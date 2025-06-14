@@ -1,6 +1,10 @@
 # Treasury Management System (TMSXO)
 
-A comprehensive, local-first treasury management system built with React and TypeScript. This application operates entirely offline with no external connections, providing secure financial data management for organizations.
+**🔴 LIVE SYNC TEST - Last Updated: December 14, 2024 at 17:55** ⭐
+
+## Overview
+
+A comprehensive **Treasury Management System** built with **React 18**, **TypeScript**, and **TensorFlow.js** for intelligent financial transaction processing and analysis. This application operates entirely offline with no external connections, providing secure financial data management for organizations.
 
 ## Features
 

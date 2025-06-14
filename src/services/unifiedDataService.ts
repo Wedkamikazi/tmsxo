@@ -1,4 +1,5 @@
 import { Transaction, BankAccount, UploadedFile } from '../types';
+import { eventBus } from './eventBus';
 
 // UNIFIED DATA SERVICE - SINGLE SOURCE OF TRUTH
 // Coordinates all data operations across the application

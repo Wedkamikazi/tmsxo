@@ -120,6 +120,10 @@ class UnifiedDataService {
       if (filtered.length < files.length) {
         localStorage.setItem(this.FILES_KEY, JSON.stringify(filtered));
         this.updateMetadata();
+        
+        // Emit event for UI updates
+        eventBus.emit('FILE_DELETED', { fileId }, 'UnifiedDataService');
+        
         return true;
       }
       return false;

@@ -47,7 +47,8 @@ export const DataManagement: React.FC = () => {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const backupPath = `${storageInfo?.dataDirectory || ''}_backup_${timestamp}`;
       
-      const success = fileStorageService.backupData(backupPath);
+      // Backup functionality temporarily disabled during consolidation
+      const success = false;
       
       if (success) {
         setBackupStatus(`Backup created successfully at: ${backupPath}`);

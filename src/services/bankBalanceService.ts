@@ -62,7 +62,7 @@ class BankBalanceService {
 
   // Extract daily closing balances for a specific account
   getDailyBalancesForAccount(accountId: string): DailyBalance[] {
-    const account = bankAccountService.getAccountById(accountId);
+    const account = unifiedDataService.getAllAccounts().find(a => a.id === accountId);
     if (!account) return [];
 
     const transactions = unifiedDataService.getTransactionsByAccount(accountId);

@@ -19,40 +19,28 @@ export const CSV_TEMPLATE: CSVTemplate = {
   ],
   sampleData: [
     {
-      'Bank reference': '829471Z01W0W',
-      'Narrative': 'HELLMANN SAUDI ARABIA TFR+',
-      'Customer reference': 'INV241221276270',
+      'Bank reference': 'REF123456',
+      'Narrative': 'Sample Transaction Description',
+      'Customer reference': 'CUST001',
       'TRN type': 'Transfer',
-      'Value date': '31/12/2024',
-      'Credit amount': '5,444.10',
-      'Debit amount': '',
-      'Time': '19:05',
-      'Post date': '31/12/2024',
-      'Balance': '20,784,406.54'
-    },
-    {
-      'Bank reference': 'LP CPM4057MZ',
-      'Narrative': 'TECHNICAL LINKS SERVICES COMPANY',
-      'Customer reference': '609720',
-      'TRN type': 'Transfer',
-      'Value date': '30/12/2024',
-      'Credit amount': '',
-      'Debit amount': '15,000,000.00',
-      'Time': '12:45',
-      'Post date': '30/12/2024',
-      'Balance': '15,010,179.45'
-    },
-    {
-      'Bank reference': 'SDR5-00029',
-      'Narrative': 'SEVING THOMAS THDMDIYIL SADAD',
-      'Customer reference': 'NONREF',
-      'TRN type': 'Cheque',
       'Value date': '01/01/2025',
-      'Credit amount': '31,050.00',
+      'Credit amount': '1000.00',
       'Debit amount': '',
-      'Time': '11:27',
-      'Post date': '30/12/2024',
-      'Balance': '33,922,117.24'
+      'Time': '09:00',
+      'Post date': '01/01/2025',
+      'Balance': '10000.00'
+    },
+    {
+      'Bank reference': 'REF123457',
+      'Narrative': 'Sample Debit Transaction',
+      'Customer reference': 'CUST002',
+      'TRN type': 'Payment',
+      'Value date': '02/01/2025',
+      'Credit amount': '',
+      'Debit amount': '500.00',
+      'Time': '14:30',
+      'Post date': '02/01/2025',
+      'Balance': '9500.00'
     }
   ]
 };

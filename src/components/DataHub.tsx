@@ -197,54 +197,42 @@ export const DataHub: React.FC<DataHubProps> = ({ onTransactionImport }) => {
         return <SimpleDataCleanup />;
       case 'payroll':
         return (
-          <div className="tab-placeholder">
-            <div className="placeholder-icon">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+          <div className="coming-soon-container">
+            <div className="coming-soon-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
                 <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
             </div>
-            <h3>Payroll Data Import</h3>
-            <p>This section will allow you to import and process payroll data, employee compensation records, and related HR financial information.</p>
-            <div className="placeholder-features">
-              <h4>Coming Soon:</h4>
-              <ul>
-                <li>Employee salary and wage data import</li>
-                <li>Benefits and deductions processing</li>
-                <li>Tax withholding calculations</li>
-                <li>Payroll period reconciliation</li>
-              </ul>
+            <h2>Payroll Data - Coming Soon</h2>
+            <p>This feature is currently under development and will be available in a future release.</p>
+            <div className="coming-soon-status">
+              <span className="status-badge">Feature Not Implemented</span>
             </div>
           </div>
         );
       case 'investments':
         return (
-          <div className="tab-placeholder">
-            <div className="placeholder-icon">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+          <div className="coming-soon-container">
+            <div className="coming-soon-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <polyline points="22,12 18,12 15,21 9,3 6,12 2,12" />
               </svg>
             </div>
-            <h3>Investment Data Import</h3>
-            <p>Manage your investment portfolio data, market valuations, and performance tracking.</p>
-            <div className="placeholder-features">
-              <h4>Coming Soon:</h4>
-              <ul>
-                <li>Portfolio holdings import</li>
-                <li>Market price updates</li>
-                <li>Performance analytics</li>
-                <li>Asset allocation tracking</li>
-              </ul>
+            <h2>Investment Data - Coming Soon</h2>
+            <p>This feature is currently under development and will be available in a future release.</p>
+            <div className="coming-soon-status">
+              <span className="status-badge">Feature Not Implemented</span>
             </div>
           </div>
         );
       case 'reports':
         return (
-          <div className="tab-placeholder">
-            <div className="placeholder-icon">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+          <div className="coming-soon-container">
+            <div className="coming-soon-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14,2 14,8 20,8" />
                 <line x1="16" y1="13" x2="8" y2="13" />
@@ -252,16 +240,10 @@ export const DataHub: React.FC<DataHubProps> = ({ onTransactionImport }) => {
                 <polyline points="10,9 9,9 8,9" />
               </svg>
             </div>
-            <h3>Financial Reports</h3>
-            <p>Generate comprehensive financial reports and export data for analysis and compliance.</p>
-            <div className="placeholder-features">
-              <h4>Coming Soon:</h4>
-              <ul>
-                <li>Balance sheet generation</li>
-                <li>Income statement reports</li>
-                <li>Cash flow analysis</li>
-                <li>Custom report builder</li>
-              </ul>
+            <h2>Financial Reports - Coming Soon</h2>
+            <p>This feature is currently under development and will be available in a future release.</p>
+            <div className="coming-soon-status">
+              <span className="status-badge">Feature Not Implemented</span>
             </div>
           </div>
         );

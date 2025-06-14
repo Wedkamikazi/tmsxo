@@ -124,7 +124,7 @@ class MLCategorizationService {
     if (!this.localModel) return;
 
     try {
-      const modelData = await this.localModel.save(tf.io.withSaveHandler(async (artifacts) => {
+      await this.localModel.save(tf.io.withSaveHandler(async (artifacts) => {
         const modelJson = {
           modelTopology: artifacts.modelTopology,
           weightSpecs: artifacts.weightSpecs,

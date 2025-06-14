@@ -108,6 +108,11 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
     }
   }, []);
 
+  useEffect(() => {
+    loadData();
+    checkQwenStatus();
+  }, [loadData, refreshTrigger, checkQwenStatus]);
+
   // Get categorization data for a transaction
   const getTransactionCategorization = useCallback((transactionId: string): TransactionCategorizationData | undefined => {
     return categorizations.find(cat => cat.transactionId === transactionId);

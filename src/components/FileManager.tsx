@@ -184,25 +184,8 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
     
     if (!confirmed) return;
     
-    try {
-      setCleaningOrphaned(true);
-      const deletedCount = transactionStorageService.clearOrphanedTransactions();
-      
-      // Refresh data
-      loadFiles();
-      
-      // Notify parent component to refresh transactions
-      if (onFileDeleted) {
-        onFileDeleted('orphaned-cleanup');
-      }
-      
-      alert(`Successfully deleted ${deletedCount} orphaned transactions.`);
-    } catch (error) {
-      console.error('Error cleaning orphaned transactions:', error);
-      alert('Failed to clean orphaned transactions. Please try again.');
-    } finally {
-      setCleaningOrphaned(false);
-    }
+    // Redirect to Data Cleanup tab for orphaned transaction cleanup
+    alert('Please use the "Data Cleanup" tab in the main navigation to clean up old transaction data.');
   };
 
   // Get storage statistics

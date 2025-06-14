@@ -127,11 +127,6 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
   // Note: Restore functionality removed during consolidation
   // File restore will be reimplemented in a future version
 
-  // Close deletion result dialog
-  const closeDeletionResult = () => {
-    setDeletionResult(null);
-  };
-
   // Handle cleanup of orphaned transactions
   const handleCleanupOrphaned = async () => {
     if (orphanedCount === 0) return;
@@ -353,92 +348,6 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
               ) : (
                 <button onClick={handleFinalDeletion} className="btn btn-danger">
                   Delete Permanently
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Deletion Result Modal */}
-      {deletionResult && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h3>Deletion Report</h3>
-            </div>
-            <div className="modal-body">
-              <div className={`status-icon ${deletionResult.report.isVerified ? 'success' : 'warning'}`}>
-                {deletionResult.report.isVerified ? '✅' : '⚠️'}
-              </div>
-              
-              <h4>File: {deletionResult.report.fileName}</h4>
-              
-              <div className="deletion-stats">
-                <div className="stat-row">
-                  <span>Expected to delete:</span>
-                  <strong>{deletionResult.report.expectedTransactionCount} transactions</strong>
-                </div>
-                <div className="stat-row">
-                  <span>Actually deleted:</span>
-                  <strong>{deletionResult.report.actualDeletedCount} transactions</strong>
-                </div>
-                <div className="stat-row">
-                  <span>Total before:</span>
-                  <strong>{deletionResult.report.totalTransactionsBefore} transactions</strong>
-                </div>
-                <div className="stat-row">
-                  <span>Total after:</span>
-                  <strong>{deletionResult.report.totalTransactionsAfter} transactions</strong>
-                </div>
-                <div className="stat-row">
-                  <span>Backup created:</span>
-                  <strong>{deletionResult.report.backupCreated ? 'Yes' : 'No'}</strong>
-                </div>
-              </div>
-
-              {deletionResult.report.isVerified ? (
-                <div className="success-message">
-                  <p>✅ <strong>Deletion completed successfully!</strong></p>
-                  <p>All transaction counts match expectations. The file and its {deletionResult.report.actualDeletedCount} transactions have been safely removed.</p>
-                  <p><strong>The Transactions page has been automatically updated</strong> to reflect these changes.</p>
-                </div>
-              ) : (
-                <div className="warning-message">
-                  <p>⚠️ <strong>Deletion verification failed!</strong></p>
-                  <p>The number of deleted transactions doesn't match expectations. This could indicate an issue with the deletion process.</p>
-                  {deletionResult.report.backupCreated && (
-                    <p><strong>A backup was created before deletion.</strong> You can restore the file if needed.</p>
-                  )}
-                </div>
-              )}
-
-              {deletionResult.report.error && (
-                <div className="error-message">
-                  <p>❌ <strong>Error:</strong> {deletionResult.report.error}</p>
-                </div>
-              )}
-            </div>
-            
-            <div className="modal-actions">
-              <button onClick={closeDeletionResult} className="btn btn-secondary">
-                Close
-              </button>
-              
-              {deletionResult.report.backupCreated && deletionResult.showRestoreOption && (
-                <button 
-                  onClick={() => handleRestore(deletionResult.report.backupKey)}
-                  disabled={restoring === deletionResult.report.backupKey}
-                  className="btn btn-warning"
-                >
-                  {restoring === deletionResult.report.backupKey ? (
-                    <>
-                      <div className="btn-spinner"></div>
-                      Restoring...
-                    </>
-                  ) : (
-                    'Restore File'
-                  )}
                 </button>
               )}
             </div>

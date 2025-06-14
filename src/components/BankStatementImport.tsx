@@ -143,9 +143,8 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
     // Store transactions (the file deletion fix is already implemented in the fileStorageService)
     const allTransactions = importSummaries.flatMap(summary => summary.transactions);
     transactionStorageService.storeTransactions(selectedBankAccount.id, allTransactions);
-    
+
     // Update account balance to the most recent transaction balance (Post date + Time based)
-    const allTransactions = importSummaries.flatMap(summary => summary.transactions);
     const sortedTransactions = [...allTransactions].sort((a, b) => {
       const dateTimeA = new Date(`${a.postDate || a.date}T${a.time || '00:00'}`);
       const dateTimeB = new Date(`${b.postDate || b.date}T${b.time || '00:00'}`);

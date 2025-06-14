@@ -130,38 +130,8 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
     setDeleteConfirmation(null);
   };
 
-  // Handle restore from backup
-  const handleRestore = async (backupKey: string) => {
-    if (!deletionResult) return;
-
-    try {
-      setRestoring(backupKey);
-      
-      const restoreResult = fileStorageService.restoreFromBackup(backupKey);
-      
-      if (restoreResult.success) {
-        // Reload files to show restored file
-        loadFiles();
-        
-        // Notify parent component to refresh transactions
-        if (onFileDeleted) {
-          onFileDeleted('restore-trigger');
-        }
-        
-        // Close deletion result dialog
-        setDeletionResult(null);
-        
-        alert(`Successfully restored ${restoreResult.restoredCount} transactions and file record. The Transactions page has been updated.`);
-      } else {
-        alert(`Failed to restore: ${restoreResult.error || 'Unknown error'}`);
-      }
-    } catch (error) {
-      console.error('Error restoring file:', error);
-      alert('An error occurred while restoring the file.');
-    } finally {
-      setRestoring(null);
-    }
-  };
+  // Note: Restore functionality removed during consolidation
+  // File restore will be reimplemented in a future version
 
   // Close deletion result dialog
   const closeDeletionResult = () => {

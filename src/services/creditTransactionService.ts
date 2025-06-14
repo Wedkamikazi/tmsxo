@@ -89,8 +89,8 @@ class CreditTransactionService {
   getCreditTransactions(accountId?: string): CreditTransactionView[] {
     // Get all transactions and filter for credits
     const allTransactions = accountId 
-      ? transactionStorageService.getTransactionsByAccount(accountId)
-      : transactionStorageService.getAllTransactions();
+      ? unifiedDataService.getTransactionsByAccount(accountId)
+      : unifiedDataService.getAllTransactions();
     
     const creditTransactions = allTransactions.filter(t => t.creditAmount > 0);
     

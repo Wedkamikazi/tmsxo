@@ -200,7 +200,7 @@ class UnifiedDataService {
       // Migrate legacy file key (treasury-uploaded-files)
       const legacyFileKey = 'treasury-uploaded-files';
       const legacyFileData = localStorage.getItem(legacyFileKey);
-      if (legacyFileData && legacyFileKey !== 'tms_files') {
+      if (legacyFileData) {
         try {
           const legacyFiles: UploadedFile[] = JSON.parse(legacyFileData);
           const currentFiles = this.getAllFiles();

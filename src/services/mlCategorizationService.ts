@@ -562,7 +562,7 @@ RESPONSE FORMAT (JSON only, no additional text):
           .trim();
 
         // Multiple JSON extraction strategies
-        let jsonResult = null;
+        let jsonResult: any = null;
 
         // Strategy 1: Direct JSON parse
         try {

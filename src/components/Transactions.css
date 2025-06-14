@@ -697,6 +697,41 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Force Light Mode for Transaction Tables - Professional Treasury Interface */
+.transactions-table-container {
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+}
+
+.transactions-table {
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+}
+
+.transactions-table thead {
+  background: #f5f5f7 !important;
+}
+
+.transactions-table th {
+  background: #f5f5f7 !important;
+  color: #1d1d1f !important;
+  border-color: #d2d2d7 !important;
+}
+
+.transactions-table td {
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+  border-color: #f2f2f7 !important;
+}
+
+.transactions-table tbody tr:hover {
+  background: #f9f9fb !important;
+}
+
+.transactions-table tbody tr:hover td {
+  background: #f9f9fb !important;
+}
+
 /* Selection styles */
 ::selection {
   background: rgba(0, 122, 255, 0.2);

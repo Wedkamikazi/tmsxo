@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { transactionStorageService, type StoredTransaction } from '../services/transactionStorageService';
-import { bankAccountService } from '../services/bankAccountService';
+import { unifiedDataService, type StoredTransaction } from '../services/unifiedDataService';
 import { BankAccount } from '../types';
 import { TransactionCategorization } from './TransactionCategorization';
 import './Transactions.css';

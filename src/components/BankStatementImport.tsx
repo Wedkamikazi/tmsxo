@@ -162,7 +162,7 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
     
     if (sortedTransactions.length > 0) {
       const latestBalance = sortedTransactions[0].balance;
-      bankAccountService.updateBalance(selectedBankAccount.id, latestBalance);
+      unifiedDataService.updateAccount(selectedBankAccount.id, { currentBalance: latestBalance });
     }
 
     if (onImportComplete) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Transaction, TransactionCategory, TransactionCategorization as TransactionCategorizationData } from '../types';
-import { transactionStorageService, type StoredTransaction } from '../services/transactionStorageService';
+import { unifiedDataService, type StoredTransaction } from '../services/unifiedDataService';
 import { categorizationService } from '../services/categorizationService';
 import { mlCategorizationService } from '../services/mlCategorizationService';
 import './TransactionCategorization.css';

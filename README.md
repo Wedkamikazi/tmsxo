@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Treasury Management System
 
 A comprehensive, local-first treasury management system built with React and TypeScript. This application operates entirely offline with no external connections, providing secure financial data management for organizations.
@@ -195,3 +196,6 @@ This project is designed for internal treasury management use. Please ensure com
 ## Support
 
 For technical support or feature requests, please refer to your internal IT documentation or treasury management guidelines.
+=======
+# tmsxo
+>>>>>>> 06058817002a855552d46ae50b1b6e9510560409

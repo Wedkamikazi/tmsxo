@@ -41,6 +41,18 @@ export interface MLCategorizationResult {
     categoryId: string;
     confidence: number;
   }>;
+  metadata?: {
+    sentiment?: string;
+    sentimentConfidence?: number;
+    isAnomaly?: boolean;
+    anomalyScore?: number;
+    pattern?: string;
+    patternConfidence?: number;
+    modelVersion?: string;
+    predictionTimestamp?: string;
+    tensorflowMemory?: any;
+    processingTime?: number;
+  };
 }
 
 export interface TransactionCategorization {

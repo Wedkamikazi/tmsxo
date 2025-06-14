@@ -270,7 +270,16 @@
   transform: translateY(0);
 }
 
-/* Remove all white boxes and internal styling */
+/* Remove all white boxes and internal styling - Override global card styles */
+.tab-button,
+.tab-button.card {
+  background: white !important;
+  border: 1px solid var(--color-neutral-200) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+  overflow: hidden !important;
+}
+
 .tab-button > *:not(.tab-icon) {
   background: transparent !important;
   border: none !important;
@@ -279,11 +288,19 @@
   margin: 0 !important;
 }
 
-.tab-button .tab-content > * {
+.tab-button .tab-content,
+.tab-button .tab-content > *,
+.tab-button .tab-label,
+.tab-button .tab-description {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
   padding: 0 !important;
+  margin: 0 !important;
+}
+
+.tab-button .tab-content .tab-label {
+  margin-bottom: 4px !important;
 }
 
 /* Ensure icons are always visible */

@@ -44,7 +44,7 @@ export interface BalanceStats {
 class BankBalanceService {
   // Extract daily closing balances from all accounts
   getDailyBalances(): DailyBalance[] {
-    const allAccounts = bankAccountService.getAllAccounts();
+    const allAccounts = unifiedDataService.getAllAccounts();
     const allBalances: DailyBalance[] = [];
 
     allAccounts.forEach(account => {

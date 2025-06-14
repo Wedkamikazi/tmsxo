@@ -271,19 +271,26 @@ class FileStorageService {
     try {
       const backupKey = `backup_${file.id}_${Date.now()}`;
 
-      // FIXED: Get transactions from unified storage
+      // FIXED: Get transactions from unified storage with precise file ID matching
       const allTransactions = this.readData<any[]>('transactions', []);
 
       // Filter transactions that belong to this file
-      const fileUploadDate = new Date(file.uploadDate);
-      const startOfDay = new Date(fileUploadDate);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(fileUploadDate);
-      endOfDay.setHours(23, 59, 59, 999);
-
       const fileTransactions = allTransactions.filter((transaction: any) => {
-        if (!transaction.importDate) return false;
-        if (transaction.accountId !== file.accountId) return false;
+        // Primary method: Use file ID if available (for new imports)
+        if (transaction.fileId) {
+          return transaction.fileId === file.id;
+        }
+
+        // Fallback method: Use date range for legacy transactions
+        if (!transaction.importDate || transaction.accountId !== file.accountId) {
+          return false;
+        }
+
+        const fileUploadDate = new Date(file.uploadDate);
+        const startOfDay = new Date(fileUploadDate);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(fileUploadDate);
+        endOfDay.setHours(23, 59, 59, 999);
 
         const importDate = new Date(transaction.importDate);
         return importDate >= startOfDay && importDate <= endOfDay;

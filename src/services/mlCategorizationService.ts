@@ -696,12 +696,18 @@ RESPONSE FORMAT (JSON only, no additional text):
       }
 
       if (result) {
+        // Add metadata to result
+        result.modelUsed = modelUsed;
+        result.processingTime = Date.now() - startTime;
+
         // Validate that the returned category ID exists
         const categoryExists = categories.some(cat => cat.id === result!.categoryId);
         if (!categoryExists) {
           console.warn(`ML model returned unknown category ID: ${result.categoryId}`);
           // Fallback to uncategorized
           result.categoryId = 'cat_uncategorized';
+          result.confidence = Math.max(0.1, result.confidence - 0.3);
+        }
           result.confidence = 0.1;
           result.reasoning = 'ML model returned unknown category, defaulted to uncategorized';
         }

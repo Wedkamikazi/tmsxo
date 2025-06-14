@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-# Treasury Management System
+# Treasury Management System (TMSXO)
 
 A comprehensive, local-first treasury management system built with React and TypeScript. This application operates entirely offline with no external connections, providing secure financial data management for organizations.
 
@@ -53,6 +52,7 @@ Date,Description,Debit,Credit,Balance,Reference
 
 ### Project Structure
 
+```
 src/
 ├── components/          # React components
 │   ├── DataHub.tsx     # Main DataHub container with tabs
@@ -66,6 +66,7 @@ src/
 │   └── index.ts       # All application types
 └── styles/           # Global styles and design system
     └── globals.css   # Design tokens and base styles
+```
 
 ## Getting Started
 
@@ -78,8 +79,8 @@ src/
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd treasury-management-system
+git clone https://github.com/Wedkamikazi/tmsxo.git
+cd tmsxo
 
 # Install dependencies
 npm install
@@ -196,6 +197,3 @@ This project is designed for internal treasury management use. Please ensure com
 ## Support
 
 For technical support or feature requests, please refer to your internal IT documentation or treasury management guidelines.
-=======
-# tmsxo
->>>>>>> 06058817002a855552d46ae50b1b6e9510560409

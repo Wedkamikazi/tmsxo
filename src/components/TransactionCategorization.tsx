@@ -339,7 +339,18 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
       <div className="categorization-header">
         <div className="categorization-title">
           <h2>Transaction Categorization</h2>
-          <p>Categorize transactions manually or use AI-powered categorization with Qwen 3</p>
+          <p>Categorize transactions manually or use AI-powered categorization with Qwen 2.5:32B</p>
+          <div className="qwen-status">
+            {qwenStatus.loading ? (
+              <span className="status-loading">🔄 Checking Qwen 2.5:32B status...</span>
+            ) : qwenStatus.modelLoaded ? (
+              <span className="status-ready">✅ Qwen 2.5:32B Ready ({stats.qwenStats.totalRequests} requests processed)</span>
+            ) : qwenStatus.available ? (
+              <span className="status-downloading">⏳ Qwen 2.5:32B downloading... Using local model for now</span>
+            ) : (
+              <span className="status-offline">🔧 Qwen 2.5:32B offline - Using local TensorFlow.js model</span>
+            )}
+          </div>
         </div>
         
         <div className="categorization-stats">

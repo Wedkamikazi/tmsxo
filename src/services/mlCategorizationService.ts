@@ -227,7 +227,7 @@ class MLCategorizationService {
         this.isOllamaAvailable = true;
         
         if (!this.modelLoaded) {
-          console.warn('Qwen3:32b model not found. Please run: ollama pull qwen3:32b');
+          console.warn('Qwen 2.5:32b model not found. Please run: ollama pull qwen2.5:32b');
         }
         
         return this.isOllamaAvailable && this.modelLoaded;

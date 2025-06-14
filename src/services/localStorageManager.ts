@@ -50,14 +50,19 @@ class LocalStorageManager {
 
   // ATOMIC TRANSACTION OPERATIONS
   executeTransaction<T>(operation: () => T): { success: boolean; result?: T; error?: string } {
+    const endTimer = performanceManager.startOperation();
     const snapshot = this.createSnapshot('atomic_operation');
+    
     try {
       const result = operation();
       this.updateMetadata();
+      endTimer();
       return { success: true, result };
     } catch (error) {
+      performanceManager.recordError();
       // Rollback on failure
       this.restoreSnapshot(snapshot);
+      endTimer();
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error' 

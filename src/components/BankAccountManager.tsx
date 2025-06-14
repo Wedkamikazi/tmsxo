@@ -44,7 +44,7 @@ export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccoun
   const [showBalanceHistory, setShowBalanceHistory] = useState<Record<string, boolean>>({});
 
   const refreshAccounts = useCallback(() => {
-    setAccounts(bankAccountService.getAllAccounts());
+    setAccounts(unifiedDataService.getAllAccounts());
     if (onAccountsUpdated) {
       onAccountsUpdated();
     }

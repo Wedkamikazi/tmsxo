@@ -32,7 +32,7 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
   const loadFiles = () => {
     try {
       setLoading(true);
-      const files = fileStorageService.getAllUploadedFiles();
+      const files = unifiedDataService.getAllFiles();
       // Sort by upload date (newest first)
       files.sort((a, b) => new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime());
       setUploadedFiles(files);

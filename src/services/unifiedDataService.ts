@@ -348,16 +348,9 @@ class UnifiedDataService {
   }
 
   private getDefaultAccounts(): BankAccount[] {
-    return [
-      {
-        id: 'acc_default_primary',
-        name: 'Primary Business Account',
-        accountNumber: '****1234',
-        bankName: 'Default Bank',
-        currency: 'USD',
-        currentBalance: 0
-      }
-    ];
+    // Production system starts with empty account list
+    // Users must create accounts manually
+    return [];
   }
 
   private createPostDateTime(postDate: string, time: string): string {

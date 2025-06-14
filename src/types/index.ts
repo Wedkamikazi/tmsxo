@@ -189,6 +189,10 @@ export interface MLCategorizationResult {
     categoryId: string;
     confidence: number;
   }>;
+  riskFactors?: string[];
+  suggestedKeywords?: string[];
+  modelUsed?: 'local_tensorflow' | 'qwen3_32b' | 'hybrid';
+  processingTime?: number;
 }
 
 export interface MLCategorizationConfig {

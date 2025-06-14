@@ -12,7 +12,7 @@ interface DataHubProps {
 }
 
 export const DataHub: React.FC<DataHubProps> = ({ onTransactionImport }) => {
-  const [activeTab, setActiveTab] = useState<'bankStatement' | 'accounts' | 'transactions' | 'fileManager' | 'payroll' | 'investments' | 'reports'>('bankStatement');
+  const [activeTab, setActiveTab] = useState<'bankStatement' | 'accounts' | 'transactions' | 'fileManager' | 'qwenStatus' | 'payroll' | 'investments' | 'reports'>('bankStatement');
   const [transactionRefreshKey, setTransactionRefreshKey] = useState(0);
 
   const handleImportComplete = (transactions: Transaction[], bankAccount: BankAccount) => {

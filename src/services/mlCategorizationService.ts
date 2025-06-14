@@ -189,6 +189,7 @@ class MLCategorizationService {
     modelName: string;
     averageLatency: number;
     totalCategorizations: number;
+    totalRequests: number;
     successRate: number;
     confidenceDistribution: { range: string; count: number }[];
     lastUpdated: string;
@@ -197,6 +198,7 @@ class MLCategorizationService {
       modelName: 'Local Rule-Based Categorization',
       averageLatency: 5, // Very fast local processing
       totalCategorizations: 0, // Would need to track this
+      totalRequests: 0, // Same as totalCategorizations for compatibility
       successRate: 0.85, // Estimated success rate for rule-based system
       confidenceDistribution: [
         { range: '0.0-0.3', count: 15 },

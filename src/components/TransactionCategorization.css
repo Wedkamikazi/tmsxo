@@ -396,50 +396,54 @@
   }
 }
 
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-  .transaction-categorization {
-    background: #1f2937;
-    color: #f9fafb;
-  }
-  
-  .categorization-title h2 {
-    color: #f9fafb;
-  }
-  
-  .categorization-title p {
-    color: #d1d5db;
-  }
-  
-  .stat-card {
-    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
-    border-color: #4b5563;
-  }
-  
-  .stat-value {
-    color: #f9fafb;
-  }
-  
-  .stat-label {
-    color: #d1d5db;
-  }
-  
-  .transactions-table {
-    background: #1f2937;
-    border-color: #4b5563;
-  }
-  
-  .transactions-table th {
-    background: #374151;
-    color: #f9fafb;
-    border-color: #4b5563;
-  }
-  
-  .transactions-table td {
-    border-color: #374151;
-  }
-  
-  .transactions-table tbody tr:hover {
-    background: #374151;
-  }
-} 
+/* Force Light Mode - Professional Treasury Interface */
+.transaction-categorization {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+}
+
+.categorization-title h2 {
+  color: #1a1a1a !important;
+}
+
+.categorization-title p {
+  color: #666666 !important;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+  border-color: #e5e5e5 !important;
+}
+
+.stat-value {
+  color: #1a1a1a !important;
+}
+
+.stat-label {
+  color: #666666 !important;
+}
+
+.transactions-table {
+  background: #ffffff !important;
+  border-color: #e5e5e5 !important;
+}
+
+.transactions-table th {
+  background: #f8f9fa !important;
+  color: #1a1a1a !important;
+  border-color: #e5e5e5 !important;
+}
+
+.transactions-table td {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+  border-color: #f0f0f0 !important;
+}
+
+.transactions-table tbody tr:hover {
+  background: #f8f9fa !important;
+}
+
+.transactions-table tbody tr:hover td {
+  background: #f8f9fa !important;
+}

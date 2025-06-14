@@ -232,11 +232,38 @@
   left: 0;
 }
 
+/* Additional Professional Styling */
+.tab-button:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1), 0 4px 12px rgba(0, 122, 255, 0.15);
+}
+
+.tab-button:active {
+  transform: translateY(0);
+}
+
+/* Ensure icons are always visible */
+.tab-icon svg,
+.tab-icon i {
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover .tab-icon svg,
+.tab-button:hover .tab-icon i,
+.tab-button.active .tab-icon svg,
+.tab-button.active .tab-icon i {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .tab-list {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--spacing-sm);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    padding: 0 16px;
   }
 }
 

@@ -144,7 +144,7 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
     importSummaries.forEach((summary, index) => {
       const fileId = uploadedFileIds[index];
       if (fileId) {
-        transactionStorageService.storeTransactions(selectedBankAccount.id, summary.transactions, fileId);
+        transactionStorageService.storeTransactionsWithFileId(selectedBankAccount.id, summary.transactions, fileId);
       } else {
         // Fallback - store without file ID if file tracking failed
         transactionStorageService.storeTransactions(selectedBankAccount.id, summary.transactions);

@@ -214,11 +214,7 @@ export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccoun
       );
 
       // Update the account in the service
-      bankAccountService.updateAccount(updatedAccount.id, {
-        name: updatedAccount.name,
-        accountNumber: updatedAccount.accountNumber,
-        bankName: updatedAccount.bankName,
-        currency: updatedAccount.currency,
+      unifiedDataService.updateAccount(updatedAccount.id, {
         currentBalance: updatedAccount.currentBalance
       });
 

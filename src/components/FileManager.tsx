@@ -13,11 +13,6 @@ interface DeleteConfirmation {
   step: 1 | 2;
 }
 
-interface DeletionResult {
-  report: DeletionReport;
-  showRestoreOption: boolean;
-}
-
 export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [loading, setLoading] = useState(true);

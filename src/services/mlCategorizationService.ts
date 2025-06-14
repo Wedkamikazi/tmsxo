@@ -538,26 +538,74 @@ RESPONSE FORMAT (JSON only, no additional text):
       const data = await response.json();
       const responseText = data.response;
 
-      // Parse JSON response from the model
+      // Enhanced JSON response parsing for Qwen 3:32B
       try {
-        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const result = JSON.parse(jsonMatch[0]);
-          
-          // Validate the response structure
-          if (result.categoryId && typeof result.confidence === 'number') {
-            return {
-              categoryId: result.categoryId,
-              confidence: Math.max(0, Math.min(1, result.confidence)),
-              reasoning: result.reasoning || 'No reasoning provided',
-              alternativeCategories: result.alternativeCategories || []
-            };
+        // Clean the response text
+        const cleanedResponse = responseText
+          .replace(/```json\s*/g, '')
+          .replace(/```\s*/g, '')
+          .replace(/^\s*[\r\n]+/gm, '')
+          .trim();
+
+        // Multiple JSON extraction strategies
+        let jsonResult = null;
+
+        // Strategy 1: Direct JSON parse
+        try {
+          jsonResult = JSON.parse(cleanedResponse);
+        } catch {
+          // Strategy 2: Extract JSON block
+          const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            jsonResult = JSON.parse(jsonMatch[0]);
+          } else {
+            // Strategy 3: Extract from markdown code blocks
+            const codeBlockMatch = cleanedResponse.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+            if (codeBlockMatch) {
+              jsonResult = JSON.parse(codeBlockMatch[1]);
+            }
           }
         }
-        throw new Error('Invalid response format from ML model');
+
+        if (jsonResult && jsonResult.categoryId && typeof jsonResult.confidence === 'number') {
+          // Enhanced validation and processing
+          const confidence = Math.max(0, Math.min(1, jsonResult.confidence));
+          const reasoning = jsonResult.reasoning || 'No reasoning provided';
+          const alternatives = Array.isArray(jsonResult.alternativeCategories)
+            ? jsonResult.alternativeCategories.slice(0, 3) // Limit to top 3
+            : [];
+
+          // Validate category exists
+          const categories = categorizationService.getAllCategories();
+          const categoryExists = categories.some(cat => cat.id === jsonResult.categoryId);
+
+          if (!categoryExists) {
+            console.warn(`Qwen 3:32B returned unknown category: ${jsonResult.categoryId}`);
+            return {
+              categoryId: 'cat_uncategorized',
+              confidence: Math.max(0.1, confidence - 0.3), // Reduce confidence for unknown category
+              reasoning: `${reasoning} (Note: Original category '${jsonResult.categoryId}' not found, defaulted to uncategorized)`,
+              alternativeCategories: alternatives,
+              riskFactors: jsonResult.riskFactors || [],
+              suggestedKeywords: jsonResult.suggestedKeywords || []
+            };
+          }
+
+          return {
+            categoryId: jsonResult.categoryId,
+            confidence,
+            reasoning,
+            alternativeCategories: alternatives,
+            riskFactors: jsonResult.riskFactors || [],
+            suggestedKeywords: jsonResult.suggestedKeywords || []
+          };
+        }
+
+        throw new Error('Invalid response structure from Qwen 3:32B');
       } catch (parseError) {
-        console.error('Failed to parse ML response:', parseError);
+        console.error('Failed to parse Qwen 3:32B response:', parseError);
         console.error('Raw response:', responseText);
+        console.error('Cleaned response:', responseText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim());
         return null;
       }
     } catch (error) {

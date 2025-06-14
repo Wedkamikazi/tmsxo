@@ -514,10 +514,16 @@ RESPONSE FORMAT (JSON only, no additional text):
           prompt: prompt,
           stream: false,
           options: {
-            temperature: 0.1, // Low temperature for consistent results
-            top_k: 10,
-            top_p: 0.9,
-            num_predict: 500
+            temperature: 0.05, // Very low temperature for maximum consistency
+            top_k: 5, // Reduced for more focused responses
+            top_p: 0.85, // Slightly reduced for better precision
+            num_predict: 800, // Increased for detailed reasoning
+            repeat_penalty: 1.1, // Prevent repetitive responses
+            num_ctx: 4096, // Increased context window for Qwen 3:32B
+            num_thread: 8, // Optimize for performance
+            // Qwen 3:32B specific optimizations
+            stop: ["\n\n", "Human:", "Assistant:", "```"], // Stop tokens
+            system: "You are a specialized financial AI focused on accurate transaction categorization for treasury management systems."
           }
         }),
         signal: controller.signal

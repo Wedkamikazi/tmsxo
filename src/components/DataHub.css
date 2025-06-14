@@ -271,36 +271,45 @@
   .datahub-title {
     font-size: 2rem;
   }
-  
+
   .datahub-description {
     font-size: 1rem;
   }
-  
+
   .tab-list {
     grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 0 12px;
   }
-  
+
   .tab-button {
-    padding: var(--spacing-md);
+    padding: 20px;
+    gap: 16px;
   }
-  
+
+  .tab-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+
   .tab-label {
     font-size: 1rem;
   }
-  
+
   .tab-description {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
   }
-  
+
   .tab-placeholder {
     padding: var(--spacing-xl);
   }
-  
+
   .tab-placeholder h3 {
     font-size: 1.5rem;
   }
-  
+
   .tab-placeholder > p {
     font-size: 1rem;
   }
-} 
+}

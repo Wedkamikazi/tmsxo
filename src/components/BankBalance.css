@@ -1,0 +1,509 @@
+.bank-balance-container {
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.bank-balance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.bank-balance-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bank-balance-title svg {
+  color: #059669;
+}
+
+.bank-balance-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.bank-balance-export-btn {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+}
+
+.bank-balance-export-btn:hover {
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+  box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
+  transform: translateY(-1px);
+}
+
+.bank-balance-refresh-btn {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.bank-balance-refresh-btn:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.bank-balance-refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Statistics Section */
+.bank-balance-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.balance-stat-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.balance-stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.balance-stat-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Filters Section */
+.bank-balance-filters {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.bank-balance-filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.bank-balance-filters-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.bank-balance-clear-filters {
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.bank-balance-clear-filters:hover {
+  color: #4f46e5;
+}
+
+.bank-balance-filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.filter-group input,
+.filter-group select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  transition: border-color 0.2s ease;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Table Section */
+.bank-balance-table-container {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bank-balance-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.bank-balance-table th,
+.bank-balance-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.bank-balance-table th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.bank-balance-table th:hover {
+  background-color: #f3f4f6;
+}
+
+.bank-balance-table th.sortable {
+  position: relative;
+}
+
+.bank-balance-table th.sortable::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 4px solid #9ca3af;
+  opacity: 0.5;
+}
+
+.bank-balance-table th.sorted-asc::after {
+  border-bottom: 4px solid #6366f1;
+  border-top: none;
+  opacity: 1;
+}
+
+.bank-balance-table th.sorted-desc::after {
+  border-top: 4px solid #6366f1;
+  border-bottom: none;
+  opacity: 1;
+}
+
+.bank-balance-table tr:hover {
+  background-color: #f9fafb;
+}
+
+.bank-balance-table td {
+  color: #1f2937;
+}
+
+/* Amount styling */
+.amount-positive {
+  color: #059669;
+  font-weight: 500;
+}
+
+.amount-negative {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.amount-zero {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Currency formatting */
+.currency-value {
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  text-align: right;
+}
+
+/* Date formatting */
+.date-cell {
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Account information */
+.account-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.account-name {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.account-details {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Pagination */
+.bank-balance-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pagination-select {
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+}
+
+.pagination-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.pagination-btn {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: white;
+  color: #374151;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-btn.active {
+  background-color: #6366f1;
+  color: white;
+  border-color: #6366f1;
+}
+
+/* Loading and Empty States */
+.bank-balance-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+.bank-balance-loading svg {
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.bank-balance-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.bank-balance-empty svg {
+  margin-bottom: 16px;
+  color: #d1d5db;
+}
+
+.bank-balance-empty h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: #374151;
+}
+
+.bank-balance-empty p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Error State */
+.bank-balance-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #dc2626;
+  text-align: center;
+}
+
+.bank-balance-error svg {
+  margin-bottom: 16px;
+  color: #fca5a5;
+}
+
+.bank-balance-error h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: #dc2626;
+}
+
+.bank-balance-error p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .bank-balance-container {
+    padding: 16px;
+  }
+  
+  .bank-balance-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .bank-balance-actions {
+    justify-content: center;
+  }
+  
+  .bank-balance-stats {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  
+  .bank-balance-filters-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .bank-balance-table-container {
+    overflow-x: auto;
+  }
+  
+  .bank-balance-table {
+    min-width: 800px;
+  }
+  
+  .bank-balance-pagination {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .pagination-controls {
+    justify-content: center;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .bank-balance-actions,
+  .bank-balance-filters,
+  .bank-balance-pagination {
+    display: none;
+  }
+  
+  .bank-balance-container {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+  
+  .bank-balance-table {
+    font-size: 12px;
+  }
+  
+  .bank-balance-table th,
+  .bank-balance-table td {
+    padding: 8px;
+  }
+} 

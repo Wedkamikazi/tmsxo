@@ -1,0 +1,476 @@
+/* Bank Statement Import Component Styles */
+.bank-statement-import {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+.import-header {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.import-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--spacing-sm);
+}
+
+.import-description {
+  font-size: 1.125rem;
+  color: var(--color-neutral-600);
+  margin: 0;
+}
+
+/* Import Steps */
+.import-step {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-neutral-200);
+  padding: var(--spacing-2xl);
+  margin-bottom: var(--spacing-lg);
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.step-header h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin: 0;
+}
+
+.step-header p {
+  color: var(--color-neutral-600);
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* Processing Indicator */
+.processing-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl);
+  background: var(--color-neutral-50);
+  border-radius: var(--radius-lg);
+  margin-top: var(--spacing-lg);
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--color-neutral-300);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.processing-indicator p {
+  color: var(--color-neutral-600);
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Error Message */
+.error-message {
+  background: var(--color-error);
+  color: white;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-top: var(--spacing-lg);
+}
+
+.error-message p {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Bank Selection */
+.bank-selection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  align-items: start;
+}
+
+.import-summary-preview {
+  background: var(--color-neutral-50);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-neutral-200);
+}
+
+.import-summary-preview h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.summary-stats {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.stat-item:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  font-weight: 500;
+  color: var(--color-neutral-700);
+}
+
+.stat-value {
+  font-weight: 600;
+  color: var(--color-neutral-900);
+}
+
+/* Account Info */
+.account-info {
+  background: var(--color-neutral-50);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-neutral-200);
+  margin-bottom: var(--spacing-xl);
+}
+
+.account-info h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.account-details p {
+  margin: var(--spacing-xs) 0;
+  color: var(--color-neutral-700);
+}
+
+.account-details p:first-child {
+  margin-top: 0;
+}
+
+.account-details p:last-child {
+  margin-bottom: 0;
+}
+
+.balance-comparison {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-neutral-200);
+}
+
+.balance-warning {
+  background: #FEF3C7;
+  color: #92400E;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid #FCD34D;
+  margin-top: var(--spacing-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.balance-success {
+  background: #D1FAE5;
+  color: #065F46;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid #34D399;
+  margin-top: var(--spacing-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Import Summaries */
+.import-summaries {
+  display: grid;
+  gap: var(--spacing-xl);
+}
+
+.import-summary-card {
+  background: white;
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  background: var(--color-neutral-50);
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.summary-header h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin: 0;
+}
+
+.summary-header .summary-stats {
+  display: flex;
+  gap: var(--spacing-lg);
+  color: var(--color-neutral-600);
+  font-size: 0.875rem;
+}
+
+/* Validation Errors */
+.validation-errors {
+  padding: var(--spacing-lg);
+  background: #FEF2F2;
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.validation-errors h5 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-error);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.validation-errors ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.validation-error {
+  padding: var(--spacing-sm);
+  background: white;
+  border: 1px solid #FCA5A5;
+  border-radius: var(--radius-sm);
+  color: var(--color-error);
+  font-size: 0.875rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.validation-error:last-child {
+  margin-bottom: 0;
+}
+
+/* Transactions Table */
+.transactions-table-container {
+  overflow-x: auto;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.transactions-table th {
+  background: var(--color-neutral-50);
+  padding: var(--spacing-md);
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  border-bottom: 1px solid var(--color-neutral-200);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.transactions-table td {
+  padding: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.transactions-table tbody tr:hover {
+  background: var(--color-neutral-50);
+}
+
+.transactions-table .form-input {
+  width: 100%;
+  min-width: 120px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.75rem;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+}
+
+.transactions-table .form-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+/* Confirmation Summary */
+.confirmation-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.summary-section {
+  background: var(--color-neutral-50);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-neutral-200);
+}
+
+.summary-section h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.confirmation-question {
+  text-align: center;
+  padding: var(--spacing-xl);
+  background: var(--color-neutral-50);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-neutral-200);
+  margin-bottom: var(--spacing-xl);
+}
+
+.confirmation-question h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.confirmation-question p {
+  color: var(--color-neutral-600);
+  margin: 0;
+}
+
+/* Step Actions */
+.step-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-neutral-200);
+}
+
+.step-actions .btn {
+  min-width: 120px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .bank-selection,
+  .confirmation-summary {
+    grid-template-columns: 1fr;
+  }
+  
+  .step-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+  
+  .summary-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+  
+  .summary-header .summary-stats {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+}
+
+@media (max-width: 768px) {
+  .bank-statement-import {
+    padding: var(--spacing-md);
+  }
+  
+  .import-step {
+    padding: var(--spacing-lg);
+  }
+  
+  .step-actions {
+    flex-direction: column;
+  }
+  
+  .step-actions .btn {
+    width: 100%;
+  }
+  
+  .transactions-table-container {
+    font-size: 0.75rem;
+  }
+  
+  .transactions-table .form-input {
+    min-width: 80px;
+    font-size: 0.75rem;
+  }
+}
+
+/* Balance Summary */
+.balance-summary {
+  padding: var(--spacing-lg);
+  background: var(--color-neutral-25);
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.balance-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.balance-row:last-child {
+  border-bottom: none;
+  font-weight: 600;
+  padding-top: var(--spacing-md);
+  margin-top: var(--spacing-sm);
+  border-top: 2px solid var(--color-neutral-300);
+}
+
+.balance-label {
+  font-size: 0.875rem;
+  color: var(--color-neutral-600);
+  font-weight: 500;
+}
+
+.balance-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+}
+
+.balance-row:last-child .balance-label,
+.balance-row:last-child .balance-value {
+  font-size: 1rem;
+  font-weight: 700;
+} 

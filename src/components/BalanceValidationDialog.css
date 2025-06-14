@@ -1,0 +1,268 @@
+/* Balance Validation Dialog Styles */
+.balance-validation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--spacing-lg);
+}
+
+.balance-validation-dialog {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--color-neutral-200);
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.dialog-content {
+  padding: var(--spacing-2xl);
+}
+
+/* Header */
+.dialog-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.header-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--color-primary);
+  color: white;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.header-text h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.header-text p {
+  font-size: 0.875rem;
+  color: var(--color-neutral-600);
+  margin: 0;
+}
+
+/* Balance Analysis Section */
+.balance-analysis-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.balance-analysis-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+.balance-comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.balance-card {
+  background: var(--color-neutral-50);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.balance-card h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.balance-amount {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+}
+
+.balance-card.expected .balance-amount {
+  color: var(--color-primary);
+}
+
+.balance-card.import .balance-amount {
+  color: var(--color-success);
+}
+
+.balance-details {
+  display: grid;
+  gap: var(--spacing-xs);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--color-neutral-600);
+}
+
+.detail-row span:first-child {
+  font-weight: 500;
+}
+
+.detail-row span:last-child {
+  font-weight: 600;
+  color: var(--color-neutral-900);
+}
+
+/* Difference Section */
+.difference-section {
+  background: var(--color-warning-light);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+}
+
+.difference-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.difference-label {
+  font-weight: 600;
+  color: var(--color-warning-dark);
+}
+
+.difference-amount {
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.difference-amount.positive {
+  color: var(--color-success);
+}
+
+.difference-amount.negative {
+  color: var(--color-error);
+}
+
+/* Explanation Section */
+.explanation-section {
+  background: var(--color-info-light);
+  border: 1px solid var(--color-info);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.explanation-section h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-info-dark);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.explanation-content {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+
+.explanation-content p {
+  font-size: 0.875rem;
+  color: var(--color-info-dark);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Dialog Actions */
+.dialog-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.action-btn {
+  padding: var(--spacing-lg);
+  text-align: center;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-content {
+  display: grid;
+  gap: var(--spacing-xs);
+  text-align: center;
+}
+
+.btn-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.btn-subtitle {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.btn-description {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .balance-validation-overlay {
+    padding: var(--spacing-md);
+  }
+
+  .dialog-content {
+    padding: var(--spacing-lg);
+  }
+
+  .balance-comparison-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dialog-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .header-text h2 {
+    font-size: 1.25rem;
+  }
+
+  .balance-amount {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dialog-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .header-icon {
+    align-self: center;
+  }
+} 

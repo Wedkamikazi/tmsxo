@@ -1,0 +1,240 @@
+/* DataHub Component Styles */
+.datahub {
+  min-height: 100vh;
+  background: var(--color-neutral-50);
+}
+
+.datahub-header {
+  background: white;
+  border-bottom: 1px solid var(--color-neutral-200);
+  padding: var(--spacing-2xl) 0;
+  margin-bottom: var(--spacing-xl);
+}
+
+.datahub-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--spacing-sm);
+  text-align: center;
+}
+
+.datahub-description {
+  font-size: 1.25rem;
+  color: var(--color-neutral-600);
+  text-align: center;
+  margin: 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.datahub-content {
+  padding-bottom: var(--spacing-3xl);
+}
+
+/* Tab Navigation */
+.datahub-tabs {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.tab-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: white;
+  border: 2px solid var(--color-neutral-200);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  font-family: inherit;
+  width: 100%;
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-button:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.tab-button.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  box-shadow: var(--shadow-md);
+}
+
+.tab-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-md);
+  color: var(--color-neutral-600);
+  transition: all 0.2s ease;
+}
+
+.tab-button:hover .tab-icon,
+.tab-button.active .tab-icon {
+  background: var(--color-primary);
+  color: white;
+}
+
+.tab-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.tab-label {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--spacing-xs);
+}
+
+.tab-description {
+  font-size: 0.875rem;
+  color: var(--color-neutral-600);
+  line-height: 1.4;
+}
+
+/* Tab Panel */
+.tab-panel {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Tab Placeholders */
+.tab-placeholder {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-neutral-200);
+  padding: var(--spacing-3xl);
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.placeholder-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-xl);
+  color: var(--color-neutral-400);
+}
+
+.tab-placeholder h3 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--spacing-md);
+}
+
+.tab-placeholder > p {
+  font-size: 1.125rem;
+  color: var(--color-neutral-600);
+  margin-bottom: var(--spacing-xl);
+  line-height: 1.6;
+}
+
+.placeholder-features {
+  background: var(--color-neutral-50);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  text-align: left;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.placeholder-features h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.placeholder-features ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.placeholder-features li {
+  padding: var(--spacing-sm) 0;
+  color: var(--color-neutral-700);
+  position: relative;
+  padding-left: var(--spacing-lg);
+}
+
+.placeholder-features li::before {
+  content: "•";
+  color: var(--color-primary);
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .tab-list {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 768px) {
+  .datahub-title {
+    font-size: 2rem;
+  }
+  
+  .datahub-description {
+    font-size: 1rem;
+  }
+  
+  .tab-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .tab-button {
+    padding: var(--spacing-md);
+  }
+  
+  .tab-label {
+    font-size: 1rem;
+  }
+  
+  .tab-description {
+    font-size: 0.75rem;
+  }
+  
+  .tab-placeholder {
+    padding: var(--spacing-xl);
+  }
+  
+  .tab-placeholder h3 {
+    font-size: 1.5rem;
+  }
+  
+  .tab-placeholder > p {
+    font-size: 1rem;
+  }
+} 

@@ -2,7 +2,7 @@
 type EventCallback = (data?: any) => void;
 
 export interface DataEvent {
-  type: 'TRANSACTIONS_UPDATED' | 'FILE_UPLOADED' | 'FILE_DELETED' | 'ACCOUNT_UPDATED' | 'DATA_CLEARED';
+  type: 'TRANSACTIONS_UPDATED' | 'FILE_UPLOADED' | 'FILE_DELETED' | 'ACCOUNT_UPDATED' | 'DATA_CLEARED' | 'ACCOUNTS_UPDATED' | 'FILES_UPDATED' | 'CATEGORIES_UPDATED';
   payload?: any;
   timestamp: number;
   source: string;

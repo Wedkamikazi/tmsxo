@@ -71,6 +71,10 @@ class UnifiedDataService {
       
       localStorage.setItem(this.TRANSACTIONS_KEY, JSON.stringify(remaining));
       this.updateMetadata();
+      
+      // Emit event for UI updates
+      eventBus.emit('TRANSACTIONS_UPDATED', { deletedCount }, 'UnifiedDataService');
+      
       return deletedCount;
     } catch (error) {
       console.error('Error deleting transactions by file:', error);

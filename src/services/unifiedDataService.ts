@@ -52,6 +52,10 @@ class UnifiedDataService {
       
       localStorage.setItem(this.TRANSACTIONS_KEY, JSON.stringify(updated));
       this.updateMetadata();
+      
+      // Emit event for UI updates
+      eventBus.emit('TRANSACTIONS_UPDATED', { count: newTransactions.length }, 'UnifiedDataService');
+      
       return true;
     } catch (error) {
       console.error('Error adding transactions:', error);

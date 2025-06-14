@@ -422,7 +422,7 @@ class MLCategorizationService {
     }
   }
 
-  // Generate enhanced categorization prompt for Qwen 3:32B
+  // Generate enhanced categorization prompt for Qwen 2.5:32B
   private generateCategorizationPrompt(
     transaction: Transaction,
     categories: TransactionCategory[]

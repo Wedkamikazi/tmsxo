@@ -1,7 +1,5 @@
 import { Transaction } from '../types';
 import { fileStorageService } from './fileStorageService';
-import { categorizationService } from './categorizationService';
-import { mlCategorizationService } from './mlCategorizationService';
 
 export interface StoredTransaction extends Transaction {
   accountId: string;
@@ -31,7 +29,7 @@ class TransactionStorageService {
   }
 
   // Get all transactions from storage
-  getAllTransactions(): StoredTransaction[] {
+  private getAllTransactions(): StoredTransaction[] {
     return fileStorageService.readData<StoredTransaction[]>(this.STORAGE_FILENAME, []);
   }
 
@@ -147,7 +145,7 @@ class TransactionStorageService {
   // Store new transactions
   storeTransactions(accountId: string, transactions: Transaction[]): void {
     const allTransactions = this.getAllTransactions();
-
+    
     const newStoredTransactions: StoredTransaction[] = transactions.map(transaction => ({
       ...transaction,
       accountId,
@@ -159,38 +157,12 @@ class TransactionStorageService {
     }));
 
     // Remove any existing transactions with the same IDs (for updates)
-    const filteredExisting = allTransactions.filter(existing =>
+    const filteredExisting = allTransactions.filter(existing => 
       !newStoredTransactions.some(newTxn => newTxn.id === existing.id)
     );
 
     const updatedTransactions = [...filteredExisting, ...newStoredTransactions];
     this.saveTransactions(updatedTransactions);
-  }
-
-  // CRITICAL FIX: Store new transactions with file ID for proper deletion tracking
-  storeTransactionsWithFileId(accountId: string, transactions: Transaction[], fileId: string): void {
-    const allTransactions = this.getAllTransactions();
-
-    const newStoredTransactions: StoredTransaction[] = transactions.map(transaction => ({
-      ...transaction,
-      accountId,
-      fileId, // Add file ID for deletion tracking
-      importDate: new Date().toISOString(),
-      postDateTime: this.createPostDateTime(
-        transaction.postDate || transaction.date,
-        transaction.time || '00:00'
-      )
-    }));
-
-    // Remove any existing transactions with the same IDs (for updates)
-    const filteredExisting = allTransactions.filter(existing =>
-      !newStoredTransactions.some(newTxn => newTxn.id === existing.id)
-    );
-
-    const updatedTransactions = [...filteredExisting, ...newStoredTransactions];
-    this.saveTransactions(updatedTransactions);
-
-    console.log(`✅ Stored ${newStoredTransactions.length} transactions with fileId: ${fileId}`);
   }
 
   // Get account balance as of a specific date
@@ -255,240 +227,6 @@ class TransactionStorageService {
       location: fileStorageService.getDataDirectory(),
       filename: `${this.STORAGE_FILENAME}.json`
     };
-  }
-
-  // ============ CATEGORIZATION METHODS ============
-
-  // Update transaction category
-  updateTransactionCategory(
-    transactionId: string, 
-    categoryId: string, 
-    isManual: boolean = true
-  ): boolean {
-    const allTransactions = this.getAllTransactions();
-    const transactionIndex = allTransactions.findIndex(t => t.id === transactionId);
-    
-    if (transactionIndex === -1) return false;
-
-    const transaction = allTransactions[transactionIndex];
-    const now = new Date().toISOString();
-
-    // Update category history
-    if (!transaction.categoryHistory) {
-      transaction.categoryHistory = [];
-    }
-
-    transaction.categoryHistory.push({
-      previousCategoryId: transaction.categoryId || transaction.manualCategoryId,
-      changedDate: now,
-      changedBy: isManual ? 'manual' : 'ml'
-    });
-
-    // Update appropriate category field
-    if (isManual) {
-      transaction.manualCategoryId = categoryId;
-      transaction.categoryId = categoryId; // Manual takes precedence
-    } else {
-      transaction.categoryId = categoryId;
-    }
-
-    // Save updated transactions
-    this.saveTransactions(allTransactions);
-
-    // Note: ML training data would be handled here in future implementation
-    if (isManual) {
-      console.log('Manual categorization completed');
-    }
-
-    return true;
-  }
-
-  // Auto-categorize uncategorized transactions
-  async autoCategorizeTransactions(accountId?: string): Promise<number> {
-    let transactions = this.getAllTransactions();
-    
-    if (accountId) {
-      transactions = transactions.filter(t => t.accountId === accountId);
-    }
-
-    // Filter uncategorized transactions
-    const uncategorizedTransactions = transactions.filter(t => 
-      !t.categoryId && !t.manualCategoryId
-    );
-
-    let categorizedCount = 0;
-
-    for (const transaction of uncategorizedTransactions) {
-      try {
-                // Try rule-based categorization first
-        const ruleCategoryId = categorizationService.applRuleBasedCategorization({
-          ...transaction,
-          description: transaction.description,
-          debitAmount: transaction.debitAmount,
-          creditAmount: transaction.creditAmount
-        });
-
-        if (ruleCategoryId) {
-          this.updateTransactionCategory(transaction.id, ruleCategoryId, false);
-          categorizedCount++;
-          continue;
-        }
-
-        // Try ML categorization
-        const mlCategorization = await mlCategorizationService.categorizeTransaction(transaction);
-
-        if (mlCategorization && mlCategorization.confidence > 0.5) {
-          // Update transaction with ML categorization
-          const allTransactions = this.getAllTransactions();
-          const transactionIndex = allTransactions.findIndex(t => t.id === transaction.id);
-          
-          if (transactionIndex !== -1) {
-            allTransactions[transactionIndex].categoryId = mlCategorization.categoryId;
-            allTransactions[transactionIndex].mlCategorization = {
-              categoryId: mlCategorization.categoryId,
-              confidence: mlCategorization.confidence,
-              algorithm: 'neural_network' as const,
-              features: [],
-              trainingDate: new Date().toISOString()
-            };
-            this.saveTransactions(allTransactions);
-            categorizedCount++;
-          }
-        }
-      } catch (error) {
-        console.error(`Error categorizing transaction ${transaction.id}:`, error);
-      }
-    }
-
-    return categorizedCount;
-  }
-
-  // Get transactions by category
-  getTransactionsByCategory(categoryId: string, accountId?: string): StoredTransaction[] {
-    let transactions = this.getAllTransactions();
-    
-    if (accountId) {
-      transactions = transactions.filter(t => t.accountId === accountId);
-    }
-
-    return transactions
-      .filter(t => t.categoryId === categoryId || t.manualCategoryId === categoryId)
-      .sort((a, b) => new Date(b.postDateTime).getTime() - new Date(a.postDateTime).getTime());
-  }
-
-  // Get categorization statistics
-  getCategorizationStats(accountId?: string): {
-    total: number;
-    categorized: number;
-    uncategorized: number;
-    manuallyCateged: number;
-    mlCategorized: number;
-    ruleCategorized: number;
-    categoryBreakdown: { categoryId: string; count: number; totalAmount: number }[];
-  } {
-    let transactions = this.getAllTransactions();
-    
-    if (accountId) {
-      transactions = transactions.filter(t => t.accountId === accountId);
-    }
-
-    const stats = {
-      total: transactions.length,
-      categorized: 0,
-      uncategorized: 0,
-      manuallyCateged: 0,
-      mlCategorized: 0,
-      ruleCategorized: 0,
-      categoryBreakdown: [] as { categoryId: string; count: number; totalAmount: number }[]
-    };
-
-    const categoryMap = new Map<string, { count: number; totalAmount: number }>();
-
-    transactions.forEach(transaction => {
-      const amount = (transaction.creditAmount || 0) - (transaction.debitAmount || 0);
-      const categoryId = transaction.categoryId || transaction.manualCategoryId;
-
-      if (categoryId) {
-        stats.categorized++;
-        
-        // Check categorization type
-        if (transaction.manualCategoryId) {
-          stats.manuallyCateged++;
-        } else if (transaction.mlCategorization) {
-          stats.mlCategorized++;
-        } else {
-          stats.ruleCategorized++;
-        }
-
-        // Update category breakdown
-        const existing = categoryMap.get(categoryId) || { count: 0, totalAmount: 0 };
-        existing.count++;
-        existing.totalAmount += Math.abs(amount);
-        categoryMap.set(categoryId, existing);
-      } else {
-        stats.uncategorized++;
-      }
-    });
-
-    // Convert map to array
-    stats.categoryBreakdown = Array.from(categoryMap.entries()).map(([categoryId, data]) => ({
-      categoryId,
-      ...data
-    }));
-
-    return stats;
-  }
-
-  // Get uncategorized transactions
-  getUncategorizedTransactions(accountId?: string): StoredTransaction[] {
-    let transactions = this.getAllTransactions();
-    
-    if (accountId) {
-      transactions = transactions.filter(t => t.accountId === accountId);
-    }
-
-    return transactions
-      .filter(t => !t.categoryId && !t.manualCategoryId)
-      .sort((a, b) => new Date(b.postDateTime).getTime() - new Date(a.postDateTime).getTime());
-  }
-
-  // Bulk update categories
-  bulkUpdateCategories(transactionIds: string[], categoryId: string): number {
-    const allTransactions = this.getAllTransactions();
-    let updatedCount = 0;
-
-    transactionIds.forEach(id => {
-      const transactionIndex = allTransactions.findIndex(t => t.id === id);
-      if (transactionIndex !== -1) {
-        const transaction = allTransactions[transactionIndex];
-        const now = new Date().toISOString();
-
-        // Update category history
-        if (!transaction.categoryHistory) {
-          transaction.categoryHistory = [];
-        }
-
-        transaction.categoryHistory.push({
-          previousCategoryId: transaction.categoryId || transaction.manualCategoryId,
-          changedDate: now,
-          changedBy: 'manual'
-        });
-
-        transaction.manualCategoryId = categoryId;
-        transaction.categoryId = categoryId;
-
-        // Note: ML training data would be handled here in future implementation
-        console.log('Bulk categorization completed');
-
-        updatedCount++;
-      }
-    });
-
-    if (updatedCount > 0) {
-      this.saveTransactions(allTransactions);
-    }
-
-    return updatedCount;
   }
 }
 

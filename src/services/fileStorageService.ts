@@ -1,10 +1,9 @@
 // File Storage Service for local file system persistence
 // This service handles reading and writing data to local JSON files
 
-// Note: These would be used in a Node.js environment
-// const fs = window.require ? window.require('fs') : null;
-// const path = window.require ? window.require('path') : null;
-// const os = window.require ? window.require('os') : null;
+const fs = window.require ? window.require('fs') : null;
+const path = window.require ? window.require('path') : null;
+const os = window.require ? window.require('os') : null;
 
 export interface UploadedFile {
   id: string;
@@ -168,77 +167,38 @@ class FileStorageService {
 
   private deleteTransactionsByFile(file: UploadedFile): number {
     try {
-      // CRITICAL FIX: Use the unified transaction storage system with precise file ID matching
-      const allTransactions = this.readData<any[]>('transactions', []);
-      const originalCount = allTransactions.length;
-
-      // Count transactions that will be deleted (for verification)
-      const transactionsToDelete = allTransactions.filter((transaction: any) => {
-        // Primary method: Use file ID if available (for new imports)
-        if (transaction.fileId) {
-          return transaction.fileId === file.id;
-        }
-
-        // Fallback method: Use date range for legacy transactions
-        if (!transaction.importDate || transaction.accountId !== file.accountId) {
-          return false;
-        }
-
-        const fileUploadDate = new Date(file.uploadDate);
-        const startOfDay = new Date(fileUploadDate);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(fileUploadDate);
-        endOfDay.setHours(23, 59, 59, 999);
-
-        const importDate = new Date(transaction.importDate);
-        return importDate >= startOfDay && importDate <= endOfDay;
-      });
-
-      // Filter out transactions that belong to this file
-      const remainingTransactions = allTransactions.filter((transaction: any) => {
-        // Primary method: Use file ID if available (for new imports)
-        if (transaction.fileId) {
-          return transaction.fileId !== file.id;
-        }
-
-        // Fallback method: Use date range for legacy transactions
-        if (!transaction.importDate || transaction.accountId !== file.accountId) {
-          return true;
-        }
-
-        const fileUploadDate = new Date(file.uploadDate);
-        const startOfDay = new Date(fileUploadDate);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(fileUploadDate);
-        endOfDay.setHours(23, 59, 59, 999);
-
+      // Get all transactions for the account
+      const transactionsKey = `treasury-transactions-${file.accountId}`;
+      const stored = localStorage.getItem(transactionsKey);
+      
+      if (!stored) return 0;
+      
+      const transactions = JSON.parse(stored);
+      const originalCount = transactions.length;
+      
+      // Filter out transactions that were imported from this file
+      // We'll use the upload date to identify transactions from this file
+      const fileUploadDate = new Date(file.uploadDate);
+      const startOfDay = new Date(fileUploadDate);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(fileUploadDate);
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      const remainingTransactions = transactions.filter((transaction: any) => {
+        if (!transaction.importDate) return true;
+        
         const importDate = new Date(transaction.importDate);
         return importDate < startOfDay || importDate > endOfDay;
       });
-
-      // Save the filtered transactions back to the unified storage
-      const success = this.writeData('transactions', remainingTransactions);
-
-      if (!success) {
-        console.error('❌ Failed to save transactions after deletion');
-        return 0;
-      }
-
+      
+      // Save the filtered transactions back
+      localStorage.setItem(transactionsKey, JSON.stringify(remainingTransactions));
+      
       const deletedCount = originalCount - remainingTransactions.length;
-      console.log(`✅ Successfully deleted ${deletedCount} transactions from file ${file.fileName}`);
-      console.log(`📊 Transactions before: ${originalCount}, after: ${remainingTransactions.length}`);
-      console.log(`🎯 Expected to delete: ${transactionsToDelete.length}, actually deleted: ${deletedCount}`);
-
-      // ALSO clean up the old account-specific localStorage (for backward compatibility)
-      const oldTransactionsKey = `treasury-transactions-${file.accountId}`;
-      if (localStorage.getItem(oldTransactionsKey)) {
-        localStorage.removeItem(oldTransactionsKey);
-        console.log(`🧹 Cleaned up legacy storage: ${oldTransactionsKey}`);
-      }
-
+      console.log(`Deleted ${deletedCount} transactions from file ${file.fileName}`);
       return deletedCount;
     } catch (error) {
-      console.error('❌ Error deleting transactions for file:', error);
+      console.error('Error deleting transactions for file:', error);
       return 0;
     }
   }
@@ -248,7 +208,7 @@ class FileStorageService {
     try {
       let totalCount = 0;
       const files = this.getAllUploadedFiles();
-      const accountIds = Array.from(new Set(files.map(f => f.accountId)));
+      const accountIds = [...new Set(files.map(f => f.accountId))];
       
       accountIds.forEach(accountId => {
         const transactionsKey = `treasury-transactions-${accountId}`;
@@ -270,28 +230,21 @@ class FileStorageService {
   createBackup(file: UploadedFile): { success: boolean; backupKey: string } {
     try {
       const backupKey = `backup_${file.id}_${Date.now()}`;
-
-      // FIXED: Get transactions from unified storage with precise file ID matching
-      const allTransactions = this.readData<any[]>('transactions', []);
-
+      
+      // Get transactions for this file
+      const transactionsKey = `treasury-transactions-${file.accountId}`;
+      const stored = localStorage.getItem(transactionsKey);
+      const allTransactions = stored ? JSON.parse(stored) : [];
+      
       // Filter transactions that belong to this file
+      const fileUploadDate = new Date(file.uploadDate);
+      const startOfDay = new Date(fileUploadDate);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(fileUploadDate);
+      endOfDay.setHours(23, 59, 59, 999);
+      
       const fileTransactions = allTransactions.filter((transaction: any) => {
-        // Primary method: Use file ID if available (for new imports)
-        if (transaction.fileId) {
-          return transaction.fileId === file.id;
-        }
-
-        // Fallback method: Use date range for legacy transactions
-        if (!transaction.importDate || transaction.accountId !== file.accountId) {
-          return false;
-        }
-
-        const fileUploadDate = new Date(file.uploadDate);
-        const startOfDay = new Date(fileUploadDate);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(fileUploadDate);
-        endOfDay.setHours(23, 59, 59, 999);
-
+        if (!transaction.importDate) return false;
         const importDate = new Date(transaction.importDate);
         return importDate >= startOfDay && importDate <= endOfDay;
       });
@@ -303,11 +256,10 @@ class FileStorageService {
       };
 
       localStorage.setItem(backupKey, JSON.stringify(backupData));
-
-      console.log(`📦 Created backup for ${fileTransactions.length} transactions from file ${file.fileName}`);
+      
       return { success: true, backupKey };
     } catch (error) {
-      console.error('❌ Error creating backup:', error);
+      console.error('Error creating backup:', error);
       return { success: false, backupKey: '' };
     }
   }
@@ -321,37 +273,31 @@ class FileStorageService {
       }
 
       const backup: BackupData = JSON.parse(backupData);
-
+      
       // Restore file record
       const files = this.getAllUploadedFiles();
       const existingIndex = files.findIndex(f => f.id === backup.fileRecord.id);
-
+      
       if (existingIndex === -1) {
         files.push(backup.fileRecord);
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(files));
       }
 
-      // FIXED: Restore transactions to unified storage
-      const existingTransactions = this.readData<any[]>('transactions', []);
-
-      // Add backup transactions back (avoid duplicates)
-      const backupTransactionIds = new Set(backup.transactions.map((t: any) => t.id));
-      const filteredExisting = existingTransactions.filter((t: any) => !backupTransactionIds.has(t.id));
-      const combinedTransactions = [...filteredExisting, ...backup.transactions];
-
-      const success = this.writeData('transactions', combinedTransactions);
-
-      if (!success) {
-        return { success: false, restoredCount: 0, error: 'Failed to restore transactions to storage' };
-      }
+      // Restore transactions
+      const transactionsKey = `treasury-transactions-${backup.fileRecord.accountId}`;
+      const stored = localStorage.getItem(transactionsKey);
+      const existingTransactions = stored ? JSON.parse(stored) : [];
+      
+      // Add backup transactions back
+      const combinedTransactions = [...existingTransactions, ...backup.transactions];
+      localStorage.setItem(transactionsKey, JSON.stringify(combinedTransactions));
 
       // Clean up backup
       localStorage.removeItem(backupKey);
 
-      console.log(`🔄 Restored ${backup.transactions.length} transactions from backup`);
       return { success: true, restoredCount: backup.transactions.length };
     } catch (error) {
-      console.error('❌ Error restoring from backup:', error);
+      console.error('Error restoring from backup:', error);
       return { success: false, restoredCount: 0, error: error instanceof Error ? error.message : 'Unknown error' };
     }
   }
@@ -414,70 +360,6 @@ class FileStorageService {
       totalTransactions: files.reduce((sum, file) => sum + file.transactionCount, 0),
       totalSize: files.reduce((sum, file) => sum + file.fileSize, 0)
     };
-  }
-
-  // Generic data reading method
-  readData<T>(filename: string, defaultValue: T): T {
-    try {
-      const key = `treasury-${filename}`;
-      const stored = localStorage.getItem(key);
-      return stored ? JSON.parse(stored) : defaultValue;
-    } catch (error) {
-      console.error(`Error reading data from ${filename}:`, error);
-      return defaultValue;
-    }
-  }
-
-  // Generic data writing method
-  writeData(filename: string, data: any): boolean {
-    try {
-      const key = `treasury-${filename}`;
-      localStorage.setItem(key, JSON.stringify(data));
-      return true;
-    } catch (error) {
-      console.error(`Error writing data to ${filename}:`, error);
-      return false;
-    }
-  }
-
-  // Get data directory (for display purposes)
-  getDataDirectory(): string {
-    return 'Browser Local Storage';
-  }
-
-  // List available data files
-  listDataFiles(): string[] {
-    const files: string[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key?.startsWith('treasury-')) {
-        files.push(key.replace('treasury-', ''));
-      }
-    }
-    return files;
-  }
-
-  // Backup data to a specific path (simplified for browser)
-  backupData(_backupPath: string): boolean {
-    try {
-      const data: Record<string, any> = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key?.startsWith('treasury-')) {
-          data[key] = localStorage.getItem(key);
-        }
-      }
-      
-      // In a browser environment, we can't write to arbitrary paths
-      // So we'll store it as another localStorage item
-      const backupKey = `treasury-backup-${Date.now()}`;
-      localStorage.setItem(backupKey, JSON.stringify(data));
-      console.log(`Backup created with key: ${backupKey}`);
-      return true;
-    } catch (error) {
-      console.error('Error creating backup:', error);
-      return false;
-    }
   }
 }
 

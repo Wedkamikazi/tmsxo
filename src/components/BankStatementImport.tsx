@@ -118,12 +118,12 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
   const handleConfirmImport = useCallback(() => {
     if (!selectedBankAccount) return;
 
-    // CRITICAL FIX: Store transactions with file IDs for proper deletion tracking
+    // Track uploaded files first to get file IDs
+    const uploadedFileIds: string[] = [];
     files.forEach((file, index) => {
       const summary = importSummaries[index];
       if (summary) {
         try {
-          // First, create the file record to get the file ID
           const uploadedFile = fileStorageService.addUploadedFile({
             fileName: file.name,
             accountId: selectedBankAccount.id,
@@ -132,36 +132,40 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
             fileSize: file.size,
             checksum: `${file.name}_${file.size}_${Date.now()}`
           });
-
-          // Then store transactions with the file ID
-          transactionStorageService.storeTransactionsWithFileId(
-            selectedBankAccount.id,
-            summary.transactions,
-            uploadedFile.id
-          );
+          uploadedFileIds.push(uploadedFile.id);
         } catch (error) {
           console.error('Error tracking uploaded file:', error);
+          uploadedFileIds.push(''); // Fallback for failed file tracking
         }
       }
     });
 
-    // FIXED: Get all transactions for balance calculation
-    const allImportedTransactions = importSummaries.flatMap(summary => summary.transactions);
-
+    // Store transactions with their associated file IDs
+    importSummaries.forEach((summary, index) => {
+      const fileId = uploadedFileIds[index];
+      if (fileId) {
+        transactionStorageService.storeTransactions(selectedBankAccount.id, summary.transactions, fileId);
+      } else {
+        // Fallback - store without file ID if file tracking failed
+        transactionStorageService.storeTransactions(selectedBankAccount.id, summary.transactions);
+      }
+    });
+    
     // Update account balance to the most recent transaction balance (Post date + Time based)
-    const sortedTransactions = [...allImportedTransactions].sort((a, b) => {
+    const allTransactions = importSummaries.flatMap(summary => summary.transactions);
+    const sortedTransactions = [...allTransactions].sort((a, b) => {
       const dateTimeA = new Date(`${a.postDate || a.date}T${a.time || '00:00'}`);
       const dateTimeB = new Date(`${b.postDate || b.date}T${b.time || '00:00'}`);
       return dateTimeB.getTime() - dateTimeA.getTime();
     });
-
+    
     if (sortedTransactions.length > 0) {
       const latestBalance = sortedTransactions[0].balance;
       bankAccountService.updateBalance(selectedBankAccount.id, latestBalance);
     }
 
     if (onImportComplete) {
-      onImportComplete(allImportedTransactions, selectedBankAccount);
+      onImportComplete(allTransactions, selectedBankAccount);
     }
     
     // Reset state

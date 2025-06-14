@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fileStorageService, type UploadedFile, type DeletionReport } from '../services/fileStorageService';
+import { transactionStorageService } from '../services/transactionStorageService';
 import './FileManager.css';
 
 interface FileManagerProps {
@@ -24,6 +25,8 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deletionResult, setDeletionResult] = useState<DeletionResult | null>(null);
   const [restoring, setRestoring] = useState<string | null>(null);
+  const [orphanedCount, setOrphanedCount] = useState(0);
+  const [cleaningOrphaned, setCleaningOrphaned] = useState(false);
 
   // Load uploaded files
   const loadFiles = () => {
@@ -33,6 +36,10 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
       // Sort by upload date (newest first)
       files.sort((a, b) => new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime());
       setUploadedFiles(files);
+      
+      // Count orphaned transactions (old data without file IDs)
+      const orphanedTransactions = transactionStorageService.getOrphanedTransactions();
+      setOrphanedCount(orphanedTransactions.length);
     } catch (error) {
       console.error('Error loading files:', error);
     } finally {
@@ -164,6 +171,40 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
     setDeletionResult(null);
   };
 
+  // Handle cleanup of orphaned transactions
+  const handleCleanupOrphaned = async () => {
+    if (orphanedCount === 0) return;
+    
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${orphanedCount} orphaned transactions?\n\n` +
+      'These are transactions that were imported before the file tracking system was implemented. ' +
+      'They cannot be linked to any file and should be cleaned up.\n\n' +
+      'This action cannot be undone.'
+    );
+    
+    if (!confirmed) return;
+    
+    try {
+      setCleaningOrphaned(true);
+      const deletedCount = transactionStorageService.clearOrphanedTransactions();
+      
+      // Refresh data
+      loadFiles();
+      
+      // Notify parent component to refresh transactions
+      if (onFileDeleted) {
+        onFileDeleted('orphaned-cleanup');
+      }
+      
+      alert(`Successfully deleted ${deletedCount} orphaned transactions.`);
+    } catch (error) {
+      console.error('Error cleaning orphaned transactions:', error);
+      alert('Failed to clean orphaned transactions. Please try again.');
+    } finally {
+      setCleaningOrphaned(false);
+    }
+  };
+
   // Get storage statistics
   const stats = fileStorageService.getStorageStats();
 
@@ -200,6 +241,38 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
           </div>
         </div>
       </div>
+
+      {/* Orphaned Transactions Warning */}
+      {orphanedCount > 0 && (
+        <div className="orphaned-warning">
+          <div className="warning-content">
+            <div className="warning-icon">⚠️</div>
+            <div className="warning-message">
+              <strong>Orphaned Transaction Data Detected</strong>
+              <p>
+                Found {orphanedCount.toLocaleString()} transactions that were imported before the file tracking system was implemented. 
+                These transactions cannot be properly managed and should be cleaned up.
+              </p>
+            </div>
+            <div className="warning-actions">
+              <button 
+                onClick={handleCleanupOrphaned}
+                disabled={cleaningOrphaned}
+                className="btn btn-warning btn-sm"
+              >
+                {cleaningOrphaned ? (
+                  <>
+                    <div className="btn-spinner"></div>
+                    Cleaning...
+                  </>
+                ) : (
+                  `Clean Up ${orphanedCount.toLocaleString()} Orphaned Transactions`
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {uploadedFiles.length === 0 ? (
         <div className="no-files">

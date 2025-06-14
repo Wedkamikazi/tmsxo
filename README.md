@@ -52,7 +52,6 @@ Date,Description,Debit,Credit,Balance,Reference
 
 ### Project Structure
 
-```
 src/
 ├── components/          # React components
 │   ├── DataHub.tsx     # Main DataHub container with tabs

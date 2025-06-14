@@ -361,6 +361,33 @@ class FileStorageService {
       totalSize: files.reduce((sum, file) => sum + file.fileSize, 0)
     };
   }
+
+  // MISSING METHODS THAT OTHER SERVICES DEPEND ON
+  readData<T>(filename: string, defaultValue: T): T {
+    try {
+      const key = `treasury-data-${filename}`;
+      const stored = localStorage.getItem(key);
+      return stored ? JSON.parse(stored) : defaultValue;
+    } catch (error) {
+      console.error(`Error reading data for ${filename}:`, error);
+      return defaultValue;
+    }
+  }
+
+  writeData<T>(filename: string, data: T): boolean {
+    try {
+      const key = `treasury-data-${filename}`;
+      localStorage.setItem(key, JSON.stringify(data));
+      return true;
+    } catch (error) {
+      console.error(`Error writing data for ${filename}:`, error);
+      return false;
+    }
+  }
+
+  getDataDirectory(): string {
+    return 'localStorage://treasury-data/';
+  }
 }
 
 export const fileStorageService = new FileStorageService(); 

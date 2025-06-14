@@ -24,6 +24,7 @@ Your Treasury Management System now has:
 ### 🚀 **How to Use:**
 
 **Option 1: Automatic (Recommended)**
+
 ```bash
 # Just commit as normal - auto-push enabled
 git add .
@@ -32,14 +33,16 @@ git commit -m "Your changes"
 ```
 
 **Option 2: Manual Sync**
+
 ```bash
 # Run the sync script anytime
 .\auto-sync.ps1
 ```
 
 **Option 3: One-Click**
+
 ```
 Double-click: sync.bat
 ```
 
-**Repository:** https://github.com/Wedkamikazi/tmsxo 
+**Repository:** <https://github.com/Wedkamikazi/tmsxo>

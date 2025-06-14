@@ -39,7 +39,7 @@ class MLCategorizationService {
   private categoryMapping: Map<string, number> = new Map();
   private reverseCategoryMapping: Map<number, string> = new Map();
 
-  // Performance monitoring for Qwen 3:32B
+  // Performance monitoring for Qwen 2.5:32B
   private qwenPerformanceStats = {
     totalRequests: 0,
     successfulRequests: 0,

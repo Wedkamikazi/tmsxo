@@ -299,7 +299,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
     return '#EF4444';
   }, []);
 
-  // Statistics
+  // Statistics with Qwen performance
   const stats = useMemo(() => {
     const total = transactions.length;
     const categorized = categorizations.length;
@@ -310,6 +310,9 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
       .filter(c => c.method === 'ml' && c.confidence !== undefined)
       .reduce((sum, c, _, arr) => sum + (c.confidence || 0) / arr.length, 0);
 
+    // Get Qwen performance stats
+    const qwenStats = mlCategorizationService.getQwenPerformanceStats();
+
     return {
       total,
       categorized,
@@ -317,7 +320,8 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
       mlCategorized,
       manualCategorized,
       averageMLConfidence,
-      categorizationRate: total > 0 ? (categorized / total) * 100 : 0
+      categorizationRate: total > 0 ? (categorized / total) * 100 : 0,
+      qwenStats
     };
   }, [transactions, categorizations]);
 

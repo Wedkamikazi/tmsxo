@@ -422,12 +422,17 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
         </div>
 
         <div className="action-buttons">
-          <button 
+          <button
             className="btn btn-primary"
             onClick={() => handleMLCategorization()}
             disabled={processingML}
+            title={qwenStatus.modelLoaded ? 'Using Qwen 2.5:32B + Local TensorFlow.js' : 'Using Local TensorFlow.js model'}
           >
-            {processingML ? `Processing ${mlProgress.current}/${mlProgress.total}...` : 'Run ML Categorization'}
+            {processingML ? (
+              `Processing ${mlProgress.current}/${mlProgress.total}... ${qwenStatus.modelLoaded ? '🤖' : '🧠'}`
+            ) : (
+              `Run AI Categorization ${qwenStatus.modelLoaded ? '🤖 Qwen+Local' : '🧠 Local'}`
+            )}
           </button>
           <button 
             className="btn btn-secondary"

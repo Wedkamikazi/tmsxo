@@ -44,7 +44,39 @@
 .categorization-title p {
   font-size: 16px;
   color: #6b7280;
-  margin: 0 0 24px 0;
+  margin: 0 0 12px 0;
+}
+
+/* Qwen Status Styles */
+.qwen-status {
+  margin-top: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status-ready {
+  color: #10B981;
+}
+
+.status-downloading {
+  color: #F59E0B;
+}
+
+.status-offline {
+  color: #6B7280;
+}
+
+.status-loading {
+  color: #3B82F6;
+}
+
+.qwen-stat {
+  border-left: 3px solid #8B5CF6;
+}
+
+.qwen-stat .stat-label {
+  color: #8B5CF6;
 }
 
 .categorization-stats {

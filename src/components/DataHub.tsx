@@ -4,7 +4,7 @@ import { BankAccountManager } from './BankAccountManager';
 import { Transactions } from './Transactions';
 import { FileManager } from './FileManager';
 import QwenIntegrationStatus from './QwenIntegrationStatus';
-import DataCleanup from './DataCleanup';
+import SimpleDataCleanup from './SimpleDataCleanup';
 import { Transaction, BankAccount } from '../types';
 import './DataHub.css';
 

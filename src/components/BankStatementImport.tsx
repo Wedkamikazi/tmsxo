@@ -140,16 +140,9 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
       }
     });
 
-    // Store transactions with their associated file IDs
-    importSummaries.forEach((summary, index) => {
-      const fileId = uploadedFileIds[index];
-      if (fileId) {
-        transactionStorageService.storeTransactionsWithFileId(selectedBankAccount.id, summary.transactions, fileId);
-      } else {
-        // Fallback - store without file ID if file tracking failed
-        transactionStorageService.storeTransactions(selectedBankAccount.id, summary.transactions);
-      }
-    });
+    // Store transactions (the file deletion fix is already implemented in the fileStorageService)
+    const allTransactions = importSummaries.flatMap(summary => summary.transactions);
+    transactionStorageService.storeTransactions(selectedBankAccount.id, allTransactions);
     
     // Update account balance to the most recent transaction balance (Post date + Time based)
     const allTransactions = importSummaries.flatMap(summary => summary.transactions);

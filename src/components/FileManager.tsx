@@ -20,7 +20,6 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
   const [deleting, setDeleting] = useState<string | null>(null);
   // Simplified state after consolidation - no restore functionality
   const [orphanedCount, setOrphanedCount] = useState(0);
-  const [cleaningOrphaned, setCleaningOrphaned] = useState(false);
 
   // Load uploaded files
   const loadFiles = () => {
@@ -201,17 +200,9 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
             <div className="warning-actions">
               <button 
                 onClick={handleCleanupOrphaned}
-                disabled={cleaningOrphaned}
                 className="btn btn-warning btn-sm"
               >
-                {cleaningOrphaned ? (
-                  <>
-                    <div className="btn-spinner"></div>
-                    Cleaning...
-                  </>
-                ) : (
-                  `Clean Up ${orphanedCount.toLocaleString()} Orphaned Transactions`
-                )}
+                Clean Up {orphanedCount.toLocaleString()} Orphaned Transactions
               </button>
             </div>
           </div>

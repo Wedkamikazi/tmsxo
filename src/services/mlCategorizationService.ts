@@ -14,7 +14,7 @@ interface LocalMLConfig extends MLCategorizationConfig {
 
 class MLCategorizationService {
   private config: LocalMLConfig = {
-    modelName: 'qwen3:32b',
+    modelName: 'qwen2.5:32b', // Updated to correct Qwen 2.5 model name
     ollamaEndpoint: 'http://localhost:11434',
     confidenceThreshold: 0.7,
     maxRetries: 3,

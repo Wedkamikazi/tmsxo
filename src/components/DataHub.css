@@ -1,7 +1,20 @@
-/* DataHub Component Styles */
+/* DataHub Component Styles - Professional Gray Theme */
+/* Override any blue colors with professional grays */
 .datahub {
   min-height: 100vh;
   background: var(--color-neutral-50);
+  /* Local color overrides for professional appearance */
+  --local-primary: #1f2937;
+  --local-primary-hover: #374151;
+  --local-primary-light: #f3f4f6;
+  --local-focus-ring: rgba(156, 163, 175, 0.1);
+}
+
+/* Ensure no blue colors anywhere in DataHub */
+.datahub * {
+  --color-primary: #1f2937 !important;
+  --color-primary-hover: #374151 !important;
+  --color-primary-light: #f3f4f6 !important;
 }
 
 .datahub-header {

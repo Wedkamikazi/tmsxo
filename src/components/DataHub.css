@@ -161,7 +161,8 @@
 }
 
 .tab-button.active .tab-label {
-  color: var(--color-primary);
+  color: #1f2937;
+  font-weight: 700;
 }
 
 .tab-description {

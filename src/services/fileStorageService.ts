@@ -168,29 +168,51 @@ class FileStorageService {
 
   private deleteTransactionsByFile(file: UploadedFile): number {
     try {
-      // CRITICAL FIX: Use the unified transaction storage system
-      // Get all transactions from the main storage (not account-specific localStorage)
+      // CRITICAL FIX: Use the unified transaction storage system with precise file ID matching
       const allTransactions = this.readData<any[]>('transactions', []);
       const originalCount = allTransactions.length;
 
-      // Filter out transactions that were imported from this file
-      // We'll use the upload date and file ID to identify transactions from this file
-      const fileUploadDate = new Date(file.uploadDate);
-      const startOfDay = new Date(fileUploadDate);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(fileUploadDate);
-      endOfDay.setHours(23, 59, 59, 999);
+      // Count transactions that will be deleted (for verification)
+      const transactionsToDelete = allTransactions.filter((transaction: any) => {
+        // Primary method: Use file ID if available (for new imports)
+        if (transaction.fileId) {
+          return transaction.fileId === file.id;
+        }
 
-      const remainingTransactions = allTransactions.filter((transaction: any) => {
-        // Skip transactions that don't have import date
-        if (!transaction.importDate) return true;
+        // Fallback method: Use date range for legacy transactions
+        if (!transaction.importDate || transaction.accountId !== file.accountId) {
+          return false;
+        }
 
-        // Skip transactions from different accounts
-        if (transaction.accountId !== file.accountId) return true;
+        const fileUploadDate = new Date(file.uploadDate);
+        const startOfDay = new Date(fileUploadDate);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(fileUploadDate);
+        endOfDay.setHours(23, 59, 59, 999);
 
         const importDate = new Date(transaction.importDate);
+        return importDate >= startOfDay && importDate <= endOfDay;
+      });
 
-        // Keep transactions that were imported outside the file's upload timeframe
+      // Filter out transactions that belong to this file
+      const remainingTransactions = allTransactions.filter((transaction: any) => {
+        // Primary method: Use file ID if available (for new imports)
+        if (transaction.fileId) {
+          return transaction.fileId !== file.id;
+        }
+
+        // Fallback method: Use date range for legacy transactions
+        if (!transaction.importDate || transaction.accountId !== file.accountId) {
+          return true;
+        }
+
+        const fileUploadDate = new Date(file.uploadDate);
+        const startOfDay = new Date(fileUploadDate);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(fileUploadDate);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const importDate = new Date(transaction.importDate);
         return importDate < startOfDay || importDate > endOfDay;
       });
 
@@ -198,13 +220,14 @@ class FileStorageService {
       const success = this.writeData('transactions', remainingTransactions);
 
       if (!success) {
-        console.error('Failed to save transactions after deletion');
+        console.error('❌ Failed to save transactions after deletion');
         return 0;
       }
 
       const deletedCount = originalCount - remainingTransactions.length;
       console.log(`✅ Successfully deleted ${deletedCount} transactions from file ${file.fileName}`);
       console.log(`📊 Transactions before: ${originalCount}, after: ${remainingTransactions.length}`);
+      console.log(`🎯 Expected to delete: ${transactionsToDelete.length}, actually deleted: ${deletedCount}`);
 
       // ALSO clean up the old account-specific localStorage (for backward compatibility)
       const oldTransactionsKey = `treasury-transactions-${file.accountId}`;

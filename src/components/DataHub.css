@@ -256,7 +256,7 @@
 
 .placeholder-features li::before {
   content: "•";
-  color: var(--color-primary);
+  color: #6b7280;
   font-weight: bold;
   position: absolute;
   left: 0;

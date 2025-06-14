@@ -364,9 +364,9 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
                   <p>Import Closing Balance: {formatCurrency(balanceValidation.actualBalance)}</p>
                   {!balanceValidation.isValid && (
                     <div className="balance-warning">
-                      ⚠️ Balance Validated: Expected {formatCurrency(balanceValidation.expectedBalance)}, 
+                      ⚠️ Balance Validated: Expected {balanceValidation.expectedBalance ? formatCurrency(balanceValidation.expectedBalance) : 'N/A'}, 
                       Got {formatCurrency(balanceValidation.actualBalance)} 
-                      (Difference: {formatCurrency(balanceValidation.difference)})
+                      (Variance: {balanceValidation.variance ? formatCurrency(balanceValidation.variance) : 'N/A'})
                     </div>
                   )}
                   {balanceValidation.isValid && (

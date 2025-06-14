@@ -38,8 +38,8 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
       setUploadedFiles(files);
       
       // Count orphaned transactions (old data without file IDs)
-      const orphanedTransactions = transactionStorageService.getOrphanedTransactions();
-      setOrphanedCount(orphanedTransactions.length);
+      // Note: This functionality is now handled by the Data Cleanup tab
+      setOrphanedCount(0);
     } catch (error) {
       console.error('Error loading files:', error);
     } finally {

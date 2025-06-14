@@ -444,7 +444,7 @@ class MLCategorizationService {
     };
   }
 
-  // DETECT ANOMALIES USING AUTOENCODER
+  // DETECT ANOMALIES USING AUTOENCODER (Fixed tensor operations)
   private async detectAnomaly(numericalFeatures: tf.Tensor): Promise<{ isAnomaly: boolean; score: number }> {
     if (!this.anomalyModel) {
       return { isAnomaly: false, score: 0 };
@@ -456,11 +456,14 @@ class MLCategorizationService {
     
     // Calculate reconstruction error
     let totalError = 0;
-    for (let i = 0; i < original.length; i++) {
-      totalError += Math.pow(original[i] - reconstructed[i], 2);
+    const originalArray = Array.from(original);
+    const reconstructedArray = Array.from(reconstructed);
+    
+    for (let i = 0; i < originalArray.length; i++) {
+      totalError += Math.pow(originalArray[i] - reconstructedArray[i], 2);
     }
     
-    const anomalyScore = totalError / original.length;
+    const anomalyScore = totalError / originalArray.length;
     const isAnomaly = anomalyScore > 0.1; // Threshold for anomaly detection
     
     reconstruction.dispose();
@@ -813,7 +816,7 @@ class MLCategorizationService {
   }
 
   // TRAIN CATEGORIZATION MODEL
-  private async trainCategorizationModel(trainingData: { inputs: tf.Tensor; labels: tf.Tensor }): Promise<void> {
+  private trainCategorizationModel = async (trainingData: { inputs: tf.Tensor; labels: tf.Tensor }): Promise<void> => {
     if (!this.categorizationModel) {
       throw new Error('Categorization model not available');
     }

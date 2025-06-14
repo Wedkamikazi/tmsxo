@@ -118,17 +118,13 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
   const handleConfirmImport = useCallback(() => {
     if (!selectedBankAccount) return;
 
-    const allTransactions = importSummaries.flatMap(summary => summary.transactions);
-    
-    // Store transactions in the system
-    transactionStorageService.storeTransactions(selectedBankAccount.id, allTransactions);
-    
-    // Track uploaded files
+    // CRITICAL FIX: Store transactions with file IDs for proper deletion tracking
     files.forEach((file, index) => {
       const summary = importSummaries[index];
       if (summary) {
         try {
-          fileStorageService.addUploadedFile({
+          // First, create the file record to get the file ID
+          const uploadedFile = fileStorageService.addUploadedFile({
             fileName: file.name,
             accountId: selectedBankAccount.id,
             accountName: selectedBankAccount.name,
@@ -136,6 +132,13 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
             fileSize: file.size,
             checksum: `${file.name}_${file.size}_${Date.now()}`
           });
+
+          // Then store transactions with the file ID
+          transactionStorageService.storeTransactionsWithFileId(
+            selectedBankAccount.id,
+            summary.transactions,
+            uploadedFile.id
+          );
         } catch (error) {
           console.error('Error tracking uploaded file:', error);
         }

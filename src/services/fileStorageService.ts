@@ -291,31 +291,37 @@ class FileStorageService {
       }
 
       const backup: BackupData = JSON.parse(backupData);
-      
+
       // Restore file record
       const files = this.getAllUploadedFiles();
       const existingIndex = files.findIndex(f => f.id === backup.fileRecord.id);
-      
+
       if (existingIndex === -1) {
         files.push(backup.fileRecord);
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(files));
       }
 
-      // Restore transactions
-      const transactionsKey = `treasury-transactions-${backup.fileRecord.accountId}`;
-      const stored = localStorage.getItem(transactionsKey);
-      const existingTransactions = stored ? JSON.parse(stored) : [];
-      
-      // Add backup transactions back
-      const combinedTransactions = [...existingTransactions, ...backup.transactions];
-      localStorage.setItem(transactionsKey, JSON.stringify(combinedTransactions));
+      // FIXED: Restore transactions to unified storage
+      const existingTransactions = this.readData<any[]>('transactions', []);
+
+      // Add backup transactions back (avoid duplicates)
+      const backupTransactionIds = new Set(backup.transactions.map((t: any) => t.id));
+      const filteredExisting = existingTransactions.filter((t: any) => !backupTransactionIds.has(t.id));
+      const combinedTransactions = [...filteredExisting, ...backup.transactions];
+
+      const success = this.writeData('transactions', combinedTransactions);
+
+      if (!success) {
+        return { success: false, restoredCount: 0, error: 'Failed to restore transactions to storage' };
+      }
 
       // Clean up backup
       localStorage.removeItem(backupKey);
 
+      console.log(`🔄 Restored ${backup.transactions.length} transactions from backup`);
       return { success: true, restoredCount: backup.transactions.length };
     } catch (error) {
-      console.error('Error restoring from backup:', error);
+      console.error('❌ Error restoring from backup:', error);
       return { success: false, restoredCount: 0, error: error instanceof Error ? error.message : 'Unknown error' };
     }
   }

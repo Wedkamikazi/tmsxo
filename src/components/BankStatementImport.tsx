@@ -20,7 +20,7 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
   const [importSummaries, setImportSummaries] = useState<ImportSummary[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [bankAccounts] = useState<BankAccount[]>(bankAccountService.getAllAccounts());
+  const [bankAccounts] = useState<BankAccount[]>(unifiedDataService.getAllAccounts());
   
   // Balance validation state
   const [balanceValidation, setBalanceValidation] = useState<BalanceValidationResult | null>(null);

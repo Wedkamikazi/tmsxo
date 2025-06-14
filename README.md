@@ -65,7 +65,6 @@ src/
 │   └── index.ts       # All application types
 └── styles/           # Global styles and design system
     └── globals.css   # Design tokens and base styles
-```
 
 ## Getting Started
 

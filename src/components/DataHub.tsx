@@ -10,19 +10,31 @@ import { eventBus } from '../services/eventBus';
 import { unifiedDataService } from '../services/unifiedDataService';
 import './DataHub.css';
 
-interface DataHubProps {
-  onTransactionImport?: (transactions: Transaction[], bankAccount: BankAccount) => void;
-}
-
-export const DataHub: React.FC<DataHubProps> = ({ onTransactionImport }) => {
+export const DataHub: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'bankStatement' | 'accounts' | 'transactions' | 'fileManager' | 'qwenStatus' | 'dataCleanup' | 'payroll' | 'investments' | 'reports'>('bankStatement');
   const [dataRefreshTrigger, setDataRefreshTrigger] = useState(0);
 
   useEffect(() => {
-    // Migrate any legacy data on startup
-    unifiedDataService.migrateLegacyData();
+    // Perform startup integrity check
+    const integrityCheck = unifiedDataService.validateDataIntegrity();
+    if (!integrityCheck.isValid) {
+      console.warn('Data integrity issues detected:', integrityCheck.issues);
+      // Auto-cleanup orphaned data on startup
+      const cleanup = unifiedDataService.cleanupOrphanedData();
+      if (cleanup.deletedTransactions > 0 || cleanup.deletedFiles > 0) {
+        console.log('Cleaned up orphaned data:', cleanup);
+        setDataRefreshTrigger(prev => prev + 1);
+      }
+    }
 
-    // Subscribe to all data events
+    // Migrate any legacy data on startup
+    const migration = unifiedDataService.migrateLegacyData();
+    if (migration.migratedTransactions > 0 || migration.migratedFiles > 0) {
+      console.log('Migrated legacy data:', migration);
+      setDataRefreshTrigger(prev => prev + 1);
+    }
+
+    // Subscribe to all data events for UI updates
     const unsubscribeTransactions = eventBus.on('TRANSACTIONS_UPDATED', () => {
       setDataRefreshTrigger(prev => prev + 1);
     });
@@ -39,27 +51,35 @@ export const DataHub: React.FC<DataHubProps> = ({ onTransactionImport }) => {
       setDataRefreshTrigger(prev => prev + 1);
     });
 
+    // Add listeners for new events
+    const unsubscribeFilesUpdated = eventBus.on('FILES_UPDATED', () => {
+      setDataRefreshTrigger(prev => prev + 1);
+    });
+
+    const unsubscribeAccountsUpdated = eventBus.on('ACCOUNTS_UPDATED', () => {
+      setDataRefreshTrigger(prev => prev + 1);
+    });
+
     return () => {
       unsubscribeTransactions();
       unsubscribeFiles();
       unsubscribeDelete();
       unsubscribeAccounts();
+      unsubscribeFilesUpdated();
+      unsubscribeAccountsUpdated();
     };
   }, []);
 
   const handleImportComplete = (transactions: Transaction[], bankAccount: BankAccount) => {
     console.log(`Imported ${transactions.length} transactions for ${bankAccount.name}`);
-    if (onTransactionImport) {
-      onTransactionImport(transactions, bankAccount);
-    }
-    // Event bus will handle component updates automatically
-    eventBus.emit('TRANSACTIONS_UPDATED', { count: transactions.length, accountId: bankAccount.id }, 'DataHub');
+    // All data operations are now handled by unified service with event bus
+    // No additional handling needed here - event bus will trigger UI updates
   };
 
   const handleFileDeleted = (fileId: string) => {
     console.log(`File deleted: ${fileId}`);
-    // Event bus will handle component updates automatically
-    eventBus.emit('FILE_DELETED', { fileId }, 'DataHub');
+    // All data operations are now handled by unified service with event bus
+    // No additional handling needed here - event bus will trigger UI updates
   };
 
   const tabs = [

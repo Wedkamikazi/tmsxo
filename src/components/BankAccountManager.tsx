@@ -167,21 +167,32 @@ export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccoun
         const snapshotId = unifiedDataService.createSnapshot('delete', `account-${accountId}-${Date.now()}`);
         
         // Delete all transactions for this account
-        const deleted = unifiedDataService.deleteTransactionsByAccount(accountId);
+        const deletedTransactionCount = unifiedDataService.deleteTransactionsByAccount(accountId);
         
-        // Delete the account (need to implement this method)
-        // For now, show a message about the cleanup
-        alert(`Successfully deleted account and ${deleted} associated transactions. A backup snapshot was created: ${snapshotId}`);
-        refreshAccounts();
+        // Delete the account
+        const accountDeleted = unifiedDataService.deleteAccount(accountId);
+        
+        if (accountDeleted) {
+          alert(`Successfully deleted account and ${deletedTransactionCount} associated transactions. A backup snapshot was created: ${snapshotId}`);
+          refreshAccounts();
+        } else {
+          alert('Failed to delete account. Please try again.');
+        }
       }
     } else {
       if (window.confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
         // Create snapshot before deletion
         const snapshotId = unifiedDataService.createSnapshot('delete', `account-${accountId}-${Date.now()}`);
         
-        // Delete the account (need to implement this method)
-        alert(`Account deletion completed. Backup snapshot created: ${snapshotId}`);
-        refreshAccounts();
+        // Delete the account
+        const accountDeleted = unifiedDataService.deleteAccount(accountId);
+        
+        if (accountDeleted) {
+          alert(`Account deletion completed. Backup snapshot created: ${snapshotId}`);
+          refreshAccounts();
+        } else {
+          alert('Failed to delete account. Please try again.');
+        }
       }
     }
   }, [refreshAccounts]);

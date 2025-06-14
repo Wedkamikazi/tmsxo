@@ -171,6 +171,10 @@ class UnifiedDataService {
         accounts[index] = { ...accounts[index], ...updates };
         localStorage.setItem(this.ACCOUNTS_KEY, JSON.stringify(accounts));
         this.updateMetadata();
+        
+        // Emit event for UI updates
+        eventBus.emit('ACCOUNT_UPDATED', { accountId, action: 'updated' }, 'UnifiedDataService');
+        
         return true;
       }
       return false;

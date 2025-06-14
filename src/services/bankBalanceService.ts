@@ -1,4 +1,4 @@
-import { StoredTransaction } from '../types';
+import { StoredTransaction } from './unifiedDataService';
 import { unifiedDataService } from './unifiedDataService';
 import { bankAccountService } from './bankAccountService';
 

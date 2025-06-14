@@ -605,6 +605,17 @@ RESPONSE FORMAT (JSON only, no additional text):
             };
           }
 
+          // Update performance stats
+          const responseTime = Date.now() - requestStart;
+          this.qwenPerformanceStats.successfulRequests++;
+          this.qwenPerformanceStats.averageResponseTime =
+            (this.qwenPerformanceStats.averageResponseTime * (this.qwenPerformanceStats.successfulRequests - 1) + responseTime) /
+            this.qwenPerformanceStats.successfulRequests;
+          this.qwenPerformanceStats.averageConfidence =
+            (this.qwenPerformanceStats.averageConfidence * (this.qwenPerformanceStats.successfulRequests - 1) + confidence) /
+            this.qwenPerformanceStats.successfulRequests;
+          this.qwenPerformanceStats.lastUsed = new Date();
+
           return {
             categoryId: jsonResult.categoryId,
             confidence,
@@ -620,10 +631,12 @@ RESPONSE FORMAT (JSON only, no additional text):
         console.error('Failed to parse Qwen 3:32B response:', parseError);
         console.error('Raw response:', responseText);
         console.error('Cleaned response:', responseText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim());
+        this.qwenPerformanceStats.errorCount++;
         return null;
       }
     } catch (error) {
       clearTimeout(timeoutId);
+      this.qwenPerformanceStats.errorCount++;
       if (error instanceof Error && error.name === 'AbortError') {
         throw new Error('ML categorization request timed out');
       }

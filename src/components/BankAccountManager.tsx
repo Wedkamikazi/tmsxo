@@ -157,8 +157,9 @@ export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccoun
 
   const handleDeleteAccount = useCallback((accountId: string) => {
     if (window.confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
-      bankAccountService.deleteAccount(accountId);
-      refreshAccounts();
+      // Note: Account deletion temporarily disabled during consolidation
+      // Will be reimplemented with proper data integrity checks
+      alert('Account deletion is temporarily disabled during system consolidation');
     }
   }, [refreshAccounts]);
 

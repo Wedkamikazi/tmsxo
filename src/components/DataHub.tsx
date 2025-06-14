@@ -145,6 +145,8 @@ export const DataHub: React.FC<DataHubProps> = ({ onTransactionImport }) => {
         return <Transactions key={transactionRefreshKey} refreshTrigger={transactionRefreshKey} />;
       case 'fileManager':
         return <FileManager onFileDeleted={handleFileDeleted} />;
+      case 'qwenStatus':
+        return <QwenIntegrationStatus />;
       case 'payroll':
         return (
           <div className="tab-placeholder">

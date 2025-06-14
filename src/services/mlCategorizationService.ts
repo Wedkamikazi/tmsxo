@@ -933,7 +933,14 @@ RESPONSE FORMAT (JSON only, no additional text):
     categoriesCount: number;
     config: LocalMLConfig;
     lastCheck: string;
-    qwenPerformance: typeof this.qwenPerformanceStats;
+    qwenPerformance: {
+      totalRequests: number;
+      successfulRequests: number;
+      averageResponseTime: number;
+      averageConfidence: number;
+      lastUsed: Date | null;
+      errorCount: number;
+    };
   } {
     return {
       isAvailable: this.isOllamaAvailable,

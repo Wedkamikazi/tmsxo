@@ -2,9 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { FileUpload } from './FileUpload';
 import { ImportSummary, BankAccount, Transaction } from '../types';
 import { csvProcessingService } from '../services/csvProcessingService';
-import { bankAccountService } from '../services/bankAccountService';
-import { transactionStorageService, BalanceValidationResult } from '../services/transactionStorageService';
-import { fileStorageService } from '../services/fileStorageService';
+import { unifiedDataService, type StoredTransaction } from '../services/unifiedDataService';
 import { BalanceValidationDialog } from './BalanceValidationDialog';
 import './BankStatementImport.css';
 

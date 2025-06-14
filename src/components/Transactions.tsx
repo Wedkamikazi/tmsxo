@@ -725,7 +725,7 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
                   <h3>No Transactions Found</h3>
                   <p>
                     {filteredAndSortedTransactions.length === 0 && transactions.length === 0
-                      ? 'No transactions have been imported yet.'
+                      ? 'No transactions have been imported yet. Import bank statements from the Bank Statements tab to get started.'
                       : 'No transactions match your current filters.'}
                   </p>
                   {filteredAndSortedTransactions.length === 0 && transactions.length > 0 && (

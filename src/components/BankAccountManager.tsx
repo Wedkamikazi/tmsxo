@@ -23,7 +23,7 @@ interface BalanceAdjustmentFormData {
 }
 
 export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccountsUpdated }) => {
-  const [accounts, setAccounts] = useState<BankAccount[]>(bankAccountService.getAllAccounts());
+  const [accounts, setAccounts] = useState<BankAccount[]>(unifiedDataService.getAllAccounts());
   const [isAddingAccount, setIsAddingAccount] = useState(false);
   const [editingAccount, setEditingAccount] = useState<BankAccount | null>(null);
   const [adjustingBalanceAccount, setAdjustingBalanceAccount] = useState<BankAccount | null>(null);

@@ -1,6 +1,6 @@
 import { StoredTransaction } from './unifiedDataService';
 import { unifiedDataService } from './unifiedDataService';
-import { bankAccountService } from './bankAccountService';
+// Note: Bank account service calls now handled by unified service
 
 export interface DailyBalance {
   id: string;

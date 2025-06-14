@@ -39,6 +39,16 @@ class MLCategorizationService {
   private categoryMapping: Map<string, number> = new Map();
   private reverseCategoryMapping: Map<number, string> = new Map();
 
+  // Performance monitoring for Qwen 3:32B
+  private qwenPerformanceStats = {
+    totalRequests: 0,
+    successfulRequests: 0,
+    averageResponseTime: 0,
+    averageConfidence: 0,
+    lastUsed: null as Date | null,
+    errorCount: 0
+  };
+
   constructor() {
     this.initializeLocalModel();
     this.checkOllamaAvailability();

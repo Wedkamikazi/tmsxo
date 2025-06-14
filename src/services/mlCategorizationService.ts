@@ -721,8 +721,6 @@ RESPONSE FORMAT (JSON only, no additional text):
           // Fallback to uncategorized
           result.categoryId = 'cat_uncategorized';
           result.confidence = Math.max(0.1, result.confidence - 0.3);
-        }
-          result.confidence = 0.1;
           result.reasoning = 'ML model returned unknown category, defaulted to uncategorized';
         }
 

@@ -30,14 +30,59 @@ class TransactionStorageService {
 
   // Get all transactions from storage
   getAllTransactions(): StoredTransaction[] {
-    return fileStorageService.readData<StoredTransaction[]>(this.STORAGE_FILENAME, []);
+    // UNIFIED STORAGE: Use single source of truth for all transactions
+    const transactions = fileStorageService.readData<StoredTransaction[]>(this.STORAGE_FILENAME, []);
+    
+    // MIGRATION: Merge any legacy account-specific transactions
+    this.migrateLegacyTransactions(transactions);
+    
+    return transactions;
   }
 
   // Save transactions to storage
   private saveTransactions(transactions: StoredTransaction[]): void {
     const success = fileStorageService.writeData(this.STORAGE_FILENAME, transactions);
     if (!success) {
-      console.error('Failed to save transactions to file system');
+      console.error('Failed to save transactions to unified storage');
+      throw new Error('Transaction storage failed - data integrity compromised');
+    }
+  }
+
+  // MIGRATION: Consolidate legacy account-specific transaction storage
+  private migrateLegacyTransactions(currentTransactions: StoredTransaction[]): void {
+    const existingIds = new Set(currentTransactions.map(t => t.id));
+    let migrationCount = 0;
+    
+    // Find all legacy transaction keys
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('treasury-transactions-') && key !== 'treasury-data-transactions') {
+        try {
+          const legacyData = localStorage.getItem(key);
+          if (legacyData) {
+            const legacyTransactions: StoredTransaction[] = JSON.parse(legacyData);
+            
+            // Add non-duplicate transactions
+            legacyTransactions.forEach(transaction => {
+              if (!existingIds.has(transaction.id)) {
+                currentTransactions.push(transaction);
+                existingIds.add(transaction.id);
+                migrationCount++;
+              }
+            });
+            
+            // Remove legacy key after migration
+            localStorage.removeItem(key);
+          }
+        } catch (error) {
+          console.error(`Error migrating legacy transactions from ${key}:`, error);
+        }
+      }
+    }
+    
+    if (migrationCount > 0) {
+      console.log(`Migrated ${migrationCount} transactions from legacy storage`);
+      this.saveTransactions(currentTransactions);
     }
   }
 

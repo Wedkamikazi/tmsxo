@@ -232,6 +232,27 @@ class UnifiedDataService {
     }
   }
 
+  deleteAccount(accountId: string): boolean {
+    try {
+      const accounts = this.getAllAccounts();
+      const filtered = accounts.filter(a => a.id !== accountId);
+      
+      if (filtered.length < accounts.length) {
+        localStorage.setItem(this.ACCOUNTS_KEY, JSON.stringify(filtered));
+        this.updateMetadata();
+        
+        // Emit event for UI updates
+        eventBus.emit('ACCOUNT_UPDATED', { accountId, action: 'deleted' }, 'UnifiedDataService');
+        
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      return false;
+    }
+  }
+
   // DATA INTEGRITY OPERATIONS
   validateDataIntegrity(): {
     isValid: boolean;

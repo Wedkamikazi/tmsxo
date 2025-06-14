@@ -1,191 +1,162 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import { mlCategorizationService } from '../services/mlCategorizationService';
 import './QwenIntegrationStatus.css';
 
-interface QwenStatus {
-  available: boolean;
-  modelLoaded: boolean;
-  loading: boolean;
-  error?: string;
-}
-
-interface QwenPerformanceStats {
-  totalRequests: number;
-  successfulRequests: number;
-  errorRate: number;
-  averageResponseTime: number;
-  averageConfidence: number;
-  lastUsed: Date | null;
-  uptime: string;
-}
-
 const QwenIntegrationStatus: React.FC = () => {
-  const [status, setStatus] = useState<QwenStatus>({
-    available: false,
-    modelLoaded: false,
-    loading: true
+  const [status, setStatus] = React.useState({
+    isAvailable: true,
+    modelLoaded: true,
+    localModelLoaded: true,
+    vocabularySize: 0,
+    categoriesCount: 0,
+    lastCheck: new Date().toISOString()
   });
-  const [stats, setStats] = useState<QwenPerformanceStats | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
 
-  const checkStatus = useCallback(async () => {
-    try {
-      setRefreshing(true);
-      
-      // Check model status
-      const modelStatus = mlCategorizationService.getModelStatus();
-      const performanceStats = mlCategorizationService.getQwenPerformanceStats();
-      
-      setStatus({
-        available: modelStatus.isAvailable,
-        modelLoaded: modelStatus.modelLoaded,
-        loading: false
-      });
-      
-      setStats(performanceStats);
-      
-      // Also check Ollama directly
-      try {
-        const response = await fetch('http://localhost:11434/api/tags');
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Ollama models:', data.models);
-        }
-      } catch (error) {
-        console.log('Ollama not accessible:', error);
-      }
-      
-    } catch (error) {
-      console.error('Failed to check Qwen status:', error);
-      setStatus({
-        available: false,
-        modelLoaded: false,
-        loading: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-    } finally {
-      setRefreshing(false);
-    }
+  const [testResult, setTestResult] = React.useState<{
+    success: boolean;
+    result?: any;
+    error?: string;
+    latency?: number;
+  } | null>(null);
+
+  React.useEffect(() => {
+    // Get local model status
+    const modelStatus = mlCategorizationService.getModelStatus();
+    setStatus(modelStatus);
   }, []);
 
-  useEffect(() => {
-    checkStatus();
-    
-    // Refresh status every 30 seconds
-    const interval = setInterval(checkStatus, 30000);
-    return () => clearInterval(interval);
-  }, [checkStatus]);
-
-  const getStatusIcon = () => {
-    if (status.loading) return '🔄';
-    if (status.modelLoaded) return '✅';
-    if (status.available) return '⏳';
-    return '🔧';
-  };
-
-  const getStatusText = () => {
-    if (status.loading) return 'Checking Qwen 2.5:32B status...';
-    if (status.modelLoaded) return 'Qwen 2.5:32B Ready & Active';
-    if (status.available) return 'Qwen 2.5:32B downloading... Using local model';
-    return 'Qwen 2.5:32B offline - Using local TensorFlow.js model';
-  };
-
-  const getStatusClass = () => {
-    if (status.loading) return 'status-loading';
-    if (status.modelLoaded) return 'status-ready';
-    if (status.available) return 'status-downloading';
-    return 'status-offline';
+  const handleTestCategorization = async () => {
+    try {
+      const result = await mlCategorizationService.testCategorization();
+      setTestResult(result);
+    } catch (error) {
+      setTestResult({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
   };
 
   return (
     <div className="qwen-integration-status">
       <div className="status-header">
-        <div className="status-indicator">
-          <span className="status-icon">{getStatusIcon()}</span>
-          <span className={`status-text ${getStatusClass()}`}>
-            {getStatusText()}
-          </span>
-        </div>
-        <button 
-          className="refresh-btn"
-          onClick={checkStatus}
-          disabled={refreshing}
-          title="Refresh status"
-        >
-          {refreshing ? '🔄' : '🔄'}
-        </button>
+        <h2>Local ML Categorization Status</h2>
+        <p>Rule-based transaction categorization system - fully local, no external dependencies</p>
       </div>
 
-      {status.error && (
-        <div className="status-error">
-          <span className="error-icon">⚠️</span>
-          <span className="error-text">{status.error}</span>
-        </div>
-      )}
-
-      {stats && (
-        <div className="performance-stats">
-          <h4>Qwen 2.5:32B Performance</h4>
-          <div className="stats-grid">
-            <div className="stat-item">
-              <span className="stat-value">{stats.totalRequests}</span>
-              <span className="stat-label">Total Requests</span>
+      <div className="status-grid">
+        <div className="status-card">
+          <div className="status-card-header">
+            <h3>System Status</h3>
+            <div className={`status-indicator ${status.isAvailable ? 'active' : 'inactive'}`}>
+              {status.isAvailable ? 'Active' : 'Inactive'}
             </div>
-            <div className="stat-item">
-              <span className="stat-value">{stats.successfulRequests}</span>
-              <span className="stat-label">Successful</span>
+          </div>
+          
+          <div className="status-details">
+            <div className="status-row">
+              <span className="status-label">Model Type:</span>
+              <span className="status-value">Local Rule-Based</span>
             </div>
-            <div className="stat-item">
-              <span className="stat-value">{(stats.errorRate * 100).toFixed(1)}%</span>
-              <span className="stat-label">Error Rate</span>
+            <div className="status-row">
+              <span className="status-label">Status:</span>
+              <span className={`status-value ${status.modelLoaded ? 'success' : 'error'}`}>
+                {status.modelLoaded ? 'Operational' : 'Error'}
+              </span>
             </div>
-            <div className="stat-item">
-              <span className="stat-value">{stats.averageResponseTime}ms</span>
-              <span className="stat-label">Avg Response</span>
+            <div className="status-row">
+              <span className="status-label">Categories:</span>
+              <span className="status-value">{status.categoriesCount}</span>
             </div>
-            <div className="stat-item">
-              <span className="stat-value">{(stats.averageConfidence * 100).toFixed(1)}%</span>
-              <span className="stat-label">Avg Confidence</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-value">{stats.uptime}</span>
-              <span className="stat-label">Last Used</span>
+            <div className="status-row">
+              <span className="status-label">Last Check:</span>
+              <span className="status-value">{new Date(status.lastCheck).toLocaleString()}</span>
             </div>
           </div>
         </div>
-      )}
 
-      <div className="integration-info">
-        <h4>Integration Details</h4>
-        <div className="info-grid">
-          <div className="info-item">
-            <span className="info-label">Model:</span>
-            <span className="info-value">Qwen 2.5:32B</span>
+        <div className="status-card">
+          <div className="status-card-header">
+            <h3>Categorization Engine</h3>
           </div>
-          <div className="info-item">
-            <span className="info-label">Endpoint:</span>
-            <span className="info-value">http://localhost:11434</span>
-          </div>
-          <div className="info-item">
-            <span className="info-label">Fallback:</span>
-            <span className="info-value">Local TensorFlow.js</span>
-          </div>
-          <div className="info-item">
-            <span className="info-label">Data Privacy:</span>
-            <span className="info-value">100% Local</span>
+          
+          <div className="status-details">
+            <div className="status-row">
+              <span className="status-label">Engine Type:</span>
+              <span className="status-value">Keyword + Pattern Matching</span>
+            </div>
+            <div className="status-row">
+              <span className="status-label">Processing:</span>
+              <span className="status-value success">Real-time</span>
+            </div>
+            <div className="status-row">
+              <span className="status-label">Storage:</span>
+              <span className="status-value success">Local Browser Storage</span>
+            </div>
+            <div className="status-row">
+              <span className="status-label">External Connections:</span>
+              <span className="status-value success">None (Offline)</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="integration-benefits">
-        <h4>Enhanced Capabilities</h4>
-        <ul>
-          <li>🎯 Superior accuracy for complex transactions</li>
-          <li>🌍 Better international transaction understanding</li>
-          <li>🔍 Advanced risk factor identification</li>
-          <li>📚 Intelligent keyword suggestions</li>
-          <li>⚡ Hybrid processing (fast local + advanced AI)</li>
-          <li>🔒 Complete data privacy (no external APIs)</li>
+      <div className="test-section">
+        <div className="test-header">
+          <h3>Test Categorization</h3>
+          <button 
+            className="test-button"
+            onClick={handleTestCategorization}
+          >
+            Run Test
+          </button>
+        </div>
+
+        {testResult && (
+          <div className={`test-result ${testResult.success ? 'success' : 'error'}`}>
+            <div className="test-result-header">
+              <span className="test-status">
+                {testResult.success ? '✅ Test Passed' : '❌ Test Failed'}
+              </span>
+              {testResult.latency && (
+                <span className="test-latency">
+                  {testResult.latency}ms
+                </span>
+              )}
+            </div>
+            
+            {testResult.success && testResult.result ? (
+              <div className="test-details">
+                <div className="test-row">
+                  <span className="test-label">Category:</span>
+                  <span className="test-value">{testResult.result.categoryId}</span>
+                </div>
+                <div className="test-row">
+                  <span className="test-label">Confidence:</span>
+                  <span className="test-value">{Math.round(testResult.result.confidence * 100)}%</span>
+                </div>
+                <div className="test-row">
+                  <span className="test-label">Reasoning:</span>
+                  <span className="test-value">{testResult.result.reasoning}</span>
+                </div>
+              </div>
+            ) : testResult.error && (
+              <div className="test-error">
+                <strong>Error:</strong> {testResult.error}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="info-section">
+        <h3>Local Processing Benefits</h3>
+        <ul className="benefits-list">
+          <li>🔒 Complete data privacy - no external API calls</li>
+          <li>⚡ Instant processing - no network latency</li>
+          <li>💾 No data transmission - everything stays local</li>
+          <li>🚀 Always available - no service dependencies</li>
+          <li>🔧 Customizable rules - adapt to your business</li>
         </ul>
       </div>
     </div>

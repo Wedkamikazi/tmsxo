@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { dataMigrationService } from '../services/dataMigrationService';
+import { fileStorageService } from '../services/fileStorageService';
 import './DataCleanup.css';
 
 interface MigrationReport {

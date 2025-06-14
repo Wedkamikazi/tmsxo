@@ -617,8 +617,26 @@ RESPONSE FORMAT (JSON only, no additional text):
     }
   }
 
-  // Categorize a single transaction using ML (local first, then Ollama fallback)
+  // Intelligent model selection for optimal categorization
+  private shouldUseQwen3First(transaction: Transaction): boolean {
+    // Use Qwen 3:32B first for complex transactions
+    const complexityFactors = [
+      transaction.description.length > 50, // Long descriptions
+      /[A-Z]{3,}/.test(transaction.description), // Contains acronyms
+      /\d{4,}/.test(transaction.description), // Contains long numbers (account numbers, etc.)
+      (transaction.debitAmount || transaction.creditAmount || 0) > 50000, // Large amounts
+      transaction.reference && transaction.reference.length > 10, // Complex references
+      /international|foreign|fx|currency/.test(transaction.description.toLowerCase()) // International transactions
+    ];
+
+    const complexityScore = complexityFactors.filter(Boolean).length;
+    return complexityScore >= 2 || !this.isLocalModelLoaded;
+  }
+
+  // Enhanced categorization with intelligent model selection
   async categorizeTransaction(transaction: Transaction): Promise<MLCategorizationResult | null> {
+    const startTime = Date.now();
+
     try {
       const categories = categorizationService.getAllCategories();
       if (categories.length === 0) {
@@ -626,31 +644,54 @@ RESPONSE FORMAT (JSON only, no additional text):
       }
 
       let result: MLCategorizationResult | null = null;
+      let modelUsed: 'local_tensorflow' | 'qwen3_32b' | 'hybrid' = 'local_tensorflow';
 
-      // Try local model first if enabled and available
-      if (this.config.useLocalModel && this.isLocalModelLoaded) {
-        result = await this.categorizeWithLocalModel(transaction);
+      // Intelligent model selection
+      const useQwenFirst = this.shouldUseQwen3First(transaction);
 
-        if (result && result.confidence >= this.config.confidenceThreshold) {
-          console.log(`Local ML categorization successful: ${result.categoryId} (${Math.round(result.confidence * 100)}%)`);
-        } else if (result) {
-          console.log(`Local ML categorization low confidence: ${result.categoryId} (${Math.round(result.confidence * 100)}%)`);
+      if (useQwenFirst && this.isOllamaAvailable && this.modelLoaded) {
+        // Use Qwen 3:32B for complex transactions
+        console.log('Using Qwen 3:32B for complex transaction categorization');
+        try {
+          const prompt = this.generateCategorizationPrompt(transaction, categories);
+          result = await this.callOllamaAPI(prompt);
+          modelUsed = 'qwen3_32b';
+
+          if (result) {
+            console.log(`Qwen 3:32B categorization: ${result.categoryId} (${Math.round(result.confidence * 100)}%)`);
+          }
+        } catch (qwenError) {
+          console.warn('Qwen 3:32B categorization failed, falling back to local model:', qwenError);
         }
       }
 
-      // Fallback to Ollama if local model failed or confidence is low
-      if (!result || (result.confidence < this.config.confidenceThreshold && this.isOllamaAvailable)) {
-        console.log('Falling back to Ollama for high-quality categorization');
+      // Use local model if Qwen failed or for simple transactions
+      if (!result && this.config.useLocalModel && this.isLocalModelLoaded) {
+        result = await this.categorizeWithLocalModel(transaction);
+
+        if (result) {
+          if (modelUsed === 'qwen3_32b') {
+            modelUsed = 'hybrid';
+          }
+          console.log(`Local ML categorization: ${result.categoryId} (${Math.round(result.confidence * 100)}%)`);
+        }
+      }
+
+      // Final fallback to Qwen 3:32B if local model confidence is low
+      if (result && result.confidence < this.config.confidenceThreshold &&
+          this.isOllamaAvailable && this.modelLoaded && modelUsed !== 'qwen3_32b') {
+        console.log('Local confidence low, enhancing with Qwen 3:32B');
         try {
           const prompt = this.generateCategorizationPrompt(transaction, categories);
-          const ollamaResult = await this.callOllamaAPI(prompt);
+          const qwenResult = await this.callOllamaAPI(prompt);
 
-          if (ollamaResult && ollamaResult.confidence > (result?.confidence || 0)) {
-            result = ollamaResult;
-            console.log(`Ollama categorization successful: ${result.categoryId} (${Math.round(result.confidence * 100)}%)`);
+          if (qwenResult && qwenResult.confidence > result.confidence) {
+            result = qwenResult;
+            modelUsed = 'hybrid';
+            console.log(`Enhanced with Qwen 3:32B: ${result.categoryId} (${Math.round(result.confidence * 100)}%)`);
           }
-        } catch (ollamaError) {
-          console.warn('Ollama categorization failed, using local result:', ollamaError);
+        } catch (qwenError) {
+          console.warn('Qwen 3:32B enhancement failed:', qwenError);
         }
       }
 

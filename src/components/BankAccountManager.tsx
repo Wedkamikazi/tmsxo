@@ -141,16 +141,10 @@ export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccoun
 
     try {
       if (editingAccount) {
-        bankAccountService.updateAccount(editingAccount.id, accountData);
+        unifiedDataService.updateAccount(editingAccount.id, accountData);
       } else {
         // For new accounts, add the required fields
-        const newAccountData = {
-          ...accountData,
-          accountType: 'checking' as const,
-          status: 'active' as const,
-          lastUpdated: new Date().toISOString()
-        };
-        bankAccountService.addAccount(newAccountData);
+        unifiedDataService.addAccount(accountData);
       }
       
       refreshAccounts();

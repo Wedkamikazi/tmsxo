@@ -30,25 +30,106 @@ const DataCleanup: React.FC = () => {
   }, []);
 
   const checkMigrationStatus = () => {
-    const status = dataMigrationService.getMigrationStatus();
-    setMigrationStatus(status);
+    try {
+      // Get current transaction data
+      const allTransactions = fileStorageService.readData<any[]>('transactions', []);
+      const orphanedCount = allTransactions.filter(t => !t.fileId).length;
+
+      // Check for legacy storage
+      let legacyStorageCount = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('treasury-transactions-') && key !== 'treasury-transactions') {
+          legacyStorageCount++;
+        }
+      }
+
+      const recommendations: string[] = [];
+      if (orphanedCount > 0) {
+        recommendations.push(`Found ${orphanedCount} transactions without file tracking`);
+      }
+      if (legacyStorageCount > 0) {
+        recommendations.push(`Found ${legacyStorageCount} legacy storage entries`);
+      }
+      if (orphanedCount === 0 && legacyStorageCount === 0) {
+        recommendations.push('Data is clean and up-to-date');
+      }
+
+      setMigrationStatus({
+        needsMigration: orphanedCount > 0 || legacyStorageCount > 0,
+        orphanedCount,
+        legacyStorageCount,
+        recommendations
+      });
+    } catch (error) {
+      console.error('Error checking migration status:', error);
+    }
   };
 
   const handleMigration = async () => {
     setIsRunning(true);
     setMigrationReport(null);
-    
+
     try {
-      const report = await dataMigrationService.migrateLegacyData();
-      setMigrationReport(report);
-      
+      // Simple cleanup: remove orphaned transactions and legacy storage
+      const allTransactions = fileStorageService.readData<any[]>('transactions', []);
+      const originalCount = allTransactions.length;
+
+      // Keep only transactions with fileId or recent transactions (last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const cleanedTransactions = allTransactions.filter(t => {
+        if (t.fileId) return true; // Keep transactions with file tracking
+
+        // Keep recent transactions even without fileId
+        if (t.importDate) {
+          const importDate = new Date(t.importDate);
+          return importDate > thirtyDaysAgo;
+        }
+
+        return false; // Remove old transactions without file tracking
+      });
+
+      // Save cleaned data
+      fileStorageService.writeData('transactions', cleanedTransactions);
+
+      // Clean up legacy storage
+      let legacyCleared = 0;
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('treasury-transactions-') && key !== 'treasury-transactions') {
+          localStorage.removeItem(key);
+          legacyCleared++;
+        }
+      }
+
+      const deletedCount = originalCount - cleanedTransactions.length;
+
+      setMigrationReport({
+        totalTransactions: originalCount,
+        orphanedTransactions: deletedCount,
+        migratedTransactions: 0,
+        deletedTransactions: deletedCount,
+        legacyStorageCleared: legacyCleared,
+        errors: []
+      });
+
       // Refresh status after migration
       setTimeout(() => {
         checkMigrationStatus();
       }, 1000);
-      
+
     } catch (error) {
       console.error('Migration failed:', error);
+      setMigrationReport({
+        totalTransactions: 0,
+        orphanedTransactions: 0,
+        migratedTransactions: 0,
+        deletedTransactions: 0,
+        legacyStorageCleared: 0,
+        errors: [error instanceof Error ? error.message : 'Migration failed']
+      });
     } finally {
       setIsRunning(false);
       setShowConfirmDialog(false);
@@ -58,37 +139,49 @@ const DataCleanup: React.FC = () => {
 
   const handleEmergencyCleanup = async () => {
     setIsRunning(true);
-    
+
     try {
-      const result = dataMigrationService.emergencyCleanup();
-      
-      if (result.success) {
-        setMigrationReport({
-          totalTransactions: result.deletedCount,
-          orphanedTransactions: result.deletedCount,
-          migratedTransactions: 0,
-          deletedTransactions: result.deletedCount,
-          legacyStorageCleared: 0,
-          errors: []
-        });
-      } else {
-        setMigrationReport({
-          totalTransactions: 0,
-          orphanedTransactions: 0,
-          migratedTransactions: 0,
-          deletedTransactions: 0,
-          legacyStorageCleared: 0,
-          errors: [result.error || 'Emergency cleanup failed']
-        });
+      // Get current count
+      const allTransactions = fileStorageService.readData<any[]>('transactions', []);
+      const deletedCount = allTransactions.length;
+
+      // Clear all transaction data
+      fileStorageService.writeData('transactions', []);
+
+      // Clear all legacy storage
+      let legacyCleared = 0;
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('treasury-transactions-')) {
+          localStorage.removeItem(key);
+          legacyCleared++;
+        }
       }
-      
+
+      setMigrationReport({
+        totalTransactions: deletedCount,
+        orphanedTransactions: deletedCount,
+        migratedTransactions: 0,
+        deletedTransactions: deletedCount,
+        legacyStorageCleared: legacyCleared,
+        errors: []
+      });
+
       // Refresh status after cleanup
       setTimeout(() => {
         checkMigrationStatus();
       }, 1000);
-      
+
     } catch (error) {
       console.error('Emergency cleanup failed:', error);
+      setMigrationReport({
+        totalTransactions: 0,
+        orphanedTransactions: 0,
+        migratedTransactions: 0,
+        deletedTransactions: 0,
+        legacyStorageCleared: 0,
+        errors: [error instanceof Error ? error.message : 'Emergency cleanup failed']
+      });
     } finally {
       setIsRunning(false);
       setShowConfirmDialog(false);

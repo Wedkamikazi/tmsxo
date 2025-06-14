@@ -67,20 +67,17 @@ export const BalanceValidationDialog: React.FC<BalanceValidationDialogProps> = (
               <div className="balance-card expected">
                 <h4>Expected Balance</h4>
                 <div className="balance-amount">
-                  {formatCurrency(validationResult.expectedBalance)}
+                  {validationResult.expectedBalance ? formatCurrency(validationResult.expectedBalance) : 'Not Available'}
                 </div>
                 <div className="balance-details">
                   <div className="detail-row">
-                    <span>Current Balance:</span>
-                    <span>{formatCurrency(validationResult.currentBalance)}</span>
+                    <span>Based on calculation</span>
                   </div>
                   <div className="detail-row">
-                    <span>Daily Movement:</span>
-                    <span>{formatCurrency(validationResult.dailyMovement)}</span>
+                    <span>From existing data</span>
                   </div>
                   <div className="detail-row">
-                    <span>Last Transaction:</span>
-                    <span>{formatDate(validationResult.lastTransactionDate)}</span>
+                    <span>Issues: {validationResult.issues.length}</span>
                   </div>
                 </div>
               </div>
@@ -108,9 +105,12 @@ export const BalanceValidationDialog: React.FC<BalanceValidationDialogProps> = (
             {/* Difference */}
             <div className="difference-section">
               <div className="difference-row">
-                <span className="difference-label">Difference:</span>
-                <span className={`difference-amount ${validationResult.difference >= 0 ? 'positive' : 'negative'}`}>
-                  {validationResult.difference >= 0 ? '+' : ''}{formatCurrency(validationResult.difference)}
+                <span className="difference-label">Variance:</span>
+                <span className={`difference-amount ${validationResult.variance && validationResult.variance >= 0 ? 'positive' : 'negative'}`}>
+                  {validationResult.variance ? 
+                    `${validationResult.variance >= 0 ? '+' : ''}${formatCurrency(validationResult.variance)}` : 
+                    'Not Available'
+                  }
                 </span>
               </div>
             </div>
@@ -151,7 +151,7 @@ export const BalanceValidationDialog: React.FC<BalanceValidationDialogProps> = (
             >
               <div className="btn-content">
                 <span className="btn-title">Use Expected Balance</span>
-                <span className="btn-subtitle">{formatCurrency(validationResult.expectedBalance)}</span>
+                <span className="btn-subtitle">{validationResult.expectedBalance ? formatCurrency(validationResult.expectedBalance) : 'Not Available'}</span>
                 <span className="btn-description">Keep calculated balance</span>
               </div>
             </button>

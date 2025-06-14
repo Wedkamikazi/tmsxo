@@ -188,7 +188,7 @@ export const DataHub: React.FC<DataHubProps> = ({ onTransactionImport }) => {
       case 'accounts':
         return <BankAccountManager />;
       case 'transactions':
-        return <Transactions key={transactionRefreshKey} refreshTrigger={transactionRefreshKey} />;
+        return <Transactions key={dataRefreshTrigger} refreshTrigger={dataRefreshTrigger} />;
       case 'fileManager':
         return <FileManager onFileDeleted={handleFileDeleted} />;
       case 'qwenStatus':

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { fileStorageService, type UploadedFile, type DeletionReport } from '../services/fileStorageService';
-import { transactionStorageService } from '../services/transactionStorageService';
+import { unifiedDataService, type StoredTransaction } from '../services/unifiedDataService';
+import { UploadedFile } from '../types';
 import './FileManager.css';
 
 interface FileManagerProps {

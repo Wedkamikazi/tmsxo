@@ -1,9 +1,7 @@
-// File Storage Service for local file system persistence
-// This service handles reading and writing data to local JSON files
+// BROWSER-ONLY FILE STORAGE SERVICE
+// Handles local storage operations without Node.js dependencies
 
-const fs = window.require ? window.require('fs') : null;
-const path = window.require ? window.require('path') : null;
-const os = window.require ? window.require('os') : null;
+import { localStorageManager } from './localStorageManager';
 
 export interface UploadedFile {
   id: string;
@@ -36,38 +34,26 @@ export interface BackupData {
   accountBalance?: number;
 }
 
+/**
+ * BROWSER-COMPATIBLE FILE STORAGE SERVICE
+ * Pure localStorage implementation without Node.js dependencies
+ */
 class FileStorageService {
-  private readonly STORAGE_KEY = 'treasury-uploaded-files';
+  private readonly BACKUP_KEY_PREFIX = 'tms_backup_';
+  private readonly MAX_BACKUPS = 10;
 
   // Get all uploaded files
   getAllUploadedFiles(): UploadedFile[] {
-    try {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch (error) {
-      console.error('Error loading uploaded files:', error);
-      return [];
-    }
+    return localStorageManager.getAllFiles();
   }
 
   // Add a new uploaded file record
   addUploadedFile(fileData: Omit<UploadedFile, 'id' | 'uploadDate'>): UploadedFile {
-    const newFile: UploadedFile = {
-      ...fileData,
-      id: this.generateFileId(),
-      uploadDate: new Date().toISOString()
-    };
-
-    const files = this.getAllUploadedFiles();
-    files.push(newFile);
-    
-    try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(files));
-      return newFile;
-    } catch (error) {
-      console.error('Error saving uploaded file record:', error);
+    const newFile = localStorageManager.addFile(fileData);
+    if (!newFile) {
       throw new Error('Failed to save file record');
     }
+    return newFile;
   }
 
   // Delete an uploaded file record and its associated transactions with verification
@@ -87,19 +73,19 @@ class FileStorageService {
 
     try {
       const files = this.getAllUploadedFiles();
-      const fileIndex = files.findIndex(f => f.id === fileId);
+      const fileToDelete = files.find(f => f.id === fileId);
       
-      if (fileIndex === -1) {
+      if (!fileToDelete) {
         deletionReport.error = 'File not found';
         return { success: false, deletionReport };
       }
 
-      const fileToDelete = files[fileIndex];
       deletionReport.fileName = fileToDelete.fileName;
       deletionReport.expectedTransactionCount = fileToDelete.transactionCount;
 
       // Count total transactions before deletion
-      deletionReport.totalTransactionsBefore = this.getTotalTransactionCount();
+      const stats = localStorageManager.getStorageStats();
+      deletionReport.totalTransactionsBefore = stats.itemCounts.transactions;
 
       // Create backup before deletion
       const backupResult = this.createBackup(fileToDelete);
@@ -111,22 +97,23 @@ class FileStorageService {
         return { success: false, deletionReport };
       }
 
-      // Delete transactions and get actual count deleted
-      const deletedCount = this.deleteTransactionsByFile(fileToDelete);
-      deletionReport.actualDeletedCount = deletedCount;
+      // Delete using unified storage manager
+      const success = localStorageManager.deleteFile(fileId);
+      
+      if (!success) {
+        deletionReport.error = 'Failed to delete file';
+        return { success: false, deletionReport };
+      }
 
-      // Remove the file record
-      files.splice(fileIndex, 1);
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(files));
-
-      // Count total transactions after deletion
-      deletionReport.totalTransactionsAfter = this.getTotalTransactionCount();
+      // Get updated stats
+      const newStats = localStorageManager.getStorageStats();
+      deletionReport.totalTransactionsAfter = newStats.itemCounts.transactions;
+      deletionReport.actualDeletedCount = deletionReport.totalTransactionsBefore - deletionReport.totalTransactionsAfter;
 
       // Verify deletion was correct
-      const expectedTotalAfter = deletionReport.totalTransactionsBefore - deletionReport.expectedTransactionCount;
       deletionReport.isVerified = (
         deletionReport.actualDeletedCount === deletionReport.expectedTransactionCount &&
-        deletionReport.totalTransactionsAfter === expectedTotalAfter
+        deletionReport.totalTransactionsAfter === (deletionReport.totalTransactionsBefore - deletionReport.expectedTransactionCount)
       );
 
       return { success: true, deletionReport };
@@ -152,110 +139,45 @@ class FileStorageService {
   // Update transaction count for a file
   updateTransactionCount(fileId: string, count: number): void {
     const files = this.getAllUploadedFiles();
-    const fileIndex = files.findIndex(f => f.id === fileId);
+    const file = files.find(f => f.id === fileId);
     
-    if (fileIndex !== -1) {
-      files[fileIndex].transactionCount = count;
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(files));
-    }
-  }
-
-  // Private helper methods
-  private generateFileId(): string {
-    return `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
-
-  private deleteTransactionsByFile(file: UploadedFile): number {
-    try {
-      // Get all transactions for the account
-      const transactionsKey = `treasury-transactions-${file.accountId}`;
-      const stored = localStorage.getItem(transactionsKey);
-      
-      if (!stored) return 0;
-      
-      const transactions = JSON.parse(stored);
-      const originalCount = transactions.length;
-      
-      // Filter out transactions that were imported from this file
-      // We'll use the upload date to identify transactions from this file
-      const fileUploadDate = new Date(file.uploadDate);
-      const startOfDay = new Date(fileUploadDate);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(fileUploadDate);
-      endOfDay.setHours(23, 59, 59, 999);
-      
-      const remainingTransactions = transactions.filter((transaction: any) => {
-        if (!transaction.importDate) return true;
-        
-        const importDate = new Date(transaction.importDate);
-        return importDate < startOfDay || importDate > endOfDay;
-      });
-      
-      // Save the filtered transactions back
-      localStorage.setItem(transactionsKey, JSON.stringify(remainingTransactions));
-      
-      const deletedCount = originalCount - remainingTransactions.length;
-      console.log(`Deleted ${deletedCount} transactions from file ${file.fileName}`);
-      return deletedCount;
-    } catch (error) {
-      console.error('Error deleting transactions for file:', error);
-      return 0;
+    if (file) {
+      const updatedFile = { ...file, transactionCount: count };
+      // This would require an update method in localStorageManager
+      // For now, we'll recreate the file list
+      const updatedFiles = files.map(f => f.id === fileId ? updatedFile : f);
+      // Note: This is a temporary solution - should be handled by localStorageManager
+      localStorage.setItem('tms_files', JSON.stringify(updatedFiles));
     }
   }
 
   // Get total transaction count across all accounts
   getTotalTransactionCount(): number {
-    try {
-      let totalCount = 0;
-      const files = this.getAllUploadedFiles();
-      const accountIds = [...new Set(files.map(f => f.accountId))];
-      
-      accountIds.forEach(accountId => {
-        const transactionsKey = `treasury-transactions-${accountId}`;
-        const stored = localStorage.getItem(transactionsKey);
-        if (stored) {
-          const transactions = JSON.parse(stored);
-          totalCount += transactions.length;
-        }
-      });
-      
-      return totalCount;
-    } catch (error) {
-      console.error('Error counting total transactions:', error);
-      return 0;
-    }
+    const stats = localStorageManager.getStorageStats();
+    return stats.itemCounts.transactions;
   }
 
   // Create backup before deletion
   createBackup(file: UploadedFile): { success: boolean; backupKey: string } {
     try {
-      const backupKey = `backup_${file.id}_${Date.now()}`;
+      const backupKey = `${this.BACKUP_KEY_PREFIX}${file.id}_${Date.now()}`;
       
-      // Get transactions for this file
-      const transactionsKey = `treasury-transactions-${file.accountId}`;
-      const stored = localStorage.getItem(transactionsKey);
-      const allTransactions = stored ? JSON.parse(stored) : [];
-      
-      // Filter transactions that belong to this file
-      const fileUploadDate = new Date(file.uploadDate);
-      const startOfDay = new Date(fileUploadDate);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(fileUploadDate);
-      endOfDay.setHours(23, 59, 59, 999);
-      
-      const fileTransactions = allTransactions.filter((transaction: any) => {
-        if (!transaction.importDate) return false;
-        const importDate = new Date(transaction.importDate);
-        return importDate >= startOfDay && importDate <= endOfDay;
-      });
+      // Get all transactions for this file
+      const transactions = localStorageManager.getAllTransactions()
+        .filter(t => t.fileId === file.id);
 
       const backupData: BackupData = {
         fileRecord: file,
-        transactions: fileTransactions,
-        timestamp: new Date().toISOString()
+        transactions,
+        timestamp: new Date().toISOString(),
+        accountBalance: localStorageManager.getAllAccounts()
+          .find(a => a.id === file.accountId)?.currentBalance
       };
 
       localStorage.setItem(backupKey, JSON.stringify(backupData));
+      
+      // Clean old backups
+      this.cleanOldBackups();
       
       return { success: true, backupKey };
     } catch (error) {
@@ -275,22 +197,21 @@ class FileStorageService {
       const backup: BackupData = JSON.parse(backupData);
       
       // Restore file record
-      const files = this.getAllUploadedFiles();
-      const existingIndex = files.findIndex(f => f.id === backup.fileRecord.id);
-      
-      if (existingIndex === -1) {
-        files.push(backup.fileRecord);
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(files));
+      const restoredFile = localStorageManager.addFile(backup.fileRecord);
+      if (!restoredFile) {
+        return { success: false, restoredCount: 0, error: 'Failed to restore file record' };
       }
 
       // Restore transactions
-      const transactionsKey = `treasury-transactions-${backup.fileRecord.accountId}`;
-      const stored = localStorage.getItem(transactionsKey);
-      const existingTransactions = stored ? JSON.parse(stored) : [];
+      const transactionsToRestore = backup.transactions.map(t => ({
+        ...t,
+        fileId: restoredFile.id // Update to new file ID if different
+      }));
       
-      // Add backup transactions back
-      const combinedTransactions = [...existingTransactions, ...backup.transactions];
-      localStorage.setItem(transactionsKey, JSON.stringify(combinedTransactions));
+      const success = localStorageManager.addTransactions(transactionsToRestore);
+      if (!success) {
+        return { success: false, restoredCount: 0, error: 'Failed to restore transactions' };
+      }
 
       // Clean up backup
       localStorage.removeItem(backupKey);
@@ -307,11 +228,11 @@ class FileStorageService {
     const keys: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key && key.startsWith('backup_')) {
+      if (key && key.startsWith(this.BACKUP_KEY_PREFIX)) {
         keys.push(key);
       }
     }
-    return keys;
+    return keys.sort();
   }
 
   // Clean old backups (older than 7 days)
@@ -321,6 +242,16 @@ class FileStorageService {
       const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
       let cleanedCount = 0;
 
+      // Keep only the most recent backups
+      if (backupKeys.length > this.MAX_BACKUPS) {
+        const toDelete = backupKeys.slice(0, backupKeys.length - this.MAX_BACKUPS);
+        toDelete.forEach(key => {
+          localStorage.removeItem(key);
+          cleanedCount++;
+        });
+      }
+
+      // Also clean by age
       backupKeys.forEach(key => {
         try {
           const backupData = localStorage.getItem(key);
@@ -349,25 +280,25 @@ class FileStorageService {
 
   // Clear all uploaded files (for testing/reset purposes)
   clearAllFiles(): void {
-    localStorage.removeItem(this.STORAGE_KEY);
+    localStorageManager.clearAllData();
   }
 
   // Get storage statistics
   getStorageStats(): { totalFiles: number; totalTransactions: number; totalSize: number } {
-    const files = this.getAllUploadedFiles();
+    const stats = localStorageManager.getStorageStats();
     return {
-      totalFiles: files.length,
-      totalTransactions: files.reduce((sum, file) => sum + file.transactionCount, 0),
-      totalSize: files.reduce((sum, file) => sum + file.fileSize, 0)
+      totalFiles: stats.itemCounts.files,
+      totalTransactions: stats.itemCounts.transactions,
+      totalSize: stats.totalSize
     };
   }
 
-  // MISSING METHODS THAT OTHER SERVICES DEPEND ON
+  // Browser-compatible data operations
   readData<T>(filename: string, defaultValue: T): T {
     try {
-      const key = `treasury-data-${filename}`;
-      const stored = localStorage.getItem(key);
-      return stored ? JSON.parse(stored) : defaultValue;
+      const key = `tms_data_${filename}`;
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : defaultValue;
     } catch (error) {
       console.error(`Error reading data for ${filename}:`, error);
       return defaultValue;
@@ -376,7 +307,7 @@ class FileStorageService {
 
   writeData<T>(filename: string, data: T): boolean {
     try {
-      const key = `treasury-data-${filename}`;
+      const key = `tms_data_${filename}`;
       localStorage.setItem(key, JSON.stringify(data));
       return true;
     } catch (error) {
@@ -386,7 +317,7 @@ class FileStorageService {
   }
 
   getDataDirectory(): string {
-    return 'localStorage://treasury-data/';
+    return 'localStorage://tms/';
   }
 }
 

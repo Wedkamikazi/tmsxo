@@ -205,17 +205,41 @@ export const DataHub: React.FC = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'bankStatement':
-        return <BankStatementImport onImportComplete={handleImportComplete} />;
+        return (
+          <ErrorBoundary componentName="BankStatementImport">
+            <BankStatementImport onImportComplete={handleImportComplete} />
+          </ErrorBoundary>
+        );
       case 'accounts':
-        return <BankAccountManager />;
+        return (
+          <ErrorBoundary componentName="BankAccountManager">
+            <BankAccountManager />
+          </ErrorBoundary>
+        );
       case 'transactions':
-        return <Transactions key={dataRefreshTrigger} refreshTrigger={dataRefreshTrigger} />;
+        return (
+          <ErrorBoundary componentName="Transactions">
+            <Transactions key={dataRefreshTrigger} refreshTrigger={dataRefreshTrigger} />
+          </ErrorBoundary>
+        );
       case 'fileManager':
-        return <FileManager onFileDeleted={handleFileDeleted} />;
+        return (
+          <ErrorBoundary componentName="FileManager">
+            <FileManager onFileDeleted={handleFileDeleted} />
+          </ErrorBoundary>
+        );
       case 'qwenStatus':
-        return <QwenIntegrationStatus />;
+        return (
+          <ErrorBoundary componentName="QwenIntegrationStatus">
+            <QwenIntegrationStatus />
+          </ErrorBoundary>
+        );
       case 'dataCleanup':
-        return <SimpleDataCleanup />;
+        return (
+          <ErrorBoundary componentName="SimpleDataCleanup">
+            <SimpleDataCleanup />
+          </ErrorBoundary>
+        );
       case 'payroll':
         return (
           <div className="coming-soon-container">

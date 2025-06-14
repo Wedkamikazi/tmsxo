@@ -311,6 +311,8 @@ export const DataHub: React.FC = () => {
 
       <div className="datahub-content">
         <div className="container">
+          <SystemHealthMonitor refreshInterval={10000} />
+          
           <div className="datahub-tabs">
             <div className="tab-list">
               {tabs.map((tab) => (

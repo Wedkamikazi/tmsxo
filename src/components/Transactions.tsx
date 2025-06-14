@@ -156,15 +156,11 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
       setError(null);
       
       // Load bank accounts
-      const accounts = bankAccountService.getAllAccounts();
+      const accounts = unifiedDataService.getAllAccounts();
       setBankAccounts(accounts);
       
       // Load all transactions
-      const allTransactions: StoredTransaction[] = [];
-      accounts.forEach(account => {
-        const accountTransactions = transactionStorageService.getTransactionsByAccount(account.id);
-        allTransactions.push(...accountTransactions);
-      });
+      const allTransactions = unifiedDataService.getAllTransactions();
       
       setTransactions(allTransactions);
       

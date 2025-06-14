@@ -147,4 +147,16 @@ export interface CSVTemplate {
   headers: string[];
   validationRules: ValidationRule[];
   sampleData: Record<string, string>[];
+}
+
+// File Management Types
+export interface UploadedFile {
+  id: string;
+  fileName: string;
+  uploadDate: string;
+  accountId: string;
+  accountName: string;
+  transactionCount: number;
+  fileSize: number;
+  checksum?: string;
 } 

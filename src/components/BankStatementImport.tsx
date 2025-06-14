@@ -144,21 +144,24 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
         }
       }
     });
-    
+
+    // FIXED: Get all transactions for balance calculation
+    const allImportedTransactions = importSummaries.flatMap(summary => summary.transactions);
+
     // Update account balance to the most recent transaction balance (Post date + Time based)
-    const sortedTransactions = [...allTransactions].sort((a, b) => {
+    const sortedTransactions = [...allImportedTransactions].sort((a, b) => {
       const dateTimeA = new Date(`${a.postDate || a.date}T${a.time || '00:00'}`);
       const dateTimeB = new Date(`${b.postDate || b.date}T${b.time || '00:00'}`);
       return dateTimeB.getTime() - dateTimeA.getTime();
     });
-    
+
     if (sortedTransactions.length > 0) {
       const latestBalance = sortedTransactions[0].balance;
       bankAccountService.updateBalance(selectedBankAccount.id, latestBalance);
     }
-    
+
     if (onImportComplete) {
-      onImportComplete(allTransactions, selectedBankAccount);
+      onImportComplete(allImportedTransactions, selectedBankAccount);
     }
     
     // Reset state

@@ -102,7 +102,7 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
     
     if (useImportBalance) {
       // Update account balance to match import balance
-      bankAccountService.updateBalance(selectedBankAccount.id, balanceValidation.actualBalance);
+      unifiedDataService.updateAccount(selectedBankAccount.id, { currentBalance: balanceValidation.actualBalance });
       // Update local state
       setSelectedBankAccount(prev => prev ? { ...prev, currentBalance: balanceValidation.actualBalance } : null);
     }

@@ -3,6 +3,35 @@ import { eventBus } from './eventBus';
 
 // UNIFIED DATA SERVICE - SINGLE SOURCE OF TRUTH
 // Coordinates all data operations across the application
+
+// Enhanced interfaces for rollback functionality
+export interface DataSnapshot {
+  timestamp: string;
+  transactions: StoredTransaction[];
+  files: UploadedFile[];
+  accounts: BankAccount[];
+  operationType: 'import' | 'delete' | 'update' | 'cleanup';
+  operationId: string;
+}
+
+export interface ValidationResult {
+  isValid: boolean;
+  errors: ValidationError[];
+  warnings: ValidationWarning[];
+}
+
+export interface ValidationError {
+  field: string;
+  message: string;
+  severity: 'critical' | 'high' | 'medium';
+}
+
+export interface ValidationWarning {
+  field: string;
+  message: string;
+  suggestion?: string;
+}
+
 export interface StoredTransaction extends Transaction {
   accountId: string;
   importDate: string;

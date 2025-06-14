@@ -251,25 +251,47 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
             <p>Choose which bank account these transactions belong to</p>
           </div>
           
-          <div className="bank-selection">
-            <div className="form-group">
-              <label htmlFor="bank-account-select" className="form-label">
-                Bank Account
-              </label>
-              <select
-                id="bank-account-select"
-                className="form-select"
-                onChange={(e) => handleBankAccountSelect(e.target.value)}
-                defaultValue=""
-              >
-                <option value="">Select a bank account...</option>
-                {bankAccounts.map(account => (
-                  <option key={account.id} value={account.id}>
-                    {account.name} - {account.bankName} ({account.accountNumber})
-                  </option>
-                ))}
-              </select>
+          {bankAccounts.length === 0 ? (
+            <div className="empty-accounts-state">
+              <div className="empty-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                </svg>
+              </div>
+              <h3>No Bank Accounts Found</h3>
+              <p>You need to create at least one bank account before importing transactions.</p>
+              <p>Please go to the <strong>Bank Accounts</strong> tab to add your first account.</p>
+              <div className="empty-actions">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="btn btn-primary"
+                >
+                  Go to Bank Accounts
+                </button>
+              </div>
             </div>
+          ) : (
+            <div className="bank-selection">
+              <div className="form-group">
+                <label htmlFor="bank-account-select" className="form-label">
+                  Bank Account
+                </label>
+                <select
+                  id="bank-account-select"
+                  className="form-select"
+                  onChange={(e) => handleBankAccountSelect(e.target.value)}
+                  defaultValue=""
+                >
+                  <option value="">Select a bank account...</option>
+                  {bankAccounts.map(account => (
+                    <option key={account.id} value={account.id}>
+                      {account.name} - {account.bankName} ({account.accountNumber})
+                    </option>
+                  ))}
+                </select>
+              </div>
             
             <div className="import-summary-preview">
               <h4>Import Summary</h4>

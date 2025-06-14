@@ -86,6 +86,7 @@ export interface StoredTransaction extends Transaction {
   accountId: string;
   importDate: string;
   postDateTime: string; // Combined Post date + Time for sorting
+  fileId?: string; // CRITICAL FIX: Track which file imported this transaction
 }
 
 // CSV Import Types

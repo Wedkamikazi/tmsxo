@@ -122,15 +122,22 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .tab-label {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--color-neutral-900);
-  margin: 0 0 6px 0;
+  margin: 0 0 4px 0;
   line-height: 1.3;
   letter-spacing: -0.01em;
+  background: transparent !important;
+  padding: 0 !important;
 }
 
 .tab-button.active .tab-label {
@@ -140,10 +147,12 @@
 .tab-description {
   font-size: 0.875rem;
   color: var(--color-neutral-600);
-  line-height: 1.5;
+  line-height: 1.4;
   margin: 0;
   font-weight: 400;
   letter-spacing: 0.01em;
+  background: transparent !important;
+  padding: 0 !important;
 }
 
 .tab-button.active .tab-description {

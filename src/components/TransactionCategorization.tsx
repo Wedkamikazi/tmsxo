@@ -374,6 +374,22 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
             <div className="stat-value">{formatConfidence(stats.averageMLConfidence)}</div>
             <div className="stat-label">Avg ML Confidence</div>
           </div>
+          {qwenStatus.modelLoaded && (
+            <>
+              <div className="stat-card qwen-stat">
+                <div className="stat-value">{stats.qwenStats.totalRequests}</div>
+                <div className="stat-label">Qwen Requests</div>
+              </div>
+              <div className="stat-card qwen-stat">
+                <div className="stat-value">{stats.qwenStats.averageResponseTime}ms</div>
+                <div className="stat-label">Avg Response Time</div>
+              </div>
+              <div className="stat-card qwen-stat">
+                <div className="stat-value">{formatConfidence(stats.qwenStats.averageConfidence)}</div>
+                <div className="stat-label">Qwen Confidence</div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

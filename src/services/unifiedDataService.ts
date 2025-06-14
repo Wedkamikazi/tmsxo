@@ -1,5 +1,6 @@
 import { Transaction, BankAccount, UploadedFile } from '../types';
 import { eventBus } from './eventBus';
+import { localStorageManager, StoredTransaction } from './localStorageManager';
 
 // UNIFIED DATA SERVICE - SINGLE SOURCE OF TRUTH
 // Coordinates all data operations across the application

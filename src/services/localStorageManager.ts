@@ -1,4 +1,5 @@
 import { Transaction, BankAccount, UploadedFile, TransactionCategory, TransactionCategorization } from '../types';
+import { performanceManager } from './performanceManager';
 
 export interface StorageSnapshot {
   timestamp: string;

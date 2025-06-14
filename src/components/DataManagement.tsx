@@ -20,7 +20,6 @@ export const DataManagement: React.FC = () => {
 
   const loadStorageInfo = async () => {
     try {
-      const dataSummary = unifiedDataService.getDataSummary();
       const info: StorageInfo = {
         bankAccounts: { location: 'localStorage', filename: 'treasury-data-accounts' },
         transactions: { location: 'localStorage', filename: 'treasury-data-transactions' },

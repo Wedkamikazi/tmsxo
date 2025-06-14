@@ -163,7 +163,7 @@ export const DataHub: React.FC<DataHubProps> = ({ onTransactionImport }) => {
       case 'qwenStatus':
         return <QwenIntegrationStatus />;
       case 'dataCleanup':
-        return <DataCleanup />;
+        return <SimpleDataCleanup />;
       case 'payroll':
         return (
           <div className="tab-placeholder">

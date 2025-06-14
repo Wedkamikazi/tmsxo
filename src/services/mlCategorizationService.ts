@@ -501,11 +501,15 @@ RESPONSE FORMAT (JSON only, no additional text):
     return context.length > 0 ? context.join('; ') : "No specific patterns identified";
   }
 
-  // Call Ollama API for categorization
+  // Call Ollama API for categorization with performance tracking
   private async callOllamaAPI(prompt: string): Promise<MLCategorizationResult | null> {
+    const requestStart = Date.now();
+    this.qwenPerformanceStats.totalRequests++;
+
     if (!this.isOllamaAvailable || !this.modelLoaded) {
       await this.checkOllamaAvailability();
       if (!this.isOllamaAvailable || !this.modelLoaded) {
+        this.qwenPerformanceStats.errorCount++;
         throw new Error('Ollama service is not available or Qwen3:32b model is not loaded');
       }
     }

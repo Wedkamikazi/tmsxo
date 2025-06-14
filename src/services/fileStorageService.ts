@@ -247,21 +247,21 @@ class FileStorageService {
   createBackup(file: UploadedFile): { success: boolean; backupKey: string } {
     try {
       const backupKey = `backup_${file.id}_${Date.now()}`;
-      
-      // Get transactions for this file
-      const transactionsKey = `treasury-transactions-${file.accountId}`;
-      const stored = localStorage.getItem(transactionsKey);
-      const allTransactions = stored ? JSON.parse(stored) : [];
-      
+
+      // FIXED: Get transactions from unified storage
+      const allTransactions = this.readData<any[]>('transactions', []);
+
       // Filter transactions that belong to this file
       const fileUploadDate = new Date(file.uploadDate);
       const startOfDay = new Date(fileUploadDate);
       startOfDay.setHours(0, 0, 0, 0);
       const endOfDay = new Date(fileUploadDate);
       endOfDay.setHours(23, 59, 59, 999);
-      
+
       const fileTransactions = allTransactions.filter((transaction: any) => {
         if (!transaction.importDate) return false;
+        if (transaction.accountId !== file.accountId) return false;
+
         const importDate = new Date(transaction.importDate);
         return importDate >= startOfDay && importDate <= endOfDay;
       });
@@ -273,10 +273,11 @@ class FileStorageService {
       };
 
       localStorage.setItem(backupKey, JSON.stringify(backupData));
-      
+
+      console.log(`📦 Created backup for ${fileTransactions.length} transactions from file ${file.fileName}`);
       return { success: true, backupKey };
     } catch (error) {
-      console.error('Error creating backup:', error);
+      console.error('❌ Error creating backup:', error);
       return { success: false, backupKey: '' };
     }
   }

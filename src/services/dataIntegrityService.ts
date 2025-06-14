@@ -1,4 +1,4 @@
-import { StoredTransaction } from './transactionStorageService';
+import { StoredTransaction } from './unifiedDataService';
 import { UploadedFile } from './fileStorageService';
 
 export interface DataIntegrityReport {

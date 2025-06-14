@@ -562,7 +562,7 @@ Respond in the following JSON format only:
 
       if (result) {
         // Validate that the returned category ID exists
-        const categoryExists = categories.some(cat => cat.id === result.categoryId);
+        const categoryExists = categories.some(cat => cat.id === result!.categoryId);
         if (!categoryExists) {
           console.warn(`ML model returned unknown category ID: ${result.categoryId}`);
           // Fallback to uncategorized

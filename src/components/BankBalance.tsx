@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { bankBalanceService, type DailyBalance, type BalanceFilters, type BalanceStats } from '../services/bankBalanceService';
-import { bankAccountService } from '../services/bankAccountService';
+import { unifiedDataService } from '../services/unifiedDataService';
 import { BankAccount } from '../types';
 import './BankBalance.css';
 

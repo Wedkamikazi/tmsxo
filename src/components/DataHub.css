@@ -270,6 +270,22 @@
   transform: translateY(0);
 }
 
+/* Remove all white boxes and internal styling */
+.tab-button > *:not(.tab-icon) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.tab-button .tab-content > * {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
 /* Ensure icons are always visible */
 .tab-icon svg,
 .tab-icon i {

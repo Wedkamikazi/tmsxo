@@ -278,6 +278,9 @@
 
 /* Transactions Table */
 .transactions-table-container {
+  background: #ffffff !important;
+  border: 1px solid #e5e5e5 !important;
+  border-radius: 8px !important;
   overflow-x: auto;
   max-height: 500px;
   overflow-y: auto;

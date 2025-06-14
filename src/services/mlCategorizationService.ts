@@ -220,9 +220,9 @@ class MLCategorizationService {
       if (response.ok) {
         const data = await response.json();
         const models = data.models || [];
-        this.modelLoaded = models.some((model: Record<string, unknown>) => 
-          model.name === this.config.modelName || 
-          (model.name as string)?.startsWith('qwen3:32b')
+        this.modelLoaded = models.some((model: Record<string, unknown>) =>
+          model.name === this.config.modelName ||
+          (model.name as string)?.startsWith('qwen2.5:32b')
         );
         this.isOllamaAvailable = true;
         

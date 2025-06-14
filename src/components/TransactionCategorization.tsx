@@ -66,7 +66,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
       
       // Load all data
       const [allTransactions, allCategories, allCategorizations] = await Promise.all([
-        Promise.resolve(transactionStorageService.getAllTransactions()),
+        Promise.resolve(unifiedDataService.getAllTransactions()),
         Promise.resolve(categorizationService.getAllCategories()),
         Promise.resolve(categorizationService.getAllCategorizations())
       ]);

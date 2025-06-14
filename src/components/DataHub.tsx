@@ -5,6 +5,7 @@ import { Transactions } from './Transactions';
 import { FileManager } from './FileManager';
 import QwenIntegrationStatus from './QwenIntegrationStatus';
 import SimpleDataCleanup from './SimpleDataCleanup';
+import { ErrorBoundary } from './ErrorBoundary';
 import { Transaction, BankAccount } from '../types';
 import { eventBus } from '../services/eventBus';
 import { unifiedDataService } from '../services/unifiedDataService';

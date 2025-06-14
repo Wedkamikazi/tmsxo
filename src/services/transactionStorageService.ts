@@ -147,7 +147,7 @@ class TransactionStorageService {
   // Store new transactions
   storeTransactions(accountId: string, transactions: Transaction[]): void {
     const allTransactions = this.getAllTransactions();
-    
+
     const newStoredTransactions: StoredTransaction[] = transactions.map(transaction => ({
       ...transaction,
       accountId,
@@ -159,12 +159,38 @@ class TransactionStorageService {
     }));
 
     // Remove any existing transactions with the same IDs (for updates)
-    const filteredExisting = allTransactions.filter(existing => 
+    const filteredExisting = allTransactions.filter(existing =>
       !newStoredTransactions.some(newTxn => newTxn.id === existing.id)
     );
 
     const updatedTransactions = [...filteredExisting, ...newStoredTransactions];
     this.saveTransactions(updatedTransactions);
+  }
+
+  // CRITICAL FIX: Store new transactions with file ID for proper deletion tracking
+  storeTransactionsWithFileId(accountId: string, transactions: Transaction[], fileId: string): void {
+    const allTransactions = this.getAllTransactions();
+
+    const newStoredTransactions: StoredTransaction[] = transactions.map(transaction => ({
+      ...transaction,
+      accountId,
+      fileId, // Add file ID for deletion tracking
+      importDate: new Date().toISOString(),
+      postDateTime: this.createPostDateTime(
+        transaction.postDate || transaction.date,
+        transaction.time || '00:00'
+      )
+    }));
+
+    // Remove any existing transactions with the same IDs (for updates)
+    const filteredExisting = allTransactions.filter(existing =>
+      !newStoredTransactions.some(newTxn => newTxn.id === existing.id)
+    );
+
+    const updatedTransactions = [...filteredExisting, ...newStoredTransactions];
+    this.saveTransactions(updatedTransactions);
+
+    console.log(`✅ Stored ${newStoredTransactions.length} transactions with fileId: ${fileId}`);
   }
 
   // Get account balance as of a specific date

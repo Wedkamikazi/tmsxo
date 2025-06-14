@@ -48,6 +48,13 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
     autoApplyHighConfidence: true
   });
 
+  // Qwen status state
+  const [qwenStatus, setQwenStatus] = useState({
+    available: false,
+    modelLoaded: false,
+    loading: true
+  });
+
   // Modal state
   const [, setShowMLConfigModal] = useState(false);
   const [, setShowCategoryModal] = useState(false);

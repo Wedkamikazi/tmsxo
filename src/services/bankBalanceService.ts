@@ -1,5 +1,5 @@
 import { StoredTransaction } from '../types';
-import { transactionStorageService } from './transactionStorageService';
+import { unifiedDataService } from './unifiedDataService';
 import { bankAccountService } from './bankAccountService';
 
 export interface DailyBalance {

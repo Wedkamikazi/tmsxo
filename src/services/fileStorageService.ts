@@ -168,38 +168,54 @@ class FileStorageService {
 
   private deleteTransactionsByFile(file: UploadedFile): number {
     try {
-      // Get all transactions for the account
-      const transactionsKey = `treasury-transactions-${file.accountId}`;
-      const stored = localStorage.getItem(transactionsKey);
-      
-      if (!stored) return 0;
-      
-      const transactions = JSON.parse(stored);
-      const originalCount = transactions.length;
-      
+      // CRITICAL FIX: Use the unified transaction storage system
+      // Get all transactions from the main storage (not account-specific localStorage)
+      const allTransactions = this.readData<any[]>('transactions', []);
+      const originalCount = allTransactions.length;
+
       // Filter out transactions that were imported from this file
-      // We'll use the upload date to identify transactions from this file
+      // We'll use the upload date and file ID to identify transactions from this file
       const fileUploadDate = new Date(file.uploadDate);
       const startOfDay = new Date(fileUploadDate);
       startOfDay.setHours(0, 0, 0, 0);
       const endOfDay = new Date(fileUploadDate);
       endOfDay.setHours(23, 59, 59, 999);
-      
-      const remainingTransactions = transactions.filter((transaction: any) => {
+
+      const remainingTransactions = allTransactions.filter((transaction: any) => {
+        // Skip transactions that don't have import date
         if (!transaction.importDate) return true;
-        
+
+        // Skip transactions from different accounts
+        if (transaction.accountId !== file.accountId) return true;
+
         const importDate = new Date(transaction.importDate);
+
+        // Keep transactions that were imported outside the file's upload timeframe
         return importDate < startOfDay || importDate > endOfDay;
       });
-      
-      // Save the filtered transactions back
-      localStorage.setItem(transactionsKey, JSON.stringify(remainingTransactions));
-      
+
+      // Save the filtered transactions back to the unified storage
+      const success = this.writeData('transactions', remainingTransactions);
+
+      if (!success) {
+        console.error('Failed to save transactions after deletion');
+        return 0;
+      }
+
       const deletedCount = originalCount - remainingTransactions.length;
-      console.log(`Deleted ${deletedCount} transactions from file ${file.fileName}`);
+      console.log(`✅ Successfully deleted ${deletedCount} transactions from file ${file.fileName}`);
+      console.log(`📊 Transactions before: ${originalCount}, after: ${remainingTransactions.length}`);
+
+      // ALSO clean up the old account-specific localStorage (for backward compatibility)
+      const oldTransactionsKey = `treasury-transactions-${file.accountId}`;
+      if (localStorage.getItem(oldTransactionsKey)) {
+        localStorage.removeItem(oldTransactionsKey);
+        console.log(`🧹 Cleaned up legacy storage: ${oldTransactionsKey}`);
+      }
+
       return deletedCount;
     } catch (error) {
-      console.error('Error deleting transactions for file:', error);
+      console.error('❌ Error deleting transactions for file:', error);
       return 0;
     }
   }

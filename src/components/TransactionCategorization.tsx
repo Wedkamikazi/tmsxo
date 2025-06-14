@@ -84,7 +84,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
   useEffect(() => {
     loadData();
     checkQwenStatus();
-  }, [loadData, refreshTrigger]);
+  }, [loadData, refreshTrigger, checkQwenStatus]);
 
   // Check Qwen 2.5:32B status
   const checkQwenStatus = useCallback(async () => {

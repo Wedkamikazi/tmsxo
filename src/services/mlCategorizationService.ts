@@ -933,6 +933,7 @@ RESPONSE FORMAT (JSON only, no additional text):
     categoriesCount: number;
     config: LocalMLConfig;
     lastCheck: string;
+    qwenPerformance: typeof this.qwenPerformanceStats;
   } {
     return {
       isAvailable: this.isOllamaAvailable,
@@ -941,7 +942,37 @@ RESPONSE FORMAT (JSON only, no additional text):
       vocabularySize: this.vocabulary.size,
       categoriesCount: this.categoryMapping.size,
       config: this.config,
-      lastCheck: new Date().toISOString()
+      lastCheck: new Date().toISOString(),
+      qwenPerformance: { ...this.qwenPerformanceStats }
+    };
+  }
+
+  // Get Qwen 3:32B performance statistics
+  getQwenPerformanceStats(): {
+    totalRequests: number;
+    successfulRequests: number;
+    errorRate: number;
+    averageResponseTime: number;
+    averageConfidence: number;
+    lastUsed: Date | null;
+    uptime: string;
+  } {
+    const errorRate = this.qwenPerformanceStats.totalRequests > 0
+      ? this.qwenPerformanceStats.errorCount / this.qwenPerformanceStats.totalRequests
+      : 0;
+
+    const uptime = this.qwenPerformanceStats.lastUsed
+      ? `${Math.round((Date.now() - this.qwenPerformanceStats.lastUsed.getTime()) / 1000 / 60)} minutes ago`
+      : 'Never used';
+
+    return {
+      totalRequests: this.qwenPerformanceStats.totalRequests,
+      successfulRequests: this.qwenPerformanceStats.successfulRequests,
+      errorRate: Math.round(errorRate * 100) / 100,
+      averageResponseTime: Math.round(this.qwenPerformanceStats.averageResponseTime),
+      averageConfidence: Math.round(this.qwenPerformanceStats.averageConfidence * 100) / 100,
+      lastUsed: this.qwenPerformanceStats.lastUsed,
+      uptime
     };
   }
 

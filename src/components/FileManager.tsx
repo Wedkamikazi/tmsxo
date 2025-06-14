@@ -155,8 +155,13 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
     alert('Please use the "Data Cleanup" tab in the main navigation to clean up old transaction data.');
   };
 
-  // Get storage statistics
-  const stats = fileStorageService.getStorageStats();
+  // Get storage statistics from unified service
+  const dataSummary = unifiedDataService.getDataSummary();
+  const stats = {
+    totalFiles: dataSummary.totalFiles,
+    totalTransactions: dataSummary.totalTransactions,
+    totalSize: dataSummary.storageUsed
+  };
 
   if (loading) {
     return (

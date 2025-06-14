@@ -111,6 +111,25 @@ class UnifiedDataService {
     }
   }
 
+  deleteTransactionsByAccount(accountId: string): number {
+    try {
+      const all = this.getAllTransactions();
+      const remaining = all.filter(t => t.accountId !== accountId);
+      const deletedCount = all.length - remaining.length;
+      
+      localStorage.setItem(this.TRANSACTIONS_KEY, JSON.stringify(remaining));
+      this.updateMetadata();
+      
+      // Emit event for UI updates
+      eventBus.emit('TRANSACTIONS_UPDATED', { deletedCount, accountId }, 'UnifiedDataService');
+      
+      return deletedCount;
+    } catch (error) {
+      console.error('Error deleting transactions by account:', error);
+      return 0;
+    }
+  }
+
   // FILE OPERATIONS
   getAllFiles(): UploadedFile[] {
     try {

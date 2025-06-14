@@ -829,7 +829,7 @@ class MLCategorizationService {
         validationSplit: 0.2,
         shuffle: true,
         callbacks: {
-          onEpochEnd: (epoch, logs) => {
+          onEpochEnd: async (epoch: number, logs?: tf.Logs) => {
             console.log(`Epoch ${epoch + 1}: loss = ${logs?.loss?.toFixed(4)}, accuracy = ${logs?.acc?.toFixed(4)}`);
           }
         }

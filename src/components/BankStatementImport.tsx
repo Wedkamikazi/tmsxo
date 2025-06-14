@@ -126,7 +126,7 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
       const summary = importSummaries[index];
       if (summary) {
         try {
-          const uploadedFile = fileStorageService.addUploadedFile({
+          const uploadedFile = unifiedDataService.addFile({
             fileName: file.name,
             accountId: selectedBankAccount.id,
             accountName: selectedBankAccount.name,

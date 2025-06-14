@@ -402,6 +402,278 @@ class UnifiedDataService {
     
     return new Date().toISOString();
   }
+
+  // TRANSACTION ROLLBACK MECHANISM
+  private readonly SNAPSHOTS_KEY = 'treasury-data-snapshots';
+  private readonly MAX_SNAPSHOTS = 10;
+
+  createSnapshot(operationType: DataSnapshot['operationType'], operationId: string): string {
+    const snapshot: DataSnapshot = {
+      timestamp: new Date().toISOString(),
+      transactions: this.getAllTransactions(),
+      files: this.getAllFiles(),
+      accounts: this.getAllAccounts(),
+      operationType,
+      operationId
+    };
+
+    const snapshots = this.getAllSnapshots();
+    snapshots.unshift(snapshot);
+    
+    // Keep only the most recent snapshots
+    if (snapshots.length > this.MAX_SNAPSHOTS) {
+      snapshots.splice(this.MAX_SNAPSHOTS);
+    }
+
+    localStorage.setItem(this.SNAPSHOTS_KEY, JSON.stringify(snapshots));
+    return snapshot.timestamp;
+  }
+
+  rollbackToSnapshot(snapshotTimestamp: string): boolean {
+    try {
+      const snapshots = this.getAllSnapshots();
+      const snapshot = snapshots.find(s => s.timestamp === snapshotTimestamp);
+      
+      if (!snapshot) {
+        console.error('Snapshot not found:', snapshotTimestamp);
+        return false;
+      }
+
+      // Restore data from snapshot
+      localStorage.setItem(this.TRANSACTIONS_KEY, JSON.stringify(snapshot.transactions));
+      localStorage.setItem(this.FILES_KEY, JSON.stringify(snapshot.files));
+      localStorage.setItem(this.ACCOUNTS_KEY, JSON.stringify(snapshot.accounts));
+      this.updateMetadata();
+
+      // Emit events for UI updates
+      eventBus.emit('TRANSACTIONS_UPDATED', { action: 'rollback', snapshotTimestamp }, 'UnifiedDataService');
+      eventBus.emit('ACCOUNTS_UPDATED', { action: 'rollback', snapshotTimestamp }, 'UnifiedDataService');
+      eventBus.emit('FILES_UPDATED', { action: 'rollback', snapshotTimestamp }, 'UnifiedDataService');
+
+      return true;
+    } catch (error) {
+      console.error('Error during rollback:', error);
+      return false;
+    }
+  }
+
+  getAllSnapshots(): DataSnapshot[] {
+    try {
+      const stored = localStorage.getItem(this.SNAPSHOTS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('Error loading snapshots:', error);
+      return [];
+    }
+  }
+
+  deleteSnapshot(snapshotTimestamp: string): boolean {
+    try {
+      const snapshots = this.getAllSnapshots();
+      const filtered = snapshots.filter(s => s.timestamp !== snapshotTimestamp);
+      
+      if (filtered.length < snapshots.length) {
+        localStorage.setItem(this.SNAPSHOTS_KEY, JSON.stringify(filtered));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error deleting snapshot:', error);
+      return false;
+    }
+  }
+
+  // CENTRALIZED VALIDATION ENGINE
+  validateTransaction(transaction: Partial<StoredTransaction>): ValidationResult {
+    const errors: ValidationError[] = [];
+    const warnings: ValidationWarning[] = [];
+
+    // Critical validations
+    if (!transaction.id) {
+      errors.push({
+        field: 'id',
+        message: 'Transaction ID is required',
+        severity: 'critical'
+      });
+    }
+
+    if (!transaction.accountId) {
+      errors.push({
+        field: 'accountId',
+        message: 'Account ID is required',
+        severity: 'critical'
+      });
+    }
+
+    if (!transaction.amount || transaction.amount === 0) {
+      errors.push({
+        field: 'amount',
+        message: 'Transaction amount cannot be zero',
+        severity: 'high'
+      });
+    }
+
+    if (!transaction.postDateTime) {
+      errors.push({
+        field: 'postDateTime',
+        message: 'Post date/time is required',
+        severity: 'high'
+      });
+    }
+
+    // Warnings for data quality
+    if (!transaction.description || transaction.description.trim().length < 3) {
+      warnings.push({
+        field: 'description',
+        message: 'Transaction description is very short',
+        suggestion: 'Add more descriptive text for better categorization'
+      });
+    }
+
+    if (transaction.amount && Math.abs(transaction.amount) > 50000) {
+      warnings.push({
+        field: 'amount',
+        message: 'Large transaction amount detected',
+        suggestion: 'Verify this transaction amount is correct'
+      });
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    };
+  }
+
+  validateBankAccount(account: Partial<BankAccount>): ValidationResult {
+    const errors: ValidationError[] = [];
+    const warnings: ValidationWarning[] = [];
+
+    if (!account.name || account.name.trim().length === 0) {
+      errors.push({
+        field: 'name',
+        message: 'Account name is required',
+        severity: 'critical'
+      });
+    }
+
+    if (!account.accountNumber || account.accountNumber.trim().length === 0) {
+      errors.push({
+        field: 'accountNumber',
+        message: 'Account number is required',
+        severity: 'critical'
+      });
+    }
+
+    if (!account.currency || !['USD', 'SAR', 'AED'].includes(account.currency)) {
+      errors.push({
+        field: 'currency',
+        message: 'Valid currency is required (USD, SAR, AED)',
+        severity: 'high'
+      });
+    }
+
+    if (account.currentBalance === undefined || account.currentBalance === null) {
+      warnings.push({
+        field: 'currentBalance',
+        message: 'Current balance not set',
+        suggestion: 'Set an initial balance for better tracking'
+      });
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    };
+  }
+
+  // DATA BACKUP AND RESTORE FUNCTIONALITY
+  exportBackup(): string {
+    const backup = {
+      version: '1.0.0',
+      timestamp: new Date().toISOString(),
+      data: {
+        transactions: this.getAllTransactions(),
+        files: this.getAllFiles(),
+        accounts: this.getAllAccounts(),
+        snapshots: this.getAllSnapshots()
+      },
+      summary: this.getDataSummary()
+    };
+
+    return JSON.stringify(backup, null, 2);
+  }
+
+  importBackup(backupData: string): { success: boolean; message: string; imported: { transactions: number; files: number; accounts: number } } {
+    try {
+      const backup = JSON.parse(backupData);
+      
+      if (!backup.data || !backup.version) {
+        return {
+          success: false,
+          message: 'Invalid backup format',
+          imported: { transactions: 0, files: 0, accounts: 0 }
+        };
+      }
+
+      // Create snapshot before import
+      const snapshotId = this.createSnapshot('import', `backup-import-${Date.now()}`);
+
+      // Import data
+      const { transactions = [], files = [], accounts = [] } = backup.data;
+      
+      // Validate and import accounts first
+      let importedAccounts = 0;
+      accounts.forEach((account: BankAccount) => {
+        const validation = this.validateBankAccount(account);
+        if (validation.isValid) {
+          this.addAccount(account);
+          importedAccounts++;
+        }
+      });
+
+      // Import files
+      let importedFiles = 0;
+      files.forEach((file: UploadedFile) => {
+        const existingFiles = this.getAllFiles();
+        if (!existingFiles.find(f => f.id === file.id)) {
+          const currentFiles = this.getAllFiles();
+          currentFiles.push(file);
+          localStorage.setItem(this.FILES_KEY, JSON.stringify(currentFiles));
+          importedFiles++;
+        }
+      });
+
+      // Import transactions
+      let importedTransactions = 0;
+      transactions.forEach((transaction: StoredTransaction) => {
+        const validation = this.validateTransaction(transaction);
+        if (validation.isValid) {
+          this.addTransactions([transaction]);
+          importedTransactions++;
+        }
+      });
+
+      this.updateMetadata();
+
+      return {
+        success: true,
+        message: `Successfully imported backup from ${backup.timestamp}`,
+        imported: {
+          transactions: importedTransactions,
+          files: importedFiles,
+          accounts: importedAccounts
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: `Failed to import backup: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        imported: { transactions: 0, files: 0, accounts: 0 }
+      };
+    }
+  }
 }
 
 export const unifiedDataService = new UnifiedDataService(); 

@@ -76,11 +76,11 @@
 }
 
 .tab-button:hover .tab-icon {
-  background: linear-gradient(135deg, var(--color-primary-light) 0%, #e6f3ff 100%) !important;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%) !important;
 }
 
 .tab-button.active .tab-icon {
-  background: linear-gradient(135deg, var(--color-primary) 0%, #5AC8FA 100%) !important;
+  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%) !important;
 }
 
 .tab-button:hover {

@@ -83,6 +83,20 @@ export const DataHub: React.FC<DataHubProps> = ({ onTransactionImport }) => {
       description: 'Manage uploaded CSV files and delete file records'
     },
     {
+      id: 'qwenStatus' as const,
+      label: 'AI Status',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M9 12l2 2 4-4" />
+          <path d="M21 12c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1z" />
+          <path d="M3 12c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1z" />
+          <path d="M12 21c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1z" />
+          <path d="M12 3c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1z" />
+        </svg>
+      ),
+      description: 'Monitor Qwen 2.5:32B AI integration status and performance'
+    },
+    {
       id: 'payroll' as const,
       label: 'Payroll Data',
       icon: (

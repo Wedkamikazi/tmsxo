@@ -17,32 +17,7 @@ export const CSV_TEMPLATE: CSVTemplate = {
     { field: 'Balance', rule: 'number', message: 'Balance must be a valid number' },
 
   ],
-  sampleData: [
-    {
-      'Bank reference': 'REF123456',
-      'Narrative': 'Sample Transaction Description',
-      'Customer reference': 'CUST001',
-      'TRN type': 'Transfer',
-      'Value date': '01/01/2025',
-      'Credit amount': '1000.00',
-      'Debit amount': '',
-      'Time': '09:00',
-      'Post date': '01/01/2025',
-      'Balance': '10000.00'
-    },
-    {
-      'Bank reference': 'REF123457',
-      'Narrative': 'Sample Debit Transaction',
-      'Customer reference': 'CUST002',
-      'TRN type': 'Payment',
-      'Value date': '02/01/2025',
-      'Credit amount': '',
-      'Debit amount': '500.00',
-      'Time': '14:30',
-      'Post date': '02/01/2025',
-      'Balance': '9500.00'
-    }
-  ]
+  sampleData: [] // No sample data in production
 };
 
 class CSVProcessingService {

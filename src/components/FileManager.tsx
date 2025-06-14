@@ -98,26 +98,23 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
     try {
       setDeleting(deleteConfirmation.fileId);
       
-      const result = fileStorageService.deleteUploadedFile(deleteConfirmation.fileId);
+      // Delete file and associated transactions
+      const fileDeleted = unifiedDataService.deleteFile(deleteConfirmation.fileId);
+      const transactionsDeleted = unifiedDataService.deleteTransactionsByFile(deleteConfirmation.fileId);
       
-      if (result.success) {
+      if (fileDeleted) {
         // Remove from local state
         setUploadedFiles(prev => prev.filter(f => f.id !== deleteConfirmation.fileId));
-        
-        // Show deletion result
-        setDeletionResult({
-          report: result.deletionReport,
-          showRestoreOption: true
-        });
         
         // Notify parent component (this will refresh transactions)
         if (onFileDeleted) {
           onFileDeleted(deleteConfirmation.fileId);
         }
         
-        console.log(`Successfully deleted file: ${deleteConfirmation.fileName}`);
+        console.log(`Successfully deleted file: ${deleteConfirmation.fileName} and ${transactionsDeleted} transactions`);
+        alert(`Successfully deleted file and ${transactionsDeleted} associated transactions`);
       } else {
-        alert(`Failed to delete file: ${result.deletionReport.error || 'Unknown error'}`);
+        alert('Failed to delete file');
       }
     } catch (error) {
       console.error('Error deleting file:', error);

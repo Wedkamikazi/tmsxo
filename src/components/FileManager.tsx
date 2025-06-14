@@ -23,8 +23,7 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
   const [loading, setLoading] = useState(true);
   const [deleteConfirmation, setDeleteConfirmation] = useState<DeleteConfirmation | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
-  const [deletionResult, setDeletionResult] = useState<DeletionResult | null>(null);
-  const [restoring, setRestoring] = useState<string | null>(null);
+  // Simplified state after consolidation - no restore functionality
   const [orphanedCount, setOrphanedCount] = useState(0);
   const [cleaningOrphaned, setCleaningOrphaned] = useState(false);
 

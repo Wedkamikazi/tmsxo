@@ -391,4 +391,48 @@ body {
 
 .fade-out {
   animation: fadeOut 0.2s ease forwards;
-} 
+}
+
+/* Force Light Mode - Professional Treasury Interface */
+/* Override any system dark mode preferences */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #fafafa !important;
+    color: #1a1a1a !important;
+  }
+
+  .card {
+    background: white !important;
+    color: #1a1a1a !important;
+  }
+
+  .table-container {
+    background: white !important;
+    border-color: var(--color-neutral-200) !important;
+  }
+
+  .table {
+    background: white !important;
+    color: #1a1a1a !important;
+  }
+
+  .table th {
+    background: var(--color-neutral-50) !important;
+    color: var(--color-neutral-700) !important;
+    border-color: var(--color-neutral-200) !important;
+  }
+
+  .table td {
+    background: white !important;
+    color: var(--color-neutral-700) !important;
+    border-color: var(--color-neutral-200) !important;
+  }
+
+  .table tbody tr:hover {
+    background: var(--color-neutral-50) !important;
+  }
+
+  .table tbody tr:hover td {
+    background: var(--color-neutral-50) !important;
+  }
+}

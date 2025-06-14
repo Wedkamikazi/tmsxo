@@ -155,6 +155,10 @@ class UnifiedDataService {
     
     localStorage.setItem(this.ACCOUNTS_KEY, JSON.stringify(accounts));
     this.updateMetadata();
+    
+    // Emit event for UI updates
+    eventBus.emit('ACCOUNT_UPDATED', { accountId: newAccount.id, action: 'created' }, 'UnifiedDataService');
+    
     return newAccount;
   }
 

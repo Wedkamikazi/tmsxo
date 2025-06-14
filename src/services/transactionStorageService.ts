@@ -29,7 +29,7 @@ class TransactionStorageService {
   }
 
   // Get all transactions from storage
-  private getAllTransactions(): StoredTransaction[] {
+  getAllTransactions(): StoredTransaction[] {
     return fileStorageService.readData<StoredTransaction[]>(this.STORAGE_FILENAME, []);
   }
 

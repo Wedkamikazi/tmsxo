@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { bankAccountService } from '../services/bankAccountService';
-import { transactionStorageService } from '../services/transactionStorageService';
-import { fileStorageService } from '../services/fileStorageService';
+import { unifiedDataService } from '../services/unifiedDataService';
 import './DataManagement.css';
 
 interface StorageInfo {

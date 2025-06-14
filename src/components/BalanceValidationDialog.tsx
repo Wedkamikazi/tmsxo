@@ -26,21 +26,6 @@ export const BalanceValidationDialog: React.FC<BalanceValidationDialogProps> = (
     }).format(amount);
   };
 
-  const formatDate = (dateString: string): string => {
-    if (!dateString) return 'N/A';
-    try {
-      return new Date(dateString).toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    } catch {
-      return dateString;
-    }
-  };
-
   return (
     <div className="balance-validation-overlay">
       <div className="balance-validation-dialog">

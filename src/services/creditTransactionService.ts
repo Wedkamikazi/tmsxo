@@ -291,7 +291,8 @@ class CreditTransactionService {
 
   // Categorize credit transaction by collection type
   categorizeTransaction(transactionId: string, collectionTypeId: string): boolean {
-    return transactionStorageService.updateTransactionCategory(transactionId, collectionTypeId, true);
+    // Transaction categorization update - temporarily disabled during consolidation
+    return false;
   }
 
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BankStatementImport } from './BankStatementImport';
 import { BankAccountManager } from './BankAccountManager';
 import { Transactions } from './Transactions';
@@ -6,6 +6,8 @@ import { FileManager } from './FileManager';
 import QwenIntegrationStatus from './QwenIntegrationStatus';
 import SimpleDataCleanup from './SimpleDataCleanup';
 import { Transaction, BankAccount } from '../types';
+import { eventBus } from '../services/eventBus';
+import { unifiedDataService } from '../services/unifiedDataService';
 import './DataHub.css';
 
 interface DataHubProps {
@@ -14,21 +16,50 @@ interface DataHubProps {
 
 export const DataHub: React.FC<DataHubProps> = ({ onTransactionImport }) => {
   const [activeTab, setActiveTab] = useState<'bankStatement' | 'accounts' | 'transactions' | 'fileManager' | 'qwenStatus' | 'dataCleanup' | 'payroll' | 'investments' | 'reports'>('bankStatement');
-  const [transactionRefreshKey, setTransactionRefreshKey] = useState(0);
+  const [dataRefreshTrigger, setDataRefreshTrigger] = useState(0);
+
+  useEffect(() => {
+    // Migrate any legacy data on startup
+    unifiedDataService.migrateLegacyData();
+
+    // Subscribe to all data events
+    const unsubscribeTransactions = eventBus.on('TRANSACTIONS_UPDATED', () => {
+      setDataRefreshTrigger(prev => prev + 1);
+    });
+
+    const unsubscribeFiles = eventBus.on('FILE_UPLOADED', () => {
+      setDataRefreshTrigger(prev => prev + 1);
+    });
+
+    const unsubscribeDelete = eventBus.on('FILE_DELETED', () => {
+      setDataRefreshTrigger(prev => prev + 1);
+    });
+
+    const unsubscribeAccounts = eventBus.on('ACCOUNT_UPDATED', () => {
+      setDataRefreshTrigger(prev => prev + 1);
+    });
+
+    return () => {
+      unsubscribeTransactions();
+      unsubscribeFiles();
+      unsubscribeDelete();
+      unsubscribeAccounts();
+    };
+  }, []);
 
   const handleImportComplete = (transactions: Transaction[], bankAccount: BankAccount) => {
     console.log(`Imported ${transactions.length} transactions for ${bankAccount.name}`);
     if (onTransactionImport) {
       onTransactionImport(transactions, bankAccount);
     }
-    // Refresh transactions when new data is imported
-    setTransactionRefreshKey(prev => prev + 1);
+    // Event bus will handle component updates automatically
+    eventBus.emit('TRANSACTIONS_UPDATED', { count: transactions.length, accountId: bankAccount.id }, 'DataHub');
   };
 
   const handleFileDeleted = (fileId: string) => {
     console.log(`File deleted: ${fileId}`);
-    // Refresh transactions when a file is deleted
-    setTransactionRefreshKey(prev => prev + 1);
+    // Event bus will handle component updates automatically
+    eventBus.emit('FILE_DELETED', { fileId }, 'DataHub');
   };
 
   const tabs = [

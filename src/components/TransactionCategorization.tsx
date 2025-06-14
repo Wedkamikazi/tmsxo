@@ -83,7 +83,35 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
 
   useEffect(() => {
     loadData();
+    checkQwenStatus();
   }, [loadData, refreshTrigger]);
+
+  // Check Qwen 2.5:32B status
+  const checkQwenStatus = useCallback(async () => {
+    try {
+      const status = mlCategorizationService.getModelStatus();
+      const qwenStats = mlCategorizationService.getQwenPerformanceStats();
+
+      setQwenStatus({
+        available: status.isAvailable,
+        modelLoaded: status.modelLoaded,
+        loading: false
+      });
+
+      console.log('Qwen 2.5:32B Status:', {
+        available: status.isAvailable,
+        modelLoaded: status.modelLoaded,
+        performance: qwenStats
+      });
+    } catch (error) {
+      console.error('Failed to check Qwen status:', error);
+      setQwenStatus({
+        available: false,
+        modelLoaded: false,
+        loading: false
+      });
+    }
+  }, []);
 
   // Get categorization data for a transaction
   const getTransactionCategorization = useCallback((transactionId: string): TransactionCategorizationData | undefined => {

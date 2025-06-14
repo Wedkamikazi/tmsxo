@@ -65,7 +65,7 @@ class BankBalanceService {
     const account = bankAccountService.getAccountById(accountId);
     if (!account) return [];
 
-    const transactions = transactionStorageService.getTransactionsByAccount(accountId);
+    const transactions = unifiedDataService.getTransactionsByAccount(accountId);
     if (transactions.length === 0) return [];
 
     // Group transactions by date (using post date)

@@ -265,8 +265,9 @@
 /* Additional Professional Styling */
 .tab-button:focus {
   outline: none;
-  border-color: #9ca3af;
-  box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #9ca3af !important;
+  box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  background: #ffffff !important;
 }
 
 .tab-button:active {

@@ -105,6 +105,10 @@ class UnifiedDataService {
     
     localStorage.setItem(this.FILES_KEY, JSON.stringify(files));
     this.updateMetadata();
+    
+    // Emit event for UI updates
+    eventBus.emit('FILE_UPLOADED', { fileId: newFile.id, fileName: newFile.fileName }, 'UnifiedDataService');
+    
     return newFile;
   }
 

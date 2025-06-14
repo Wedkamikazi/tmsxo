@@ -49,48 +49,70 @@
 .tab-button {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-lg);
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
   background: white;
-  border: 2px solid var(--color-neutral-200);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-neutral-200);
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
   font-family: inherit;
   width: 100%;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  position: relative;
+  overflow: hidden;
 }
 
 .tab-button:hover {
   border-color: var(--color-primary);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.15), 0 2px 4px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
 }
 
 .tab-button.active {
   border-color: var(--color-primary);
-  background: var(--color-primary-light);
-  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.tab-button.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary) 0%, #5AC8FA 100%);
+  border-radius: 16px 16px 0 0;
 }
 
 .tab-icon {
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-neutral-100);
-  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
   color: var(--color-neutral-600);
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 20px;
 }
 
-.tab-button:hover .tab-icon,
+.tab-button:hover .tab-icon {
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, #e6f3ff 100%);
+  color: var(--color-primary);
+  transform: scale(1.05);
+}
+
 .tab-button.active .tab-icon {
-  background: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary) 0%, #5AC8FA 100%);
   color: white;
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
 }
 
 .tab-content {

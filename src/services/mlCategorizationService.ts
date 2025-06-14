@@ -412,43 +412,83 @@ class MLCategorizationService {
     }
   }
 
-  // Generate categorization prompt for the Ollama model (fallback)
+  // Generate enhanced categorization prompt for Qwen 3:32B
   private generateCategorizationPrompt(
-    transaction: Transaction, 
+    transaction: Transaction,
     categories: TransactionCategory[]
   ): string {
     const amount = transaction.debitAmount ? `-${transaction.debitAmount}` : `+${transaction.creditAmount}`;
-    const categoryList = categories.map(cat => 
+    const categoryList = categories.map(cat =>
       `${cat.id}: ${cat.name} - ${cat.description} (keywords: ${cat.keywords?.join(', ') || 'none'})`
     ).join('\n');
 
-    return `You are a financial transaction categorization expert. Analyze the following transaction and categorize it.
+    // Get historical context for better categorization
+    const historicalContext = this.getHistoricalContext(transaction);
 
-Transaction Details:
-- Description: "${transaction.description}"
-- Amount: ${amount}
-- Date: ${transaction.date}
-- Reference: ${transaction.reference || 'N/A'}
+    return `You are an expert financial transaction categorization AI with deep knowledge of treasury management, accounting principles, and business operations.
 
-Available Categories:
+TRANSACTION TO CATEGORIZE:
+Description: "${transaction.description}"
+Amount: ${amount}
+Date: ${transaction.date}
+Reference: ${transaction.reference || 'N/A'}
+Balance After: ${transaction.balance}
+${transaction.postDate ? `Post Date: ${transaction.postDate}` : ''}
+${transaction.time ? `Time: ${transaction.time}` : ''}
+
+AVAILABLE CATEGORIES:
 ${categoryList}
 
-Instructions:
-1. Analyze the transaction description, amount, and context
-2. Select the most appropriate category ID from the list above
-3. Provide a confidence score between 0.0 and 1.0
-4. Explain your reasoning in 1-2 sentences
-5. Suggest up to 2 alternative categories if applicable
+HISTORICAL CONTEXT:
+${historicalContext}
 
-Respond in the following JSON format only:
+CATEGORIZATION GUIDELINES:
+1. Prioritize exact keyword matches in transaction description
+2. Consider transaction amount patterns (recurring vs one-time)
+3. Analyze temporal patterns (payroll dates, monthly bills, etc.)
+4. Apply treasury management best practices
+5. Consider regulatory compliance requirements
+6. Factor in business context and industry standards
+
+CONFIDENCE SCORING:
+- 0.9-1.0: Exact keyword match + amount pattern + temporal consistency
+- 0.8-0.89: Strong keyword match + either amount or temporal pattern
+- 0.7-0.79: Good keyword match or strong contextual evidence
+- 0.6-0.69: Moderate match with some uncertainty
+- Below 0.6: Low confidence, requires manual review
+
+RESPONSE FORMAT (JSON only, no additional text):
 {
   "categoryId": "selected_category_id",
   "confidence": 0.85,
-  "reasoning": "Brief explanation of why this category was chosen",
+  "reasoning": "Detailed explanation including keyword matches, patterns, and business context",
   "alternativeCategories": [
     {"categoryId": "alt_category_id", "confidence": 0.65}
-  ]
+  ],
+  "riskFactors": ["any potential misclassification risks"],
+  "suggestedKeywords": ["additional keywords to improve future categorization"]
 }`;
+  }
+
+  // Get historical context for better categorization
+  private getHistoricalContext(transaction: Transaction): string {
+    // This would analyze similar transactions, patterns, etc.
+    // For now, provide basic context
+    const amount = transaction.debitAmount || transaction.creditAmount || 0;
+    const isLargeAmount = amount > 10000;
+    const isSmallAmount = amount < 100;
+    const isRoundAmount = amount % 100 === 0;
+
+    const context = [];
+    if (isLargeAmount) context.push("Large transaction - likely significant business expense or revenue");
+    if (isSmallAmount) context.push("Small transaction - likely office supplies, fees, or miscellaneous");
+    if (isRoundAmount) context.push("Round amount - likely planned payment or transfer");
+
+    const dayOfWeek = new Date(transaction.date).getDay();
+    if (dayOfWeek === 1) context.push("Monday transaction - often weekly recurring payments");
+    if (dayOfWeek === 5) context.push("Friday transaction - often payroll or end-of-week settlements");
+
+    return context.length > 0 ? context.join('; ') : "No specific patterns identified";
   }
 
   // Call Ollama API for categorization

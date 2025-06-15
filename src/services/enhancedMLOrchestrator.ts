@@ -5,6 +5,7 @@ import { localOllamaIntegration } from './localOllamaIntegration';
 // import { performanceManager } from './performanceManager';
 import { localStorageManager } from './localStorageManager';
 import { categorizationService } from './categorizationService';
+import { isDebugMode } from '../utils/debugMode';
 
 // ENHANCED ML ORCHESTRATOR
 // Intelligently combines TensorFlow.js models with Ollama for optimal performance

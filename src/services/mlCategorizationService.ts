@@ -289,13 +289,26 @@ class MLCategorizationService {
     // PATTERN RECOGNITION MODEL
     this.patternModel = tf.sequential({
       layers: [
-        tf.layers.dense({ units: 128, activation: 'relu', inputShape: [20] }),
+        tf.layers.dense({ 
+          units: 96, 
+          activation: 'relu', 
+          inputShape: [20],
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.batchNormalization(),
         tf.layers.dropout({ rate: 0.3 }),
-        tf.layers.dense({ units: 64, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 48, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.batchNormalization(),
         tf.layers.dropout({ rate: 0.2 }),
-        tf.layers.dense({ units: 32, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 24, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.dense({ units: 5, activation: 'softmax' }) // Pattern types
       ]
     });

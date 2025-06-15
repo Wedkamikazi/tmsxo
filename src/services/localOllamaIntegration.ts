@@ -576,5 +576,25 @@ Provide detailed analysis in JSON format.`;
   }
 }
 
-// Export singleton instance
-export const localOllamaIntegration = new LocalOllamaIntegration(); 
+// Check for debug mode
+const isDebugMode = typeof window !== 'undefined' && (
+  window.location.search.includes('debug') || 
+  localStorage.getItem('debugMode') === 'true'
+);
+
+// Export singleton instance (skip in debug mode)
+let localOllamaIntegration: LocalOllamaIntegration;
+
+if (isDebugMode) {
+  console.log('🚨 LocalOllamaIntegration: Debug mode detected - creating mock instance');
+  localOllamaIntegration = {
+    ensureInitialized: () => Promise.resolve(),
+    analyzeTransaction: () => Promise.resolve({ category: 'Other', confidence: 0.5, reasoning: 'Debug mode' }),
+    generateInsights: () => Promise.resolve([]),
+    dispose: () => Promise.resolve()
+  } as any;
+} else {
+  localOllamaIntegration = new LocalOllamaIntegration();
+}
+
+export { localOllamaIntegration }; 

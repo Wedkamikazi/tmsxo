@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { BankAccount } from '../types';
 import { unifiedDataService } from '../services/unifiedDataService';
-import { balanceManagementService } from '../services/balanceManagementService';
+import { unifiedBalanceService } from '../services/unifiedBalanceService';
 import './BankAccountManager.css';
 
 interface BankAccountManagerProps {

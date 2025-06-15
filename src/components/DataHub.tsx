@@ -90,13 +90,20 @@ export const DataHub: React.FC = () => {
 
   useEffect(() => {
     // Skip service operations if in debug mode or services not loaded
-    if (isDebugMode || !servicesLoaded || (!unifiedDataService && !initializationSkipped)) {
+    if (isDebugMode || !servicesLoaded) {
       return;
     }
 
-    // Skip intensive operations if we used cached state
+    // CRITICAL: Skip intensive operations completely if we used cached state
     if (initializationSkipped) {
-      console.log('⚡ PERFORMANCE: Skipping integrity checks - using cached initialization');
+      console.log('🚀 CACHED MODE: Skipping all startup checks - instant refresh experience');
+      console.log('📂 Active tab preserved:', activeTab);
+      return;
+    }
+
+    // Only perform intensive operations if services were actually loaded fresh
+    if (!unifiedDataService) {
+      console.log('⏳ Services not ready yet for integrity checks');
       return;
     }
 

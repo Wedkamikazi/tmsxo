@@ -396,7 +396,7 @@ class EnhancedCategorizationService {
     
     this.saveLearningHistory();
     
-    eventBus.emit('CATEGORIZATION_IMPROVED', {
+    eventBus.emit('CATEGORIES_UPDATED', {
       transactionId,
       correctCategoryId,
       method: 'user_feedback'

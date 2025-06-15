@@ -185,8 +185,23 @@ export const MLIntegrationDashboard: React.FC = () => {
         categorizationTest,
         performanceStats
       ] = await Promise.all([
-        mlCategorizationService.testCategorization(),
-        mlCategorizationService.getAdvancedPerformanceStats()
+        // Test categorization with sample transaction
+        (async () => {
+          const testTransactions = unifiedDataService.getAllTransactions().slice(0, 5);
+          if (testTransactions.length === 0) return { status: 'No test data available' };
+          
+          const results = await Promise.all(
+            testTransactions.map(t => unifiedCategorizationService.categorizeTransaction(t))
+          );
+          
+          return {
+            status: 'success',
+            results: results.length,
+            averageConfidence: results.reduce((sum, r) => sum + r.confidence, 0) / results.length
+          };
+        })(),
+        // Get performance stats from unified service
+        Promise.resolve(unifiedCategorizationService.getPerformanceMetrics())
       ]);
 
       setMlTestResults({

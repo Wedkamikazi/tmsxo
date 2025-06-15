@@ -572,6 +572,33 @@ class ServiceOrchestrator {
     });
   }
 
+  // INITIALIZE REMAINING SERVICES IN BACKGROUND AFTER FAST MODE STARTUP
+  private async initializeRemainingServicesInBackground(remainingTiers: string[][]): Promise<void> {
+    console.log('🔄 Initializing Remaining Services in Background...');
+    
+    try {
+      for (let tierIndex = 0; tierIndex < remainingTiers.length; tierIndex++) {
+        const tier = remainingTiers[tierIndex];
+        console.log(`🔄 Background Tier ${tierIndex + 3}: [${tier.join(', ')}]`);
+        
+        // Initialize all services in current tier in parallel
+        const tierPromises = tier.map(async (serviceName) => {
+          try {
+            await this.initializeService(serviceName);
+          } catch (error) {
+            console.warn(`⚠️ Background service ${serviceName} failed:`, error);
+          }
+        });
+        
+        await Promise.allSettled(tierPromises);
+      }
+      
+      console.log('✅ Background Services Initialization Complete');
+    } catch (error) {
+      console.warn('⚠️ Background Services Initialization Failed:', error);
+    }
+  }
+
   // SETUP GLOBAL HANDLERS
   private setupGlobalHandlers(): void {
     // Handle page unload

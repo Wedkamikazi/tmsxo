@@ -20,22 +20,32 @@ const OllamaControlWidget: React.FC = () => {
   // Check Ollama status periodically
   useEffect(() => {
     const checkStatus = async () => {
-      const result = await checkOllamaStatus();
-      
-      if (result.isRunning && result.models) {
-        const qwenModel = result.models.find((m: any) => m.name.includes('qwen'));
-        
-        setStatus({
-          isRunning: true,
-          isLoading: false,
-          modelName: qwenModel?.name || 'Unknown Model',
-          memoryUsage: qwenModel?.size ? `${Math.round(qwenModel.size / 1024 / 1024 / 1024 * 100) / 100} GB` : undefined
+      try {
+        const response = await fetch('http://localhost:11434/api/tags', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
         });
-      } else {
+        
+        if (response.ok) {
+          const data = await response.json();
+          const qwenModel = data.models?.find((m: any) => m.name.includes('qwen'));
+          
+          setStatus({
+            isRunning: true,
+            isLoading: false,
+            modelName: qwenModel?.name || 'Unknown Model',
+            memoryUsage: qwenModel?.size ? `${Math.round(qwenModel.size / 1024 / 1024 / 1024 * 100) / 100} GB` : undefined
+          });
+        } else {
+          setStatus({
+            isRunning: false,
+            isLoading: false
+          });
+        }
+      } catch (error) {
         setStatus({
           isRunning: false,
-          isLoading: false,
-          error: result.error
+          isLoading: false
         });
       }
     };

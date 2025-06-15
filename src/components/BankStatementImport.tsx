@@ -3,7 +3,7 @@ import { FileUpload } from './FileUpload';
 import { ImportSummary, BankAccount, Transaction } from '../types';
 import { csvProcessingService } from '../services/csvProcessingService';
 import { unifiedDataService, type StoredTransaction } from '../services/unifiedDataService';
-import { BalanceValidationResult } from '../services/balanceManagementService';
+import { BalanceValidationResult } from '../services/unifiedBalanceService';
 import { BalanceValidationDialog } from './BalanceValidationDialog';
 import './BankStatementImport.css';
 

@@ -1,5 +1,6 @@
 import React from 'react';
-import { mlCategorizationService } from '../services/mlCategorizationService';
+import { unifiedCategorizationService } from '../services/unifiedCategorizationService';
+import { TensorFlowMethod } from '../services/categorization/tensorFlowMethod';
 import './QwenIntegrationStatus.css';
 
 const QwenIntegrationStatus: React.FC = () => {

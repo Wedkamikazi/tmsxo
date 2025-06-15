@@ -1696,14 +1696,14 @@ class SystemIntegrityService {
     const checkMLService = async (serviceName: string, serviceModule: any) => {
       try {
         if (!serviceModule || typeof serviceModule.getServiceStatus !== 'function') {
-          return { status: 'failed', details: { error: 'Service not available' } };
+          return { status: 'failed' as const, details: { error: 'Service not available' } };
         }
         
         const status = serviceModule.getServiceStatus();
         const isHealthy = status.isInitialized && status.modelLoaded;
         
         return {
-          status: isHealthy ? 'healthy' : 'degraded',
+          status: (isHealthy ? 'healthy' : 'degraded') as 'healthy' | 'degraded' | 'failed',
           details: {
             initialized: status.isInitialized,
             modelLoaded: status.modelLoaded,
@@ -1713,7 +1713,7 @@ class SystemIntegrityService {
         };
       } catch (error) {
         this.logServiceError('SystemIntegrityService', `getMLServicesHealth-${serviceName}`, error instanceof Error ? error : new Error(String(error)), 'medium');
-        return { status: 'failed', details: { error: 'Health check failed' } };
+        return { status: 'failed' as const, details: { error: 'Health check failed' } };
       }
     };
 

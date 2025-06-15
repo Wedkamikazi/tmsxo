@@ -8,8 +8,23 @@ import SimpleDataCleanup from './SimpleDataCleanup';
 import { ErrorBoundary } from './ErrorBoundary';
 import SystemHealthMonitor from './SystemHealthMonitor';
 import { Transaction, BankAccount } from '../types';
-import { eventBus } from '../services/eventBus';
-import { unifiedDataService } from '../services/unifiedDataService';
+// Conditional imports based on debug mode
+let eventBus: any = null;
+let unifiedDataService: any = null;
+
+// Only import services if not in debug mode
+const isDebugMode = window.location.search.includes('debug') || localStorage.getItem('debugMode') === 'true';
+if (!isDebugMode) {
+  try {
+    const eventBusModule = require('../services/eventBus');
+    const unifiedDataServiceModule = require('../services/unifiedDataService');
+    eventBus = eventBusModule.eventBus;
+    unifiedDataService = unifiedDataServiceModule.unifiedDataService;
+  } catch (error) {
+    console.warn('Services not available in debug mode:', error);
+  }
+}
+
 import './DataHub.css';
 
 export const DataHub: React.FC = () => {
@@ -17,6 +32,12 @@ export const DataHub: React.FC = () => {
   const [dataRefreshTrigger, setDataRefreshTrigger] = useState(0);
 
   useEffect(() => {
+    // Skip service operations in debug mode
+    if (isDebugMode || !unifiedDataService || !eventBus) {
+      console.log('🚨 DataHub: Running in debug mode - skipping service operations');
+      return;
+    }
+
     // Perform startup integrity check
     const integrityCheck = unifiedDataService.validateDataIntegrity();
     if (!integrityCheck.isValid) {
@@ -83,6 +104,87 @@ export const DataHub: React.FC = () => {
     // All data operations are now handled by unified service with event bus
     // No additional handling needed here - event bus will trigger UI updates
   };
+
+  // Debug mode notification
+  if (isDebugMode) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      }}>
+        <div style={{
+          background: 'white',
+          borderRadius: '16px',
+          padding: '48px',
+          maxWidth: '600px',
+          textAlign: 'center',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)'
+        }}>
+          <div style={{ fontSize: '64px', marginBottom: '24px' }}>🎯</div>
+          <h1 style={{
+            color: '#1a1a1a',
+            margin: '0 0 16px 0',
+            fontSize: '28px',
+            fontWeight: 600
+          }}>Treasury Management System</h1>
+          <h2 style={{
+            color: '#666',
+            margin: '0 0 24px 0',
+            fontSize: '18px',
+            fontWeight: 400
+          }}>Debug Mode Active</h2>
+          <p style={{
+            color: '#666',
+            margin: '0 0 32px 0',
+            lineHeight: 1.6,
+            fontSize: '16px'
+          }}>
+            The application is running in debug mode with all backend services disabled.
+            This allows you to test the user interface without service initialization delays.
+          </p>
+          <div style={{
+            background: '#f8f9fa',
+            borderRadius: '8px',
+            padding: '20px',
+            marginBottom: '24px',
+            textAlign: 'left'
+          }}>
+            <h3 style={{ margin: '0 0 12px 0', fontSize: '16px', color: '#333' }}>Debug Mode Features:</h3>
+            <ul style={{ margin: 0, paddingLeft: '20px', color: '#666' }}>
+              <li>UI components are fully functional</li>
+              <li>All backend services are bypassed</li>
+              <li>No data persistence or processing</li>
+              <li>Fast loading with no service delays</li>
+              <li>Safe for testing interface components</li>
+            </ul>
+          </div>
+          <button 
+            onClick={() => {
+              localStorage.removeItem('debugMode');
+              window.location.reload();
+            }}
+            style={{
+              background: '#007AFF',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            Exit Debug Mode
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const tabs = [
     {
@@ -199,7 +301,7 @@ export const DataHub: React.FC = () => {
           <polyline points="10,9 9,9 8,9" />
         </svg>
       ),
-      description: 'Generate and export financial reports'
+      description: 'Generate comprehensive financial reports and analytics'
     }
   ];
 

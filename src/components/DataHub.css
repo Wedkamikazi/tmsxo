@@ -456,12 +456,48 @@
 }
 
 @media (max-width: 768px) {
-  .datahub-title {
-    font-size: 2rem;
+  .datahub-header {
+    padding: 16px 0;
   }
 
-  .datahub-description {
-    font-size: 1rem;
+  .header-content {
+    padding: 0 16px;
+  }
+
+  .app-logo {
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .app-title {
+    font-size: 1.25rem;
+  }
+
+  .app-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .header-right {
+    gap: 12px;
+  }
+
+  .system-status {
+    padding: 6px 10px;
+    font-size: 0.7rem;
+  }
+
+  .header-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .header-btn svg {
+    width: 16px;
+    height: 16px;
   }
 
   .tab-list {

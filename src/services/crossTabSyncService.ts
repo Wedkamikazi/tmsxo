@@ -539,7 +539,7 @@ class CrossTabSyncService {
 
   // HANDLE CONFLICT RESOLUTION
   private handleConflictResolution(message: SyncMessage): void {
-    const { conflictId, resolution, winningData } = message.payload || {};
+    const { conflictId, resolution } = message.payload || {};
     
     const conflict = this.pendingConflicts.get(conflictId);
     if (conflict && !conflict.resolved) {

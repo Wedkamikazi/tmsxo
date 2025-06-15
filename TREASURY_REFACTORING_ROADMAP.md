@@ -659,7 +659,7 @@ Create a comprehensive performance monitoring system with real-time metrics and 
 
 #### **Dependencies**: Task 2.1, Task 3.1
 
-#### **Estimated Effort**: 28-36 hours
+#### **Estimated Effort (Task 3.3)**: 28-36 hours
 
 ---
 
@@ -721,7 +721,7 @@ Build comprehensive payroll data import and analysis functionality.
 
 #### **Dependencies**: Phase 2 complete
 
-#### **Estimated Effort**: 40-50 hours
+#### **Estimated Effort (Task 4.1)**: 40-50 hours
 
 ---
 
@@ -777,7 +777,7 @@ Implement investment portfolio tracking and performance analysis.
 
 #### **Dependencies**: Phase 2 complete
 
-#### **Estimated Effort**: 35-45 hours
+#### **Estimated Effort (Task 4.2)**: 35-45 hours
 
 ---
 
@@ -836,7 +836,7 @@ Create comprehensive financial reporting with PDF export capabilities.
 
 #### **Dependencies**: Phase 2 complete, Task 4.1, Task 4.2
 
-#### **Estimated Effort**: 45-55 hours
+#### **Estimated Effort (Task 4.3)**: 45-55 hours
 
 ---
 

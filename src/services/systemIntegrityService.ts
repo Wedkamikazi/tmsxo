@@ -1,5 +1,5 @@
 import { eventBus, DataEvent } from './eventBus';
-import { localStorageManager, StorageStats } from './localStorageManager';
+import { localStorageManager } from './localStorageManager';
 import { unifiedDataService, StoredTransaction } from './unifiedDataService';
 import { performanceManager } from './performanceManager';
 import { crossTabSyncService } from './crossTabSyncService';

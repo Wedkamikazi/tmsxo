@@ -148,7 +148,7 @@ export class TensorFlowMethod implements CategorizationStrategy {
         method: 'tensorflow',
         reasoning: enhancedResult.reasoning,
         suggestions: this.generateSuggestions(enhancedResult),
-        alternatives: enhancedResult.alternativeCategories.map(alt => ({
+        alternatives: enhancedResult.alternativeCategories.map((alt: any) => ({
           categoryId: alt.categoryId,
           categoryName: this.getCategoryName(alt.categoryId),
           confidence: alt.confidence

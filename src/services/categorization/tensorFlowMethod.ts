@@ -258,42 +258,42 @@ export class TensorFlowMethod implements CategorizationStrategy {
   }
 
   private registerCleanup(): void {
-    // Register models with cleanup manager using 'tensorflow-model' type
-    if (this.categorizationModel) {
-      cleanupManager.registerResource(
-        'tensorflow-categorization-model', 
-        'tensorflow-model', 
-        'high',
-        'TensorFlowMethod',
-        () => this.categorizationModel?.dispose()
-      );
-    }
-    if (this.sentimentModel) {
-      cleanupManager.registerResource(
-        'tensorflow-sentiment-model', 
-        'tensorflow-model', 
-        'medium',
-        'TensorFlowMethod',
-        () => this.sentimentModel?.dispose()
-      );
-    }
-    if (this.anomalyModel) {
-      cleanupManager.registerResource(
-        'tensorflow-anomaly-model', 
-        'tensorflow-model', 
-        'medium',
-        'TensorFlowMethod',
-        () => this.anomalyModel?.dispose()
-      );
-    }
-    if (this.patternModel) {
-      cleanupManager.registerResource(
-        'tensorflow-pattern-model', 
-        'tensorflow-model', 
-        'low',
-        'TensorFlowMethod',
-        () => this.patternModel?.dispose()
-      );
+    // Register models with cleanup manager - simplify for now, will be enhanced later
+    try {
+      if (this.categorizationModel) {
+        cleanupManager.registerResource(
+          'tensorflow-categorization-model', 
+          'tensorflow-model', 
+          'high',
+          () => this.categorizationModel?.dispose()
+        );
+      }
+      if (this.sentimentModel) {
+        cleanupManager.registerResource(
+          'tensorflow-sentiment-model', 
+          'tensorflow-model', 
+          'medium',
+          () => this.sentimentModel?.dispose()
+        );
+      }
+      if (this.anomalyModel) {
+        cleanupManager.registerResource(
+          'tensorflow-anomaly-model', 
+          'tensorflow-model', 
+          'medium',
+          () => this.anomalyModel?.dispose()
+        );
+      }
+      if (this.patternModel) {
+        cleanupManager.registerResource(
+          'tensorflow-pattern-model', 
+          'tensorflow-model', 
+          'low',
+          () => this.patternModel?.dispose()
+        );
+      }
+    } catch (error) {
+      console.warn('Failed to register cleanup for TensorFlow models:', error);
     }
   }
 

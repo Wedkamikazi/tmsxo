@@ -221,7 +221,7 @@ export class RuleBasedMethod implements CategorizationStrategy {
   }
 
   private createFallbackResult(
-    transaction: Transaction, 
+    _transaction: Transaction, 
     processingTime: number, 
     error?: string
   ): UnifiedCategorizationResult {

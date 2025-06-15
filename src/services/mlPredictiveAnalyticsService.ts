@@ -183,16 +183,25 @@ class MLPredictiveAnalyticsService {
       name: 'SeasonalityDetection',
       layers: [
         tf.layers.dense({
-          units: 256,
+          units: 128,
           activation: 'relu',
-          inputShape: [this.modelConfig.seasonalityMaxPeriod]
+          inputShape: [this.modelConfig.seasonalityMaxPeriod],
+          kernelInitializer: 'glorotUniform'
         }),
         tf.layers.batchNormalization(),
         tf.layers.dropout({ rate: 0.4 }),
-        tf.layers.dense({ units: 128, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 64, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.batchNormalization(),
         tf.layers.dropout({ rate: 0.3 }),
-        tf.layers.dense({ units: 64, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 32, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.dense({ units: 12, activation: 'softmax' }) // Monthly seasonality patterns
       ]
     });

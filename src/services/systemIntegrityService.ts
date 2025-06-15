@@ -764,7 +764,13 @@ class SystemIntegrityService {
     totalErrors: number;
     errorsByService: Record<string, number>;
     errorsBySeverity: Record<string, number>;
-    recentErrors: typeof this.errorLog;
+    recentErrors: Array<{
+      timestamp: string;
+      component: string;
+      error: string;
+      severity: 'critical' | 'high' | 'medium' | 'low';
+      resolved: boolean;
+    }>;
     errorRate: number;
     topErrorServices: Array<{ service: string; count: number }>;
   } {

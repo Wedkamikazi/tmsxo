@@ -135,14 +135,13 @@ class ServiceOrchestrator {
       retryAttempts: 2
     });
 
-    // ML Services (Tier 4) - These need explicit initialization
+    // ML Services (Background initialization) - Initialize after main app loads
     this.registerService({
       name: 'mlCategorizationService',
       service: mlCategorizationService,
       dependencies: ['memoryManagementService', 'unifiedDataService'],
-      initMethod: 'ensureInitialized',
       healthCheckMethod: 'getModelStatus',
-      timeout: 30000,
+      timeout: 5000, // Shorter timeout - just for basic service setup
       critical: false,
       retryAttempts: 1
     });
@@ -151,9 +150,8 @@ class ServiceOrchestrator {
       name: 'mlNaturalLanguageService',
       service: mlNaturalLanguageService,
       dependencies: ['memoryManagementService', 'unifiedDataService'],
-      initMethod: 'ensureInitialized',
       healthCheckMethod: 'getServiceStatus',
-      timeout: 30000,
+      timeout: 5000, // Shorter timeout - just for basic service setup
       critical: false,
       retryAttempts: 1
     });
@@ -162,9 +160,8 @@ class ServiceOrchestrator {
       name: 'mlPredictiveAnalyticsService',
       service: mlPredictiveAnalyticsService,
       dependencies: ['memoryManagementService', 'unifiedDataService'],
-      initMethod: 'ensureInitialized',
       healthCheckMethod: 'getServiceStatus',
-      timeout: 45000,
+      timeout: 5000, // Shorter timeout - just for basic service setup
       critical: false,
       retryAttempts: 1
     });

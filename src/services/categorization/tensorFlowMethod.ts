@@ -258,11 +258,11 @@ export class TensorFlowMethod implements CategorizationStrategy {
   }
 
   private registerCleanup(): void {
-    // Register models with cleanup manager
+    // Register models with cleanup manager using 'tensorflow-model' type
     if (this.categorizationModel) {
       cleanupManager.registerResource(
         'tensorflow-categorization-model', 
-        this.categorizationModel, 
+        'tensorflow-model', 
         'high',
         'TensorFlowMethod',
         () => this.categorizationModel?.dispose()
@@ -271,7 +271,7 @@ export class TensorFlowMethod implements CategorizationStrategy {
     if (this.sentimentModel) {
       cleanupManager.registerResource(
         'tensorflow-sentiment-model', 
-        this.sentimentModel, 
+        'tensorflow-model', 
         'medium',
         'TensorFlowMethod',
         () => this.sentimentModel?.dispose()
@@ -280,7 +280,7 @@ export class TensorFlowMethod implements CategorizationStrategy {
     if (this.anomalyModel) {
       cleanupManager.registerResource(
         'tensorflow-anomaly-model', 
-        this.anomalyModel, 
+        'tensorflow-model', 
         'medium',
         'TensorFlowMethod',
         () => this.anomalyModel?.dispose()
@@ -289,7 +289,7 @@ export class TensorFlowMethod implements CategorizationStrategy {
     if (this.patternModel) {
       cleanupManager.registerResource(
         'tensorflow-pattern-model', 
-        this.patternModel, 
+        'tensorflow-model', 
         'low',
         'TensorFlowMethod',
         () => this.patternModel?.dispose()

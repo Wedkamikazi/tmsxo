@@ -320,6 +320,107 @@ export class MLEnhancedMethod implements CategorizationStrategy {
     }
   }
 
+  // FALLBACK STRATEGY METHODS
+  private async tryFallbackStrategy(transaction: Transaction): Promise<UnifiedCategorizationResult> {
+    try {
+      switch (this.strategy.fallback) {
+        case 'rule-based':
+          return await this.categorizeWithRules(transaction);
+        case 'manual':
+          return await this.categorizeWithManual(transaction);
+        default:
+          return this.createDefaultResult(transaction, 0, 'fallback_to_default');
+      }
+    } catch (error) {
+      this.logError('tryFallbackStrategy', error, 'medium');
+      return this.createDefaultResult(transaction, 0, String(error));
+    }
+  }
+
+  private async categorizeWithRules(transaction: Transaction): Promise<UnifiedCategorizationResult> {
+    // Import rule-based method to avoid circular dependencies
+    const { RuleBasedMethod } = await import('./ruleBasedMethod');
+    const ruleBasedMethod = new RuleBasedMethod();
+    
+    try {
+      const result = await ruleBasedMethod.categorize(transaction);
+      
+      // Update performance metrics
+      this.performance.methodBreakdown.ruleBased++;
+      this.performance.enhancedMetrics.fallbackRate = 
+        (this.performance.enhancedMetrics.fallbackRate * this.performance.totalCategorizations + 1) / 
+        (this.performance.totalCategorizations + 1);
+      
+      // Mark as fallback method
+      result.metadata.fallbackReason = 'low_ml_confidence';
+      result.metadata.strategyUsed = 'rule-based-fallback';
+      
+      return result;
+    } finally {
+      ruleBasedMethod.dispose();
+    }
+  }
+
+  private async categorizeWithManual(transaction: Transaction): Promise<UnifiedCategorizationResult> {
+    // Check if manual categorization exists
+    const { categorizationService } = await import('../categorizationService');
+    const existingCategorization = categorizationService.getCategorizationByTransactionId(transaction.id);
+    
+    if (existingCategorization) {
+      const category = this.categoryMappings.get(existingCategorization.categoryId);
+      
+      this.performance.methodBreakdown.manual++;
+      
+      return {
+        categoryId: existingCategorization.categoryId,
+        categoryName: category?.name || existingCategorization.categoryId,
+        confidence: 1.0, // Manual categorization is always high confidence
+        method: 'manual',
+        reasoning: existingCategorization.reasoning || 'Manual categorization',
+        suggestions: [],
+        alternatives: [],
+        processingTime: 0,
+        metadata: {
+          anomalyDetected: false,
+          fallbackReason: 'low_ml_confidence',
+          strategyUsed: 'manual-fallback'
+        }
+      };
+    }
+    
+    throw new Error('No manual categorization available');
+  }
+
+  private createDefaultResult(
+    _transaction: Transaction,
+    processingTime: number,
+    fallbackReason?: string
+  ): UnifiedCategorizationResult {
+    this.performance.methodBreakdown.default++;
+    
+    return {
+      categoryId: 'cat_expense', // Default fallback category
+      categoryName: 'Expense',
+      confidence: 0.3,
+      method: 'fallback',
+      reasoning: 'Default categorization due to processing failure or low confidence',
+      suggestions: ['Manual review recommended', 'Consider adding categorization rules'],
+      alternatives: [],
+      processingTime,
+      metadata: {
+        anomalyDetected: false,
+        fallbackReason: fallbackReason || 'default_categorization',
+        strategyUsed: 'default-fallback'
+      }
+    };
+  }
+
+  // STRATEGY CONFIGURATION
+  updateStrategy(newStrategy: Partial<MLEnhancedStrategy>): void {
+    this.strategy = { ...this.strategy, ...newStrategy };
+    console.log('🔧 ML-Enhanced strategy updated:', this.strategy);
+  }
+
   // FEEDBACK AND IMPROVEMENT
   async improveFromFeedback(transactionId: string, correctCategoryId: string): Promise<void> {
     const learningPoint = this.learningHistory.find(l => l.transactionId === transactionId);

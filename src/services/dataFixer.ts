@@ -50,11 +50,16 @@ class DataFixerService {
       if (fixedCount > 0) {
         console.log(`🔧 Data Fixer: Updating ${fixedCount} transactions with fixed postDateTime values`);
         
-        // Clear existing transactions and add fixed ones
-        unifiedDataService.clearAllTransactions();
-        unifiedDataService.addTransactions(fixedTransactions);
+        // We need to update transactions through localStorage directly since there's no bulk update method
+        try {
+          const localStorage = window.localStorage;
+          const transactionsKey = 'transactions';
+          localStorage.setItem(transactionsKey, JSON.stringify(fixedTransactions));
+          console.log(`✅ Data Fixer: Successfully fixed ${fixedCount} out of ${totalCount} transactions`);
+        } catch (error) {
+          console.error('❌ Data Fixer: Error updating transactions:', error);
+        }
         
-        console.log(`✅ Data Fixer: Successfully fixed ${fixedCount} out of ${totalCount} transactions`);
       } else {
         console.log(`✅ Data Fixer: All ${totalCount} transactions have valid postDateTime values`);
       }

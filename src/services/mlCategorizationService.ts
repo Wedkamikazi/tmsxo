@@ -818,7 +818,7 @@ class MLCategorizationService {
   }
 
   // TRAIN CATEGORIZATION MODEL
-  private trainCategorizationModel = async (trainingData: { inputs: tf.Tensor; labels: tf.Tensor }): Promise<void> => {
+  private async trainCategorizationModel(trainingData: { inputs: tf.Tensor; labels: tf.Tensor }): Promise<void> {
     if (!this.categorizationModel) {
       throw new Error('Categorization model not available');
     }

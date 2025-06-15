@@ -35,43 +35,12 @@ function App(): React.ReactElement {
 
   // INSTANT REFRESH: If we can use cached state, skip SystemInitializer entirely
   if (canUseInstantRefresh) {
-    console.log('🚀 INSTANT REFRESH: Bypassing SystemInitializer completely');
+    console.log('🚀 INSTANT REFRESH: No loading, no delays - direct render like normal web apps');
     return (
       <ErrorBoundary componentName="App">
         <div className="App">
           <ErrorBoundary componentName="DataHub">
-            <React.Suspense fallback={
-              <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
-              }}>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{
-                    width: '24px',
-                    height: '24px',
-                    border: '2px solid rgba(255,255,255,0.3)',
-                    borderTop: '2px solid white',
-                    borderRadius: '50%',
-                    animation: 'spin 0.8s linear infinite',
-                    margin: '0 auto 8px'
-                  }}></div>
-                  <div style={{ fontSize: '14px', fontWeight: 500, opacity: 0.9 }}>Instant loading...</div>
-                </div>
-                <style>{`
-                  @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                  }
-                `}</style>
-              </div>
-            }>
-              <DataHub />
-            </React.Suspense>
+            <DataHub />
           </ErrorBoundary>
         </div>
       </ErrorBoundary>

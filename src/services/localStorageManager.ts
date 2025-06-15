@@ -471,6 +471,15 @@ class LocalStorageManager {
     });
   }
 
+  // PUBLIC GENERIC STORAGE METHODS
+  getItem<T>(key: string, defaultValue?: T): T | null {
+    return this.getStorageData(key, defaultValue || null);
+  }
+
+  setItem<T>(key: string, data: T): void {
+    this.setStorageData(key, data);
+  }
+
   // PRIVATE HELPER METHODS
   private getStorageData<T>(key: string, defaultValue: T): T {
     try {

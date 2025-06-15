@@ -65,6 +65,9 @@ export const DataHub: React.FC = () => {
         setUnifiedDataService(unifiedDataServiceModule.unifiedDataService);
       });
       
+      // Mark services as initialized to ensure cache persistence
+      markServicesInitialized();
+      
       return () => {
         unregisterGlobalRefresh('DataHub');
       };

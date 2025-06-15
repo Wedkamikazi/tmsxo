@@ -500,4 +500,8 @@ export const setComponentState = (componentName: string, state: any) =>
   stateManager.setComponentState(componentName, state);
 export const getComponentState = <T = any>(componentName: string): T | null => 
   stateManager.getComponentState<T>(componentName);
-export const getGlobalRefreshStats = () => stateManager.getRefreshStats(); 
+export const getGlobalRefreshStats = () => stateManager.getRefreshStats();
+
+// Storage management exports
+export const clearComponentStates = () => stateManager.clearComponentStates();
+export const getStateStorageUsage = () => stateManager.getStorageUsage(); 

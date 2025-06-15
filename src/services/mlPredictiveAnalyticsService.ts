@@ -1,6 +1,7 @@
 import * as tf from '@tensorflow/tfjs';
 
 import { localStorageManager } from './localStorageManager';
+import { systemIntegrityService } from './systemIntegrityService';
 
 // ADVANCED ML PREDICTIVE ANALYTICS SERVICE
 // COMBINES MULTIPLE AI MODELS FOR FINANCIAL FORECASTING

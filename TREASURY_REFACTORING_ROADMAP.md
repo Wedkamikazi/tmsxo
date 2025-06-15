@@ -21,41 +21,10 @@ This roadmap addresses critical architectural issues in the Treasury Management 
 Replace the permanently enabled debug mode with environment-based detection to restore ML functionality.
 
 #### **Technical Specifications**
-```typescript
-// Files to modify:
-- src/utils/debugMode.ts
-- src/services/*/index.ts (all service files with debug checks)
-- src/components/SystemInitializer.tsx
-```
-
-#### **Implementation Details**
-1. **Create Environment Detection**
-   ```typescript
-   // src/utils/debugMode.ts
-   export const DEBUG_MODE_ACTIVE = (() => {
-     if (typeof window === 'undefined') return false;
-     
-     const urlDebug = window.location.search.includes('debug=true');
-     const localStorageDebug = localStorage.getItem('debugMode') === 'true';
-     const envDebug = process.env.NODE_ENV === 'development' && 
-                      process.env.REACT_APP_FORCE_DEBUG === 'true';
-     
-     return urlDebug || localStorageDebug || envDebug;
-   })();
-   ```
-
-2. **Update All Service Debug Checks**
-   - Replace hardcoded `true` with dynamic detection
-   - Ensure mock instances have complete method signatures
-   - Add proper TypeScript typing for mock objects
-
-3. **Add Debug Control Panel**
-   ```typescript
-   // Component for toggling debug mode at runtime
-   interface DebugControlProps {
-     onToggle: (enabled: boolean) => void;
-   }
-   ```
+Files to modify:
+- `src/utils/debugMode.ts`
+- `src/services/*/index.ts` (all service files with debug checks)
+- `src/components/SystemInitializer.tsx`
 
 #### **Acceptance Criteria**
 - [ ] ML services initialize properly when debug mode is OFF
@@ -66,7 +35,6 @@ Replace the permanently enabled debug mode with environment-based detection to r
 - [ ] No console errors during mode switching
 
 #### **Dependencies**: None
-
 #### **Estimated Effort**: 8-12 hours
 
 ---

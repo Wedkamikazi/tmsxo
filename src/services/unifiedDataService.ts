@@ -19,6 +19,14 @@ export interface DataSummary {
   totalAccounts: number;
   storageUsed: number;
   lastUpdated: string;
+  quotaInfo?: {
+    utilization: number;
+    isNearLimit: boolean;
+    isCritical: boolean;
+    totalQuota: number;
+    availableSpace: number;
+  };
+  activeAlerts?: number;
 }
 
 export interface ValidationError {

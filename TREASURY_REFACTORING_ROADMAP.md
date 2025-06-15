@@ -892,7 +892,7 @@ Implement investment portfolio tracking and performance analysis.
 - [ ] Risk assessment tools
 - [ ] Rebalancing recommendations
 
-#### **Dependencies**: Phase 2 complete
+#### **Dependencies (Task 4.2)**: Phase 2 complete
 
 #### **Estimated Effort (Task 4.2)**: 35-45 hours
 
@@ -1094,7 +1094,7 @@ Create comprehensive documentation for users, developers, and administrators.
 - [ ] Installation and deployment guides
 - [ ] Troubleshooting documentation
 
-#### **Dependencies**: All previous phases
+#### **Dependencies (Task 5.2)**: All previous phases
 
 #### **Estimated Effort (Task 5.2)**: 30-40 hours
 

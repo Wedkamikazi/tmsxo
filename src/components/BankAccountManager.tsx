@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { BankAccount } from '../types';
 import { unifiedDataService } from '../services/unifiedDataService';
 import { unifiedBalanceService } from '../services/unifiedBalanceService';
@@ -6,6 +6,7 @@ import './BankAccountManager.css';
 
 interface BankAccountManagerProps {
   onAccountsUpdated?: () => void;
+  refreshTrigger?: number;
 }
 
 interface AccountFormData {
@@ -22,7 +23,7 @@ interface BalanceAdjustmentFormData {
   reason: string;
 }
 
-export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccountsUpdated }) => {
+export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccountsUpdated, refreshTrigger }) => {
   const [accounts, setAccounts] = useState<BankAccount[]>(unifiedDataService.getAllAccounts());
   const [isAddingAccount, setIsAddingAccount] = useState(false);
   const [editingAccount, setEditingAccount] = useState<BankAccount | null>(null);
@@ -278,6 +279,12 @@ export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccoun
       currency: 'USD'
     }).format(amount);
   };
+
+  useEffect(() => {
+    if (refreshTrigger) {
+      refreshAccounts();
+    }
+  }, [refreshAccounts, refreshTrigger]);
 
   return (
     <div className="bank-account-manager">

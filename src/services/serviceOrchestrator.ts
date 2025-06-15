@@ -164,8 +164,8 @@ class ServiceOrchestrator {
   }
 
   // INITIALIZE ALL SERVICES IN DEPENDENCY ORDER
-  async initializeSystem(): Promise<SystemStatus> {
-    console.log('🚀 Starting System Initialization...');
+  async initializeSystem(fastMode = false): Promise<SystemStatus> {
+    console.log('🚀 Starting System Initialization...' + (fastMode ? ' (Fast Mode)' : ''));
     this.systemStartTime = Date.now();
 
     try {
@@ -176,8 +176,11 @@ class ServiceOrchestrator {
       // Initialize services in tiers
       const tiers = this.groupServicesByTier(initializationOrder);
       
-      for (let tierIndex = 0; tierIndex < tiers.length; tierIndex++) {
-        const tier = tiers[tierIndex];
+      // In fast mode, only initialize critical services from the first two tiers
+      const tiersToInitialize = fastMode ? tiers.slice(0, 2) : tiers;
+      
+      for (let tierIndex = 0; tierIndex < tiersToInitialize.length; tierIndex++) {
+        const tier = tiersToInitialize[tierIndex];
         console.log(`🔄 Initializing Tier ${tierIndex + 1}: [${tier.join(', ')}]`);
         
         // Initialize all services in current tier in parallel
@@ -196,6 +199,13 @@ class ServiceOrchestrator {
           const failedServices = criticalFailures.map(f => f.serviceName).join(', ');
           throw new Error(`Critical services failed to initialize: ${failedServices}`);
         }
+      }
+
+      // In fast mode, initialize remaining services in background
+      if (fastMode && tiers.length > 2) {
+        setTimeout(() => {
+          this.initializeRemainingServicesInBackground(tiers.slice(2));
+        }, 100);
       }
 
       // Start health monitoring

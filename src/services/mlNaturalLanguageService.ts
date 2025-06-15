@@ -329,10 +329,18 @@ class MLNaturalLanguageService {
           inputLength: maxSeqLength
         }),
         tf.layers.globalAveragePooling1d(),
-        tf.layers.dense({ units: 256, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 128, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.batchNormalization(),
         tf.layers.dropout({ rate: 0.4 }),
-        tf.layers.dense({ units: 128, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 64, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.dropout({ rate: 0.3 }),
         tf.layers.dense({ units: this.modelConfig.topicCount, activation: 'softmax' })
       ]

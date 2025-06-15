@@ -3,7 +3,6 @@ import { localStorageManager } from './localStorageManager';
 import { unifiedDataService } from './unifiedDataService';
 
 import { crossTabSyncService } from './crossTabSyncService';
-import { Transaction, BankAccount, UploadedFile } from '../types';
 
 // SYSTEM INTEGRITY SERVICE - ULTIMATE INTEGRATION ENHANCEMENT
 // Provides centralized error handling, data consistency validation, and system health monitoring

@@ -565,6 +565,24 @@ Provide detailed analysis in JSON format.`;
     return this.currentModel;
   }
 
+  // Enable/disable Ollama integration
+  enableOllamaIntegration(): void {
+    this.ollamaEnabled = true;
+    localStorage.setItem('ollamaEnabled', 'true');
+    console.info('✅ Ollama integration enabled - will attempt connection on next initialization');
+  }
+
+  disableOllamaIntegration(): void {
+    this.ollamaEnabled = false;
+    localStorage.setItem('ollamaEnabled', 'false');
+    this.isInitialized = false;
+    console.info('❌ Ollama integration disabled - TensorFlow.js only mode');
+  }
+
+  isOllamaEnabled(): boolean {
+    return this.ollamaEnabled;
+  }
+
   async switchModel(modelName: string): Promise<boolean> {
     if (!this.healthStatus.availableModels.find(m => m.name === modelName)) {
       return false;

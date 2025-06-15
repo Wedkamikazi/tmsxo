@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { isDebugMode, enableDebugMode, disableDebugMode } from '../utils/debugMode';
+import { systemSafetyManager, initializeSystemSafety } from '../utils/systemSafetyManager';
 // import { serviceOrchestrator, SystemStatus } from '../services/serviceOrchestrator';
 
 interface SystemInitializerProps {
@@ -14,360 +15,198 @@ interface InitializationState {
 }
 
 export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }) => {
-  const [initState, setInitState] = useState<InitializationState>({
-    status: 'initializing',
-    progress: 0,
-    debugMode: isDebugMode()
-  });
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [initializationStatus, setInitializationStatus] = useState('Starting...');
+  const [debugMode, setDebugMode] = useState(isDebugMode());
+  const [safetyStatus, setSafetyStatus] = useState('Initializing...');
 
   useEffect(() => {
-    let mounted = true;
-    
-    const initializeSystem = async () => {
-      try {
-        const debugActive = isDebugMode();
-        
-        if (debugActive) {
-          console.log('🔧 DEBUG MODE: Skipping service initialization');
-          
-          // Brief loading simulation for debug mode
-          setTimeout(() => {
-            if (mounted) {
-              setInitState({
-                status: 'debug',
-                progress: 100,
-                debugMode: true
-              });
-            }
-          }, 1000);
-        } else {
-          console.log('🚀 PRODUCTION MODE: Initializing all services');
-          
-          // TODO: Uncomment and implement proper service initialization
-          // when services are ready for production mode
-          
-          // Update progress during initialization
-          setInitState(prev => ({ ...prev, progress: 25 }));
-          
-          // Simulate service initialization phases
-          // Phase 1: Core services
-          setTimeout(() => {
-            if (mounted) {
-              setInitState(prev => ({ ...prev, progress: 50 }));
-            }
-          }, 500);
-          
-          // Phase 2: ML services
-          setTimeout(() => {
-            if (mounted) {
-              setInitState(prev => ({ ...prev, progress: 75 }));
-            }
-          }, 1000);
-          
-          // Phase 3: Complete
-          setTimeout(() => {
-            if (mounted) {
-              setInitState({
-                status: 'ready',
-                progress: 100,
-                debugMode: false
-              });
-            }
-          }, 1500);
-          
-          /* 
-          TODO: Replace simulation with actual service initialization:
-          
-          try {
-            // Initialize core services
-            await serviceOrchestrator.initializeCoreServices();
-            setInitState(prev => ({ ...prev, progress: 50 }));
-            
-            // Initialize ML services
-            await serviceOrchestrator.initializeMLServices();
-            setInitState(prev => ({ ...prev, progress: 75 }));
-            
-            // Final system check
-            const systemStatus = await serviceOrchestrator.getSystemHealth();
-            if (systemStatus.status === 'healthy') {
-              setInitState({
-                status: 'ready',
-                progress: 100,
-                debugMode: false
-              });
-            } else {
-              throw new Error('System health check failed');
-            }
-          } catch (error) {
-            console.error('Service initialization failed:', error);
-            setInitState({
-              status: 'error',
-              progress: 0,
-              debugMode: false,
-              error: error instanceof Error ? error.message : 'Service initialization failed'
-            });
-          }
-          */
-        }
-      } catch (error) {
-        console.error('System initialization error:', error);
-        if (mounted) {
-          setInitState({
-            status: 'error',
-            progress: 0,
-            debugMode: isDebugMode(),
-            error: error instanceof Error ? error.message : 'Unknown initialization error'
-          });
-        }
-      }
-    };
-
     initializeSystem();
-
-    return () => {
-      mounted = false;
-    };
   }, []);
 
-  const handleToggleDebugMode = () => {
-    const newDebugMode = !initState.debugMode;
+  const initializeSystem = async () => {
+    try {
+      // STEP 1: CRITICAL - Initialize Safety System FIRST
+      setInitializationStatus('🛡️ Initializing System Safety Manager...');
+      setSafetyStatus('Enforcing safety rules...');
+      
+      await initializeSystemSafety();
+      setSafetyStatus('✅ Safety system active - No duplicates allowed');
+      
+      // STEP 2: Register Treasury System process
+      const canStartTreasury = systemSafetyManager.registerProcess('treasury-system', 3000);
+      if (!canStartTreasury) {
+        throw new Error('Treasury system already running - Safety violation prevented');
+      }
+
+      // STEP 3: Continue with normal initialization
+      setInitializationStatus('Initializing services...');
+      
+      const currentDebugMode = isDebugMode();
+      setDebugMode(currentDebugMode);
+
+      if (currentDebugMode) {
+        setInitializationStatus('🔧 Debug Mode: Initializing mock services...');
+        // Initialize mock services
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setInitializationStatus('✅ Debug services initialized');
+      } else {
+        setInitializationStatus('🚀 Production Mode: Initializing full services...');
+        // Initialize production services
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        setInitializationStatus('✅ Production services initialized');
+      }
+
+      setIsInitialized(true);
+      setInitializationStatus('✅ System ready');
+      
+    } catch (error) {
+      console.error('❌ System initialization failed:', error);
+      setInitializationStatus(`❌ Initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setSafetyStatus('❌ Safety system error');
+    }
+  };
+
+  const handleDebugToggle = () => {
+    const newDebugMode = !debugMode;
     if (newDebugMode) {
       enableDebugMode();
     } else {
       disableDebugMode();
     }
-    // Reload page to reinitialize with new debug mode
-    window.location.reload();
+    setDebugMode(newDebugMode);
+    
+    // Reinitialize system with new mode
+    setIsInitialized(false);
+    initializeSystem();
   };
 
-  const handleContinueToApp = () => {
-    setInitState(prev => ({
-      ...prev,
-      status: 'ready'
-    }));
+  const handleEmergencyStop = () => {
+    console.log('🚨 EMERGENCY STOP REQUESTED BY USER');
+    systemSafetyManager.emergencyStop();
+    setSafetyStatus('🚨 Emergency stop activated');
+    setInitializationStatus('🛑 System stopped for safety');
+    setIsInitialized(false);
   };
 
-  if (initState.status === 'ready') {
-    return <>{children}</>;
-  }
+  const getSystemStatus = () => {
+    return systemSafetyManager.getSystemStatus();
+  };
 
-  if (initState.status === 'debug') {
+  if (!isInitialized) {
+    const systemStatus = getSystemStatus();
+    
     return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'linear-gradient(135deg, #ff9500 0%, #ff6b00 100%)',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-      }}>
-        <div style={{
-          background: 'white',
-          borderRadius: '16px',
-          padding: '48px',
-          maxWidth: '500px',
-          textAlign: 'center',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)'
-        }}>
-          <div style={{ fontSize: '64px', marginBottom: '24px' }}>🔧</div>
-          <h1 style={{
-            color: '#1a1a1a',
-            margin: '0 0 16px 0',
-            fontSize: '24px',
-            fontWeight: 600
-          }}>Debug Mode Active</h1>
-          <p style={{
-            color: '#666',
-            margin: '0 0 24px 0',
-            lineHeight: 1.5
+      <div className="system-initializer">
+        <div className="initialization-screen">
+          <h2>🏦 Treasury Management System</h2>
+          
+          {/* SAFETY STATUS - ALWAYS VISIBLE */}
+          <div className="safety-status" style={{
+            padding: '15px',
+            margin: '10px 0',
+            border: `2px solid ${systemStatus.isHealthy ? '#4CAF50' : '#f44336'}`,
+            borderRadius: '8px',
+            backgroundColor: systemStatus.isHealthy ? '#e8f5e9' : '#ffebee'
           }}>
-            Service initialization bypassed. The app will load with basic functionality and mock data.
-          </p>
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-            <button onClick={handleContinueToApp} style={{
-              background: '#ff6b00',
-              color: 'white',
-              border: 'none',
-              padding: '12px 24px',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: 500,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}>
-              Continue to App
-            </button>
-            <button onClick={handleToggleDebugMode} style={{
-              background: 'white',
-              color: '#ff6b00',
-              border: '2px solid #ff6b00',
-              padding: '12px 24px',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: 500,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}>
-              Disable Debug Mode
+            <h3>🛡️ System Safety Status</h3>
+            <p><strong>Status:</strong> {safetyStatus}</p>
+            <p><strong>Health:</strong> {systemStatus.isHealthy ? '✅ Healthy' : '⚠️ Issues Detected'}</p>
+            <p><strong>Running Processes:</strong> {systemStatus.runningProcesses.length}</p>
+            <p><strong>Memory Usage:</strong> {systemStatus.memoryUsage.toFixed(2)}MB</p>
+            {systemStatus.warnings.length > 0 && (
+              <div style={{ color: '#f44336', marginTop: '10px' }}>
+                <strong>⚠️ Warnings:</strong>
+                <ul>
+                  {systemStatus.warnings.map((warning, index) => (
+                    <li key={index}>{warning}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          <div className="status-display">
+            <p>{initializationStatus}</p>
+            <div className="loading-spinner">⏳</div>
+          </div>
+
+          <div className="debug-controls">
+            <p>Debug Mode: {debugMode ? '🔧 ON (Mock Services)' : '🚀 OFF (Production Services)'}</p>
+            <button onClick={handleDebugToggle} disabled={true}>
+              Toggle Debug Mode (Disabled during initialization)
             </button>
           </div>
-          <div style={{
-            marginTop: '24px',
-            fontSize: '12px',
-            color: '#999',
-            textAlign: 'left'
-          }}>
-            <strong>Debug Mode Features:</strong><br/>
-            • All services bypassed<br/>
-            • Mock data for testing<br/>
-            • Safe for UI development<br/>
-            • Toggle via URL: ?debug=true
+
+          {/* EMERGENCY STOP BUTTON */}
+          <div className="emergency-controls" style={{ marginTop: '20px' }}>
+            <button 
+              onClick={handleEmergencyStop}
+              style={{
+                backgroundColor: '#f44336',
+                color: 'white',
+                padding: '10px 20px',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}
+            >
+              🚨 EMERGENCY STOP
+            </button>
+            <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+              Use if system becomes unresponsive or uses too much memory
+            </p>
           </div>
         </div>
       </div>
     );
   }
 
-  if (initState.status === 'error') {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'linear-gradient(135deg, #ff4757 0%, #ff3838 100%)',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-      }}>
-        <div style={{
-          background: 'white',
-          borderRadius: '16px',
-          padding: '48px',
-          maxWidth: '500px',
-          textAlign: 'center',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)'
-        }}>
-          <div style={{ fontSize: '64px', marginBottom: '24px' }}>⚠️</div>
-          <h1 style={{
-            color: '#1a1a1a',
-            margin: '0 0 16px 0',
-            fontSize: '24px',
-            fontWeight: 600
-          }}>System Initialization Failed</h1>
-          <p style={{
-            color: '#666',
-            margin: '0 0 24px 0',
-            lineHeight: 1.5
-          }}>
-            {initState.error || 'An unknown error occurred during system initialization.'}
-          </p>
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-            <button onClick={() => window.location.reload()} style={{
-              background: '#ff4757',
-              color: 'white',
-              border: 'none',
-              padding: '12px 24px',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: 500,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}>
-              Retry
-            </button>
-            <button onClick={handleToggleDebugMode} style={{
-              background: 'white',
-              color: '#ff4757',
-              border: '2px solid #ff4757',
-              padding: '12px 24px',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: 500,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}>
-              Enable Debug Mode
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const systemStatus = getSystemStatus();
 
-  // Loading state
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-    }}>
-      <div style={{
-        background: 'white',
-        borderRadius: '16px',
-        padding: '48px',
-        maxWidth: '400px',
-        textAlign: 'center',
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)'
+    <div className="system-controls">
+      {/* PERMANENT SAFETY DASHBOARD */}
+      <div className="safety-dashboard" style={{
+        position: 'fixed',
+        top: '10px',
+        right: '10px',
+        padding: '10px',
+        backgroundColor: systemStatus.isHealthy ? '#e8f5e9' : '#ffebee',
+        border: `1px solid ${systemStatus.isHealthy ? '#4CAF50' : '#f44336'}`,
+        borderRadius: '5px',
+        fontSize: '12px',
+        zIndex: 1000
       }}>
-        <div style={{ marginBottom: '24px' }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            border: '4px solid #f3f3f3',
-            borderTop: '4px solid #007AFF',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto'
-          }}></div>
-        </div>
-        <h1 style={{
-          color: '#1a1a1a',
-          margin: '0 0 8px 0',
-          fontSize: '24px',
-          fontWeight: 600
-        }}>Treasury Management System</h1>
-        <p style={{
-          color: '#666',
-          margin: '0 0 32px 0'
-        }}>
-          {initState.debugMode ? 'Loading debug mode...' : 'Initializing services...'}
-        </p>
-        
-        <div style={{
-          width: '100%',
-          height: '4px',
-          background: '#f3f3f3',
-          borderRadius: '2px',
-          marginBottom: '16px'
-        }}>
-          <div style={{
-            width: `${initState.progress}%`,
-            height: '100%',
-            background: '#007AFF',
-            borderRadius: '2px',
-            transition: 'width 0.3s ease'
-          }}></div>
-        </div>
-        
-        <div style={{
-          fontSize: '12px',
-          color: '#999'
-        }}>
-          {initState.debugMode 
-            ? 'Debug mode - bypassing services'
-            : `Initializing... ${initState.progress}%`
-          }
-        </div>
+        <div><strong>🛡️ Safety:</strong> {systemStatus.isHealthy ? '✅' : '⚠️'}</div>
+        <div><strong>Processes:</strong> {systemStatus.runningProcesses.length}</div>
+        <div><strong>Memory:</strong> {systemStatus.memoryUsage.toFixed(1)}MB</div>
+        <button 
+          onClick={handleEmergencyStop}
+          style={{
+            backgroundColor: '#f44336',
+            color: 'white',
+            padding: '2px 8px',
+            border: 'none',
+            borderRadius: '3px',
+            cursor: 'pointer',
+            fontSize: '10px',
+            marginTop: '5px'
+          }}
+        >
+          🚨 STOP
+        </button>
       </div>
-      
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
+
+      <div className="debug-controls">
+        <h3>System Controls</h3>
+        <p>Debug Mode: {debugMode ? '🔧 ON' : '🚀 OFF'}</p>
+        <button onClick={handleDebugToggle}>
+          {debugMode ? 'Switch to Production Mode' : 'Switch to Debug Mode'}
+        </button>
+      </div>
     </div>
   );
 }; 

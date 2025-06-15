@@ -7,6 +7,7 @@
 import * as tf from '@tensorflow/tfjs';
 import { eventBus } from './eventBus';
 import { systemIntegrityService } from './systemIntegrityService';
+import { DEBUG_MODE_ACTIVE } from '../utils/debugMode';
 
 export interface PerformanceMetrics {
   memoryUsage: number;
@@ -757,11 +758,7 @@ class PerformanceManager {
 }
 
 // Check for debug mode
-const isDebugMode = typeof window !== 'undefined' && (
-  window.location.search.includes('debug') || 
-  localStorage.getItem('debugMode') === 'true' ||
-  (window as any).__TREASURY_DEBUG_MODE === true
-);
+const isDebugMode = DEBUG_MODE_ACTIVE;
 
 // Export singleton instance (skip TensorFlow initialization in debug mode)
 let performanceManager: PerformanceManager;

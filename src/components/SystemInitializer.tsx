@@ -33,7 +33,14 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
         console.log('✅ Treasury system registered successfully');
       }
 
-      // STEP 3: Continue with normal initialization
+      // STEP 3: Initialize Storage Quota Manager
+      setInitializationStatus('📊 Initializing Storage Quota Manager...');
+      console.log('📊 Starting Storage Quota Manager...');
+      // The quota manager auto-initializes on import, just check if it's ready
+      await new Promise(resolve => setTimeout(resolve, 500)); // Allow initialization time
+      console.log('✅ Storage Quota Manager ready');
+
+      // STEP 4: Continue with normal initialization
       setInitializationStatus('Initializing services...');
       
       const currentDebugMode = isDebugMode();

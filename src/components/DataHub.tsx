@@ -608,9 +608,9 @@ export const DataHub: React.FC = () => {
                   className="header-btn" 
                   title="Clear State Cache (Fix Storage Issues)"
                   onClick={() => {
-                    if (confirm('Clear component state cache? This will fix storage quota issues but you may need to refresh the page.')) {
+                    if (window.confirm('Clear component state cache? This will fix storage quota issues but you may need to refresh the page.')) {
                       clearComponentStates();
-                      alert('✅ Component state cache cleared successfully!');
+                      window.alert('✅ Component state cache cleared successfully!');
                     }
                   }}
                 >

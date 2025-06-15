@@ -63,13 +63,13 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
 
       if (currentDebugMode) {
         setInitializationStatus('🔧 Debug Mode: Initializing mock services...');
-        // Initialize mock services
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Initialize mock services (fast)
+        await new Promise(resolve => setTimeout(resolve, 200));
         setInitializationStatus('✅ Debug services initialized');
       } else {
         setInitializationStatus('🚀 Production Mode: Initializing full services...');
-        // Initialize production services
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Initialize production services (fast)
+        await new Promise(resolve => setTimeout(resolve, 300));
         setInitializationStatus('✅ Production services initialized');
       }
 

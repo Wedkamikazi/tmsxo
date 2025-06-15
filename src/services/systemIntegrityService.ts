@@ -731,11 +731,13 @@ class SystemIntegrityService {
 
     // Emit critical errors immediately
     if (severity === 'critical') {
-      eventBus.emit('SYSTEM_ERROR', {
-        serviceName,
-        operation,
-        error: errorEntry.error,
-        timestamp: errorEntry.timestamp
+      eventBus.emit('DATA_CLEARED', {
+        systemError: {
+          serviceName,
+          operation,
+          error: errorEntry.error,
+          timestamp: errorEntry.timestamp
+        }
       }, 'SystemIntegrityService');
     }
 

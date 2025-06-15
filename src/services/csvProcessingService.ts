@@ -240,22 +240,43 @@ class CSVProcessingService {
   }
 
   private isValidDate(dateString: string): boolean {
-    // Handle DD/MM/YYYY format (Saudi bank format)
+    // Handle slash-separated dates (MM/DD/YYYY or DD/MM/YYYY)
     if (dateString.includes('/')) {
       const parts = dateString.split('/');
       if (parts.length === 3) {
-        const day = parseInt(parts[0]);
-        const month = parseInt(parts[1]);
+        const part1 = parseInt(parts[0]);
+        const part2 = parseInt(parts[1]);
         const year = parseInt(parts[2]);
         
-        // Basic range validation
-        if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 1900 && year <= 2100) {
-          // Create date object to validate the actual date (handles leap years, etc.)
-          const date = new Date(year, month - 1, day);
-          return date.getFullYear() === year && 
-                 date.getMonth() === month - 1 && 
-                 date.getDate() === day;
+        // Try MM/DD/YYYY format first (US format)
+        if (part1 >= 1 && part1 <= 12 && part2 >= 1 && part2 <= 31 && year >= 1900 && year <= 2100) {
+          const date = new Date(year, part1 - 1, part2);
+          if (date.getFullYear() === year && date.getMonth() === part1 - 1 && date.getDate() === part2) {
+            return true;
+          }
         }
+        
+        // Try DD/MM/YYYY format (European format) 
+        if (part1 >= 1 && part1 <= 31 && part2 >= 1 && part2 <= 12 && year >= 1900 && year <= 2100) {
+          const date = new Date(year, part2 - 1, part1);
+          if (date.getFullYear() === year && date.getMonth() === part2 - 1 && date.getDate() === part1) {
+            return true;
+          }
+        }
+      }
+    }
+    
+    // Handle MMDDYYYY format (no separators)
+    if (dateString.length === 8 && /^\d{8}$/.test(dateString)) {
+      const month = parseInt(dateString.substring(0, 2));
+      const day = parseInt(dateString.substring(2, 4));
+      const year = parseInt(dateString.substring(4, 8));
+      
+      if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900 && year <= 2100) {
+        const date = new Date(year, month - 1, day);
+        return date.getFullYear() === year && 
+               date.getMonth() === month - 1 && 
+               date.getDate() === day;
       }
     }
     

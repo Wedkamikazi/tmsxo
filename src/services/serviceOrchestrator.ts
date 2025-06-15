@@ -58,7 +58,7 @@ class ServiceOrchestrator {
   
   // ML Services handled separately for background initialization
   private mlServices = {
-    mlCategorizationService,
+    unifiedCategorizationService,
     mlNaturalLanguageService,
     mlPredictiveAnalyticsService,
     localOllamaIntegration,

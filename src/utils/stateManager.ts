@@ -418,6 +418,33 @@ class StateManager {
     console.log('🗑️ GLOBAL STATE: Application state cleared');
   }
 
+  public clearComponentStates(): void {
+    this.state.componentStates = {};
+    this.saveState();
+    console.log('🧹 GLOBAL STATE: All component states cleared');
+  }
+
+  public getStorageUsage(): { 
+    totalSize: number; 
+    stateSize: number; 
+    componentStatesSize: number;
+    componentCount: number;
+  } {
+    try {
+      const stateString = localStorage.getItem(STATE_STORAGE_KEY) || '{}';
+      const componentStatesString = JSON.stringify(this.state.componentStates);
+      
+      return {
+        totalSize: stateString.length,
+        stateSize: stateString.length,
+        componentStatesSize: componentStatesString.length,
+        componentCount: Object.keys(this.state.componentStates).length
+      };
+    } catch (error) {
+      return { totalSize: 0, stateSize: 0, componentStatesSize: 0, componentCount: 0 };
+    }
+  }
+
   public isInitialized(): boolean {
     return this.initialized;
   }

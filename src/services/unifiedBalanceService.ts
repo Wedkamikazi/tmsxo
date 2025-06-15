@@ -401,11 +401,16 @@ class UnifiedBalanceService {
       this.createBalanceAdjustment(account.id, effectiveDate, newBalance, reason, previousBalance);
       
       // Return updated account
-      return {
+      // Update the account balance and return the updated account
+      const updatedAccount = {
         ...account,
-        currentBalance: newBalance,
-        lastUpdated: new Date().toISOString()
+        currentBalance: newBalance
       };
+      
+      // Store the update timestamp separately if needed for tracking
+      const lastUpdated = new Date().toISOString();
+      
+      return updatedAccount;
     } catch (error) {
       systemIntegrityService.logServiceError(
         'UnifiedBalanceService',

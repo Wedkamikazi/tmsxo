@@ -719,6 +719,13 @@ class PerformanceManager {
             resolve(results);
           }
         } catch (error) {
+          systemIntegrityService.logServiceError(
+            'PerformanceManager',
+            'batchProcess',
+            error instanceof Error ? error : new Error(String(error)),
+            'medium',
+            { batchSize, totalItems: items.length, currentIndex }
+          );
           reject(error);
         }
       };

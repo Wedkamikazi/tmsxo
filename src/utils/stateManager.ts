@@ -27,7 +27,7 @@ interface AppState {
 const STATE_STORAGE_KEY = 'treasury_app_state';
 const STATE_VERSION = '1.1'; // Updated version for new features
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
-const INSTANT_REFRESH_THRESHOLD = 5 * 60 * 1000; // 5 minutes for instant refresh
+const INSTANT_REFRESH_THRESHOLD = 10 * 60 * 1000; // 10 minutes for instant refresh (more aggressive)
 
 class StateManager {
   private static instance: StateManager;

@@ -137,7 +137,7 @@ class MLNaturalLanguageService {
       .slice(0, this.modelConfig.vocabularySize);
     
     this.vocabulary.clear();
-    sortedWords.forEach(([word, count], index) => {
+    sortedWords.forEach(([word], index) => {
       this.vocabulary.set(word, index + 1); // Reserve 0 for padding
     });
     

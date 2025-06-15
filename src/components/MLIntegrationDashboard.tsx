@@ -26,6 +26,10 @@ interface ModelPerformanceMetrics {
 }
 
 export const MLIntegrationDashboard: React.FC = () => {
+  // Initialize cleanup hooks for TensorFlow models and timers
+  const tensorFlowCleanup = useTensorFlowCleanup('MLIntegrationDashboard');
+  const timerCleanup = useTimerCleanup('MLIntegrationDashboard');
+
   const [systemStatus, setSystemStatus] = useState<MLSystemStatus | null>(null);
   const [predictiveInsights, setPredictiveInsights] = useState<PredictiveInsight[]>([]);
   const [recentAnalyses, setRecentAnalyses] = useState<Array<{

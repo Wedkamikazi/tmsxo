@@ -317,6 +317,17 @@ export const DataHub: React.FC = () => {
       description: 'Chat with AI assistant powered by Ollama for financial insights'
     },
     {
+      id: 'settings' as const,
+      label: 'Settings',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M12 1v6m0 10v6m11-7h-6M7 12H1m15.364-6.364l-4.243 4.243M9.879 14.121l-4.243 4.243M20.364 17.364l-4.243-4.243M9.879 9.879l-4.243-4.243" />
+        </svg>
+      ),
+      description: 'Application settings and debug controls'
+    },
+    {
       id: 'payroll' as const,
       label: 'Payroll Data',
       icon: (

@@ -27,11 +27,39 @@ const ITEMS_PER_PAGE_OPTIONS = [25, 50, 100, 200];
 const DEFAULT_ITEMS_PER_PAGE = 50;
 
 export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
+  // Initialize with cached state if available
+  const cachedState = getComponentState<{
+    filteredBalances: DailyBalance[];
+    bankAccounts: BankAccount[];
+    stats: BankBalanceStats | null;
+  }>('BankBalance');
+  
   // State management
-  const [filteredBalances, setFilteredBalances] = useState<DailyBalance[]>([]);
-  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
-  const [stats, setStats] = useState<BankBalanceStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [filteredBalances, setFilteredBalances] = useState<DailyBalance[]>(() => {
+    if (cachedState?.filteredBalances && shouldComponentUseCache('BankBalance')) {
+      console.log('🚀 BANK BALANCE: Using cached balance data');
+      return cachedState.filteredBalances;
+    }
+    return [];
+  });
+  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>(() => {
+    if (cachedState?.bankAccounts && shouldComponentUseCache('BankBalance')) {
+      console.log('🚀 BANK BALANCE: Using cached account data');
+      return cachedState.bankAccounts;
+    }
+    return [];
+  });
+  const [stats, setStats] = useState<BankBalanceStats | null>(() => {
+    if (cachedState?.stats && shouldComponentUseCache('BankBalance')) {
+      console.log('🚀 BANK BALANCE: Using cached stats data');
+      return cachedState.stats;
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => {
+    // If we have cached data, skip loading
+    return !(cachedState?.filteredBalances && shouldComponentUseCache('BankBalance'));
+  });
   const [error, setError] = useState<string | null>(null);
   
   // Pagination state

@@ -781,6 +781,217 @@ class SystemIntegrityService {
       errorRate: this.calculateErrorRate()
     };
   }
+
+  // UNIFIED SYSTEM HEALTH AGGREGATION
+  public async getUnifiedSystemHealth(): Promise<{
+    overall: 'excellent' | 'good' | 'warning' | 'critical' | 'failure';
+    score: number; // 0-100
+    services: {
+      storage: { status: string; details: any };
+      performance: { status: string; details: any };
+      dataIntegrity: { status: string; details: any };
+      eventBus: { status: string; details: any };
+      crossTabSync: { status: string; details: any };
+    };
+    errorSummary: {
+      totalErrors: number;
+      criticalErrors: number;
+      recentErrorRate: number;
+      topErrorServices: Array<{ service: string; count: number }>;
+    };
+    recommendations: string[];
+    lastCheck: string;
+  }> {
+    const startTime = Date.now();
+    
+    try {
+      // Get individual service health checks
+      const [storageHealth, performanceHealth, dataIntegrityHealth, eventBusHealth, crossTabSyncHealth] = await Promise.all([
+        this.checkStorageHealth(),
+        this.checkPerformanceHealth(), 
+        this.checkDataIntegrityHealth(),
+        this.checkEventBusHealth(),
+        this.checkCrossTabSyncHealth()
+      ]);
+
+      // Get error statistics
+      const errorStats = this.getErrorStats();
+      
+      // Get performance metrics from performanceManager
+      const { performanceManager } = require('./performanceManager');
+      const performanceReport = performanceManager.getPerformanceReport();
+      const memoryHealth = performanceManager.getMemoryHealthStatus();
+      
+      // Get data integrity from unifiedDataService
+      const { unifiedDataService } = require('./unifiedDataService');
+      const integrityReport = unifiedDataService.validateDataIntegrity();
+
+      // Calculate overall health score (0-100)
+      let healthScore = 100;
+      
+      // Service health penalties
+      if (storageHealth === 'failed') healthScore -= 30;
+      else if (storageHealth === 'degraded') healthScore -= 15;
+      
+      if (performanceHealth === 'failed') healthScore -= 25;
+      else if (performanceHealth === 'degraded') healthScore -= 10;
+      
+      if (dataIntegrityHealth === 'failed') healthScore -= 25;
+      else if (dataIntegrityHealth === 'degraded') healthScore -= 10;
+      
+      if (eventBusHealth === 'failed') healthScore -= 20;
+      else if (eventBusHealth === 'degraded') healthScore -= 8;
+      
+      if (crossTabSyncHealth === 'failed') healthScore -= 10;
+      else if (crossTabSyncHealth === 'degraded') healthScore -= 5;
+      
+      // Error-based penalties
+      const criticalErrors = errorStats.errorsBySeverity.critical || 0;
+      const highErrors = errorStats.errorsBySeverity.high || 0;
+      healthScore -= criticalErrors * 8;
+      healthScore -= highErrors * 3;
+      healthScore -= Math.min(errorStats.recentErrorRate * 10, 15);
+      
+      // Memory health penalties
+      if (memoryHealth.status === 'emergency') healthScore -= 20;
+      else if (memoryHealth.status === 'critical') healthScore -= 12;
+      else if (memoryHealth.status === 'warning') healthScore -= 5;
+      
+      // Data integrity penalties  
+      healthScore -= (100 - integrityReport.integrityScore) * 0.3;
+      
+      healthScore = Math.max(0, Math.min(100, healthScore));
+      
+      // Determine overall status
+      let overall: 'excellent' | 'good' | 'warning' | 'critical' | 'failure';
+      if (healthScore >= 90) overall = 'excellent';
+      else if (healthScore >= 75) overall = 'good';
+      else if (healthScore >= 60) overall = 'warning';
+      else if (healthScore >= 30) overall = 'critical';
+      else overall = 'failure';
+      
+      // Generate top error services
+      const topErrorServices = Object.entries(errorStats.errorsByService)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 3)
+        .map(([service, count]) => ({ service, count }));
+        
+      // Aggregate recommendations
+      const recommendations: string[] = [];
+      
+      if (criticalErrors > 0) {
+        recommendations.push(`Address ${criticalErrors} critical system errors immediately`);
+      }
+      
+      if (memoryHealth.status === 'emergency' || memoryHealth.status === 'critical') {
+        recommendations.push('Memory usage critical - immediate cleanup required');
+      }
+      
+      if (integrityReport.integrityScore < 80) {
+        recommendations.push('Data integrity issues detected - run cleanup operations');
+      }
+      
+      if (performanceReport.metrics.errorCount > 10) {
+        recommendations.push('High error rate detected - investigate recurring issues');
+      }
+      
+      if (storageHealth === 'degraded') {
+        recommendations.push('Storage performance degraded - consider cleanup');
+      }
+      
+      // Add service-specific recommendations
+      recommendations.push(...performanceReport.recommendations);
+      recommendations.push(...integrityReport.recommendations);
+      recommendations.push(...memoryHealth.recommendations);
+      
+      // Remove duplicates and limit
+      const uniqueRecommendations = Array.from(new Set(recommendations)).slice(0, 8);
+
+      const checkDuration = Date.now() - startTime;
+      if (checkDuration > 200) {
+        this.logServiceError(
+          'SystemIntegrityService',
+          'getUnifiedSystemHealth', 
+          `Health check took ${checkDuration}ms - performance concern`,
+          'low',
+          { duration: checkDuration }
+        );
+      }
+
+      return {
+        overall,
+        score: Math.round(healthScore),
+        services: {
+          storage: { 
+            status: storageHealth, 
+            details: { responsiveness: 'measured', errors: errorStats.errorsByService.LocalStorageManager || 0 }
+          },
+          performance: { 
+            status: memoryHealth.status,
+            details: {
+              memoryUsage: memoryHealth.currentUsage,
+              cacheHitRate: memoryHealth.cacheStats.hitRate,
+              modelCount: memoryHealth.modelStats.total
+            }
+          },
+          dataIntegrity: { 
+            status: integrityReport.integrityScore > 80 ? 'healthy' : integrityReport.integrityScore > 60 ? 'degraded' : 'failed',
+            details: {
+              score: integrityReport.integrityScore,
+              duplicates: integrityReport.duplicateTransactions.length,
+              anomalies: integrityReport.anomalies.length
+            }
+          },
+          eventBus: { 
+            status: eventBusHealth,
+            details: { errors: errorStats.errorsByService.EventBus || 0 }
+          },
+          crossTabSync: { 
+            status: crossTabSyncHealth,
+            details: { errors: errorStats.errorsByService.CrossTabSyncService || 0 }
+          }
+        },
+        errorSummary: {
+          totalErrors: errorStats.totalErrors,
+          criticalErrors,
+          recentErrorRate: errorStats.recentErrors.length,
+          topErrorServices
+        },
+        recommendations: uniqueRecommendations,
+        lastCheck: new Date().toISOString()
+      };
+      
+    } catch (error) {
+      this.logServiceError(
+        'SystemIntegrityService',
+        'getUnifiedSystemHealth',
+        error instanceof Error ? error : new Error(String(error)),
+        'high',
+        { checkDuration: Date.now() - startTime }
+      );
+      
+      // Return degraded status on health check failure
+      return {
+        overall: 'critical',
+        score: 0,
+        services: {
+          storage: { status: 'unknown', details: {} },
+          performance: { status: 'unknown', details: {} },
+          dataIntegrity: { status: 'unknown', details: {} },
+          eventBus: { status: 'unknown', details: {} },
+          crossTabSync: { status: 'unknown', details: {} }
+        },
+        errorSummary: {
+          totalErrors: this.errorLog.length,
+          criticalErrors: 0,
+          recentErrorRate: 0,
+          topErrorServices: []
+        },
+        recommendations: ['System health check failed - manual investigation required'],
+        lastCheck: new Date().toISOString()
+      };
+    }
+  }
 }
 
 // Export singleton instance

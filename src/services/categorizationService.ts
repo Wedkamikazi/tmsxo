@@ -341,13 +341,13 @@ class CategorizationService {
     const description = transaction.description.toLowerCase();
     
     // Simple keyword matching - can be enhanced with more sophisticated logic
-    const matchesDescription = rule.description && 
-      description.includes(rule.description.toLowerCase());
+    const matchesDescription = Boolean(rule.description && 
+      description.includes(rule.description.toLowerCase()));
 
     // Amount range matching
     const amount = transaction.debitAmount || transaction.creditAmount || 0;
-    const matchesAmountMin = !rule.amountMin || amount >= rule.amountMin;
-    const matchesAmountMax = !rule.amountMax || amount <= rule.amountMax;
+    const matchesAmountMin = Boolean(!rule.amountMin || amount >= rule.amountMin);
+    const matchesAmountMax = Boolean(!rule.amountMax || amount <= rule.amountMax);
 
     return matchesDescription && matchesAmountMin && matchesAmountMax;
   }

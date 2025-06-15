@@ -181,7 +181,7 @@ class MLNaturalLanguageService {
 
   // INITIALIZE ENTITY EXTRACTION PATTERNS
   private initializeEntityPatterns(): void {
-    this.entityPatterns.set('MERCHANT', /\b([A-Z][A-Z\s&\.]{2,})\b/g);
+    this.entityPatterns.set('MERCHANT', /\b([A-Z][A-Z\s&.]{2,})\b/g);
     this.entityPatterns.set('AMOUNT', /\$?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)/g);
     this.entityPatterns.set('DATE', /(\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2})/g);
     this.entityPatterns.set('LOCATION', /\b(ST|AVE|BLVD|RD|DR|LN|CT)\b|\b[A-Z]{2}\s*\d{5}\b/g);

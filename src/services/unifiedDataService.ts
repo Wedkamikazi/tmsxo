@@ -1,5 +1,5 @@
 // Architectural consistency imports - keep for future use
-import { Transaction as _Transaction, BankAccount, UploadedFile } from '../types';
+import { BankAccount, UploadedFile } from '../types';
 import { eventBus } from './eventBus';
 // StorageStats maintained for architectural consistency - used in method signatures elsewhere
 import { localStorageManager, StoredTransaction as LSMStoredTransaction, StorageStats as _StorageStats } from './localStorageManager';

@@ -1,10 +1,21 @@
 import { Transaction } from '../types';
+import { StoredTransaction } from './unifiedDataService';
 
 export interface DuplicateMatch {
   existingTransaction: Transaction;
   newTransaction: Transaction;
   matchScore: number;
   matchReasons: string[];
+}
+
+export interface SophisticatedDuplicateReport {
+  duplicates: StoredTransaction[];
+  analysis: {
+    totalChecked: number;
+    duplicatesFound: number;
+    confidenceScores: number[];
+    avgSimilarity: number;
+  };
 }
 
 export interface DuplicateResolution {
@@ -56,20 +67,114 @@ class DuplicateDetectionService {
     };
   }
   
+  // SOPHISTICATED DUPLICATE DETECTION (from dataIntegrityService)
+  findSophisticatedDuplicates(transactions: StoredTransaction[]): SophisticatedDuplicateReport {
+    const seen = new Map<string, StoredTransaction>();
+    const duplicates: StoredTransaction[] = [];
+    const confidenceScores: number[] = [];
+
+    transactions.forEach(transaction => {
+      // Create a more sophisticated duplicate detection key
+      const normalizedDesc = transaction.description.trim().toLowerCase();
+      const key = [
+        transaction.accountId,
+        transaction.date,
+        transaction.debitAmount || 0,
+        transaction.creditAmount || 0,
+        normalizedDesc.substring(0, 50) // First 50 chars of description
+      ].join('|');
+      
+      if (seen.has(key)) {
+        // Additional validation - check if they're really duplicates
+        const existing = seen.get(key)!;
+        const similarity = this.areTransactionsDuplicates(existing, transaction);
+        if (similarity > 0.9) {
+          duplicates.push(transaction);
+          confidenceScores.push(similarity);
+        }
+      } else {
+        seen.set(key, transaction);
+      }
+    });
+
+    return {
+      duplicates,
+      analysis: {
+        totalChecked: transactions.length,
+        duplicatesFound: duplicates.length,
+        confidenceScores,
+        avgSimilarity: confidenceScores.length > 0 ? 
+          confidenceScores.reduce((sum, score) => sum + score, 0) / confidenceScores.length : 0
+      }
+    };
+  }
+
+  // Enhanced duplicate detection with similarity scoring
+  private areTransactionsDuplicates(t1: StoredTransaction, t2: StoredTransaction): number {
+    // Same basic data
+    if (t1.accountId !== t2.accountId || t1.date !== t2.date) return 0;
+    if (t1.debitAmount !== t2.debitAmount || t1.creditAmount !== t2.creditAmount) return 0;
+    
+    // Similar descriptions (allow for minor variations)
+    const desc1 = t1.description.trim().toLowerCase();
+    const desc2 = t2.description.trim().toLowerCase();
+    return this.calculateStringSimilarity(desc1, desc2);
+  }
+
+  // Calculate string similarity using Levenshtein distance
+  private calculateStringSimilarity(str1: string, str2: string): number {
+    const longer = str1.length > str2.length ? str1 : str2;
+    const shorter = str1.length > str2.length ? str2 : str1;
+    
+    if (longer.length === 0) return 1.0;
+    
+    const editDistance = this.levenshteinDistance(longer, shorter);
+    return (longer.length - editDistance) / longer.length;
+  }
+
+  // Levenshtein distance calculation
+  private levenshteinDistance(str1: string, str2: string): number {
+    const matrix = [];
+    
+    for (let i = 0; i <= str2.length; i++) {
+      matrix[i] = [i];
+    }
+    
+    for (let j = 0; j <= str1.length; j++) {
+      matrix[0][j] = j;
+    }
+    
+    for (let i = 1; i <= str2.length; i++) {
+      for (let j = 1; j <= str1.length; j++) {
+        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          );
+        }
+      }
+    }
+    
+    return matrix[str2.length][str1.length];
+  }
+  
   // Find the best matching existing transaction for a new transaction
   private findBestMatch(newTransaction: Transaction, existingTransactions: Transaction[]): DuplicateMatch | null {
     let bestMatch: DuplicateMatch | null = null;
-    let highestScore = 0;
+    let bestScore = 0;
     
     for (const existing of existingTransactions) {
       const match = this.calculateMatch(existing, newTransaction);
-      if (match.matchScore > highestScore) {
-        highestScore = match.matchScore;
+      if (match.matchScore > bestScore) {
+        bestScore = match.matchScore;
         bestMatch = match;
       }
     }
     
-    return bestMatch && bestMatch.matchScore >= 0.6 ? bestMatch : null;
+    return bestMatch && bestMatch.matchScore >= 0.7 ? bestMatch : null;
   }
   
   // Calculate match score between two transactions
@@ -107,9 +212,12 @@ class DuplicateDetectionService {
       matchReasons.push('Same debit/credit amounts');
     }
     
-    // Description similarity
+    // Description similarity (enhanced with sophisticated matching)
     const descSimilarity = this.calculateStringSimilarity(existing.description, newTxn.description);
-    if (descSimilarity > 0.8) {
+    if (descSimilarity > 0.9) {
+      score += 0.15;
+      matchReasons.push('Highly similar description');
+    } else if (descSimilarity > 0.8) {
       score += 0.1;
       matchReasons.push('Very similar description');
     } else if (descSimilarity > 0.6) {
@@ -132,25 +240,24 @@ class DuplicateDetectionService {
   }
   
   // Find overlap period between existing and new transactions
-  private findOverlapPeriod(existing: Transaction[], newTxns: Transaction[]): { start: string; end: string } {
-    if (existing.length === 0 || newTxns.length === 0) {
-      return { start: '', end: '' };
-    }
+  private findOverlapPeriod(existingTransactions: Transaction[], newTransactions: Transaction[]): { start: string; end: string } {
+    const existingDates = existingTransactions.map(t => t.postDate || t.date).sort();
+    const newDates = newTransactions.map(t => t.postDate || t.date).sort();
     
-    // Use Post date if available, otherwise fall back to date
-    const existingDates = existing.map(t => t.postDate || t.date).sort();
-    const newDates = newTxns.map(t => t.postDate || t.date).sort();
+    const overlapStart = Math.max(
+      new Date(existingDates[0] || '1900-01-01').getTime(),
+      new Date(newDates[0] || '1900-01-01').getTime()
+    );
     
-    const existingStart = existingDates[0];
-    const existingEnd = existingDates[existingDates.length - 1];
-    const newStart = newDates[0];
-    const newEnd = newDates[newDates.length - 1];
+    const overlapEnd = Math.min(
+      new Date(existingDates[existingDates.length - 1] || '2100-01-01').getTime(),
+      new Date(newDates[newDates.length - 1] || '2100-01-01').getTime()
+    );
     
-    // Find overlap
-    const overlapStart = existingStart > newStart ? existingStart : newStart;
-    const overlapEnd = existingEnd < newEnd ? existingEnd : newEnd;
-    
-    return overlapStart <= overlapEnd ? { start: overlapStart, end: overlapEnd } : { start: '', end: '' };
+    return {
+      start: new Date(overlapStart).toISOString().split('T')[0],
+      end: new Date(overlapEnd).toISOString().split('T')[0]
+    };
   }
   
   // Categorize matches into auto-skip and requires-review
@@ -158,14 +265,13 @@ class DuplicateDetectionService {
     const autoSkip: DuplicateMatch[] = [];
     const requiresReview: DuplicateMatch[] = [];
     
-    for (const match of matches) {
-      // High confidence matches (>= 0.9) can be auto-skipped
-      if (match.matchScore >= 0.9) {
+    matches.forEach(match => {
+      if (match.matchScore >= 0.95) {
         autoSkip.push(match);
       } else {
         requiresReview.push(match);
       }
-    }
+    });
     
     return { autoSkip, requiresReview };
   }
@@ -177,38 +283,6 @@ class DuplicateDetectionService {
     const diffTime = Math.abs(d2.getTime() - d1.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays <= days;
-  }
-  
-  // Helper: Calculate string similarity (simple implementation)
-  private calculateStringSimilarity(str1: string, str2: string): number {
-    const longer = str1.length > str2.length ? str1 : str2;
-    const shorter = str1.length > str2.length ? str2 : str1;
-    
-    if (longer.length === 0) return 1.0;
-    
-    const editDistance = this.levenshteinDistance(longer.toLowerCase(), shorter.toLowerCase());
-    return (longer.length - editDistance) / longer.length;
-  }
-  
-  // Helper: Calculate Levenshtein distance
-  private levenshteinDistance(str1: string, str2: string): number {
-    const matrix = Array(str2.length + 1).fill(null).map(() => Array(str1.length + 1).fill(null));
-    
-    for (let i = 0; i <= str1.length; i++) matrix[0][i] = i;
-    for (let j = 0; j <= str2.length; j++) matrix[j][0] = j;
-    
-    for (let j = 1; j <= str2.length; j++) {
-      for (let i = 1; i <= str1.length; i++) {
-        const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
-        matrix[j][i] = Math.min(
-          matrix[j][i - 1] + 1,     // deletion
-          matrix[j - 1][i] + 1,     // insertion
-          matrix[j - 1][i - 1] + indicator // substitution
-        );
-      }
-    }
-    
-    return matrix[str2.length][str1.length];
   }
   
   // Apply resolution to duplicates

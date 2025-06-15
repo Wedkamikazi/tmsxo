@@ -58,10 +58,11 @@ export const Settings: React.FC = () => {
 
   const handleExportState = () => {
     const stateData = stateManager.exportState();
+    const stateString = JSON.stringify(stateData, null, 2);
     setShowStateExport(true);
     
     // Copy to clipboard
-    navigator.clipboard.writeText(stateData).then(() => {
+    navigator.clipboard.writeText(stateString).then(() => {
       alert('State data copied to clipboard!');
     }).catch(() => {
       console.log('Fallback: State data logged to console');

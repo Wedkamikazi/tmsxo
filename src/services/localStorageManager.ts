@@ -79,20 +79,33 @@ class LocalStorageManager {
   }
 
   addTransactions(transactions: StoredTransaction[]): boolean {
-    return this.executeTransaction(() => {
+    const result = this.executeTransaction(() => {
       const existing = this.getAllTransactions();
       const existingIds = new Set(existing.map(t => t.id));
       const newTransactions = transactions.filter(t => !existingIds.has(t.id));
       
-      if (newTransactions.length === 0) return true;
+      if (newTransactions.length === 0) return { success: true, affectedAccountIds: [] };
       
       const updated = [...existing, ...newTransactions].sort(
         (a, b) => new Date(b.postDateTime).getTime() - new Date(a.postDateTime).getTime()
       );
       
       this.setStorageData(this.STORAGE_KEYS.transactions, updated);
-      return true;
-    }).success;
+      
+      // Return affected account IDs for balance update
+      const affectedAccountIds = [...new Set(newTransactions.map(t => t.accountId))];
+      return { success: true, affectedAccountIds };
+    });
+    
+    if (result.success && result.result) {
+      // Automatically update account balances for affected accounts
+      const affectedAccountIds = result.result.affectedAccountIds;
+      if (affectedAccountIds.length > 0) {
+        this.updateAccountBalancesFromTransactions(affectedAccountIds);
+      }
+    }
+    
+    return result.success;
   }
 
   getTransactionsByAccount(accountId: string): StoredTransaction[] {

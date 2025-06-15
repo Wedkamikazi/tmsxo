@@ -598,9 +598,45 @@ let enhancedCategorizationService: EnhancedCategorizationService;
 if (isDebugMode) {
   console.log('🚨 EnhancedCategorizationService: Debug mode detected - creating mock instance');
   enhancedCategorizationService = {
-    categorizeTransaction: () => Promise.resolve({ category: 'Other', confidence: 0.5, reasoning: 'Debug mode' }),
+    categorizeTransaction: () => Promise.resolve({
+      categoryId: 'Other',
+      categoryName: 'Other',
+      confidence: 0.5,
+      method: 'default',
+      reasoning: 'Debug mode',
+      suggestions: [],
+      alternatives: [],
+      processingTime: 0,
+      metadata: { anomalyDetected: false }
+    }),
     ensureInitialized: () => Promise.resolve(),
-    dispose: () => Promise.resolve()
+    dispose: () => Promise.resolve(),
+    getPerformanceMetrics: () => ({
+      totalCategorizations: 0,
+      accuracyRate: 0.85,
+      averageConfidence: 0.75,
+      methodBreakdown: {
+        mlEnhanced: 0,
+        ruleBased: 0,
+        manual: 0,
+        default: 0
+      },
+      averageProcessingTime: 0,
+      ollamaUsageRate: 0,
+      learningDataPoints: 0
+    }),
+    getStrategy: () => ({
+      primary: 'rule-based' as const,
+      fallback: 'default' as const,
+      confidenceThreshold: 0.7,
+      useOllamaWhenAvailable: false,
+      enableLearning: false
+    }),
+    updateStrategy: () => Promise.resolve(),
+    getCategoryMappings: () => new Map(),
+    recategorizeAllTransactions: () => Promise.resolve({ success: 0, failed: 0 }),
+    batchCategorizeTransactions: () => Promise.resolve([]),
+    improveFromFeedback: () => Promise.resolve()
   } as any;
 } else {
   enhancedCategorizationService = new EnhancedCategorizationService();

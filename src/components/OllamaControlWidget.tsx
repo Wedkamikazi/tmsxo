@@ -76,17 +76,8 @@ const OllamaControlWidget: React.FC = () => {
         return;
       }
 
-      // Start Ollama with safety environment variables
-      const startCommand = `
-        $env:OLLAMA_ORIGINS="*"; 
-        $env:OLLAMA_NUM_PARALLEL="1"; 
-        $env:OLLAMA_MAX_LOADED_MODELS="1"; 
-        $env:OLLAMA_GPU_OVERHEAD="2048"; 
-        Start-Process -FilePath "ollama" -ArgumentList "serve" -WindowStyle Hidden
-      `;
-
-      // Note: In a real implementation, you'd need to execute this command
-      // For now, we'll simulate the process
+      // Note: In a real implementation, you'd execute this command:
+      // $env:OLLAMA_ORIGINS="*"; $env:OLLAMA_NUM_PARALLEL="1"; $env:OLLAMA_MAX_LOADED_MODELS="1"; $env:OLLAMA_GPU_OVERHEAD="2048"; Start-Process -FilePath "ollama" -ArgumentList "serve" -WindowStyle Hidden
       console.log('🚀 Starting Ollama with safety parameters...');
       
       // Simulate startup delay

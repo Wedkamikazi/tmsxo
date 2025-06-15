@@ -171,10 +171,6 @@ export class TensorFlowMethod implements CategorizationStrategy {
     }
   }
 
-  async batchCategorize(transactions: Transaction[]): Promise<UnifiedCategorizationResult[]> {
-    return Promise.all(transactions.map(t => this.categorize(t)));
-  }
-
   // INITIALIZATION
   private async initializeTensorFlow(): Promise<void> {
     try {

@@ -157,49 +157,67 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
     );
   }
 
-  const systemStatus = getSystemStatus();
+     const systemStatus = getSystemStatus();
 
-  return (
-    <div className="system-controls">
-      {/* PERMANENT SAFETY DASHBOARD */}
-      <div className="safety-dashboard" style={{
-        position: 'fixed',
-        top: '10px',
-        right: '10px',
-        padding: '10px',
-        backgroundColor: systemStatus.isHealthy ? '#e8f5e9' : '#ffebee',
-        border: `1px solid ${systemStatus.isHealthy ? '#4CAF50' : '#f44336'}`,
-        borderRadius: '5px',
-        fontSize: '12px',
-        zIndex: 1000
-      }}>
-        <div><strong>🛡️ Safety:</strong> {systemStatus.isHealthy ? '✅' : '⚠️'}</div>
-        <div><strong>Processes:</strong> {systemStatus.runningProcesses.length}</div>
-        <div><strong>Memory:</strong> {systemStatus.memoryUsage.toFixed(1)}MB</div>
-        <button 
-          onClick={handleEmergencyStop}
-          style={{
-            backgroundColor: '#f44336',
-            color: 'white',
-            padding: '2px 8px',
-            border: 'none',
-            borderRadius: '3px',
-            cursor: 'pointer',
-            fontSize: '10px',
-            marginTop: '5px'
-          }}
-        >
-          🚨 STOP
-        </button>
-      </div>
+   return (
+     <>
+       {/* PERMANENT SAFETY DASHBOARD */}
+       <div className="safety-dashboard" style={{
+         position: 'fixed',
+         top: '10px',
+         right: '10px',
+         padding: '10px',
+         backgroundColor: systemStatus.isHealthy ? '#e8f5e9' : '#ffebee',
+         border: `1px solid ${systemStatus.isHealthy ? '#4CAF50' : '#f44336'}`,
+         borderRadius: '5px',
+         fontSize: '12px',
+         zIndex: 1000
+       }}>
+         <div><strong>🛡️ Safety:</strong> {systemStatus.isHealthy ? '✅' : '⚠️'}</div>
+         <div><strong>Processes:</strong> {systemStatus.runningProcesses.length}</div>
+         <div><strong>Memory:</strong> {systemStatus.memoryUsage.toFixed(1)}MB</div>
+         <button 
+           onClick={handleEmergencyStop}
+           style={{
+             backgroundColor: '#f44336',
+             color: 'white',
+             padding: '2px 8px',
+             border: 'none',
+             borderRadius: '3px',
+             cursor: 'pointer',
+             fontSize: '10px',
+             marginTop: '5px'
+           }}
+         >
+           🚨 STOP
+         </button>
+       </div>
 
-      <div className="debug-controls">
-        <h3>System Controls</h3>
-        <p>Debug Mode: {debugMode ? '🔧 ON' : '🚀 OFF'}</p>
-        <button onClick={handleDebugToggle}>
-          {debugMode ? 'Switch to Production Mode' : 'Switch to Debug Mode'}
-        </button>
-      </div>
-    </div>
-  );
+       {/* RENDER CHILDREN (MAIN APP) */}
+       {children}
+
+       {/* DEBUG CONTROLS */}
+       <div className="debug-controls" style={{
+         position: 'fixed',
+         bottom: '10px',
+         left: '10px',
+         padding: '10px',
+         backgroundColor: 'rgba(255, 255, 255, 0.9)',
+         border: '1px solid #ccc',
+         borderRadius: '5px',
+         fontSize: '12px',
+         zIndex: 1000
+       }}>
+         <div><strong>Debug Mode:</strong> {debugMode ? '🔧 ON' : '🚀 OFF'}</div>
+         <button onClick={handleDebugToggle} style={{
+           padding: '5px 10px',
+           marginTop: '5px',
+           fontSize: '11px',
+           cursor: 'pointer'
+         }}>
+           {debugMode ? 'Switch to Production' : 'Switch to Debug'}
+         </button>
+       </div>
+     </>
+   );
 }; 

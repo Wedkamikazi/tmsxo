@@ -1,8 +1,7 @@
 // Architectural consistency imports - keep for future use
 import { BankAccount, UploadedFile } from '../types';
 import { eventBus } from './eventBus';
-// StorageStats maintained for architectural consistency - used in method signatures elsewhere
-import { localStorageManager, StoredTransaction as LSMStoredTransaction, StorageStats as _StorageStats } from './localStorageManager';
+import { localStorageManager, StoredTransaction as LSMStoredTransaction } from './localStorageManager';
 import { systemIntegrityService } from './systemIntegrityService';
 
 // Type aliases to satisfy linter while preserving architectural consistency

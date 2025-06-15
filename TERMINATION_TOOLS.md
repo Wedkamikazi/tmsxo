@@ -22,6 +22,7 @@ node terminate-all.js
 ## 📋 What Gets Terminated
 
 ### Processes
+
 - **Node.js processes** (`node.exe`, `npm.exe`)
 - **React Development Server** (running on port 3000)
 - **Ollama processes** (`ollama.exe`)
@@ -29,11 +30,13 @@ node terminate-all.js
 - **React Scripts** and related build processes
 
 ### Ports Freed
+
 - **Port 3000** - React Development Server
 - **Port 3001** - Process Controller Server  
 - **Port 11434** - Ollama API Server
 
 ### System Resources
+
 - **TensorFlow.js Models** - All ML models disposed
 - **Web Workers** - All background workers terminated
 - **Timers & Intervals** - All scheduled tasks cleared
@@ -45,12 +48,14 @@ node terminate-all.js
 ## 🛠️ Usage Instructions
 
 ### Quick Termination (Windows)
+
 1. Open PowerShell in the project directory
 2. Run: `.\terminate-all.ps1`
 3. Wait for completion message
 4. Optionally verify with: `.\verify-termination.ps1`
 
 ### Quick Termination (Cross-Platform)
+
 1. Open terminal in the project directory
 2. Run: `node terminate-all.js`
 3. Wait for completion message
@@ -94,16 +99,19 @@ interface TerminationReport {
 ## 🔧 Troubleshooting
 
 ### If Processes Won't Terminate
+
 1. Run the script with administrator privileges
 2. Use Task Manager to manually kill stubborn processes
 3. Restart your computer as a last resort
 
 ### If Ports Remain Occupied
+
 1. Check what's using the port: `netstat -ano | findstr :3000`
 2. Kill the process by PID: `taskkill /F /PID <pid>`
 3. Wait a few seconds and try again
 
 ### If Ollama Won't Stop
+
 1. Check if Ollama service is running: `sc query ollama`
 2. Stop the service: `sc stop ollama`
 3. Or use the process controller: `POST http://localhost:3001/api/ollama/stop`
@@ -139,6 +147,7 @@ node processController.js
 ## 🚨 When to Use
 
 Use these termination tools when:
+
 - Development server becomes unresponsive
 - Ports are occupied by zombie processes
 - System resources are not being freed properly

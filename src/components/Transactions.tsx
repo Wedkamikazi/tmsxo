@@ -85,7 +85,7 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
   */
 
   // Check if two transactions are potential duplicates
-  /* Temporarily commented out for debugging pagination
+  /* Temporarily commented out for debugging
   const arePotentialDuplicates = useCallback((t1: StoredTransaction, t2: StoredTransaction): boolean => {
     // Same account
     if (t1.accountId !== t2.accountId) return false;
@@ -177,7 +177,7 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
       setLoading(false);
       setRefreshing(false);
     }
-  }, [onTransactionUpdate, findDuplicatesInTransactions]);
+  }, [onTransactionUpdate, findDuplicatesInTransactions, transactions.length]);
 
   useEffect(() => {
     loadData();

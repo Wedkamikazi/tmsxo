@@ -49,24 +49,6 @@
   margin: 0;
 }
 
-.section-actions {
-  display: flex;
-  gap: var(--spacing-md);
-  align-items: center;
-}
-
-.section-actions .btn {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  font-size: 0.875rem;
-  padding: var(--spacing-sm) var(--spacing-md);
-}
-
-.section-actions .btn svg {
-  flex-shrink: 0;
-}
-
 /* Empty State */
 .empty-state {
   text-align: center;

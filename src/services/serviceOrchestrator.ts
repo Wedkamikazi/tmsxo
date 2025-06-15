@@ -59,7 +59,9 @@ class ServiceOrchestrator {
   private mlServices = {
     mlCategorizationService,
     mlNaturalLanguageService,
-    mlPredictiveAnalyticsService
+    mlPredictiveAnalyticsService,
+    localOllamaIntegration,
+    enhancedMLOrchestrator
   };
 
   constructor() {

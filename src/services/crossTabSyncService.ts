@@ -91,7 +91,7 @@ class CrossTabSyncService {
     // Clean up dead tabs
     this.cleanupInactiveTabs();
     
-    this.isInitialized = true;
+
     console.log('✅ Cross-Tab Sync Service Initialized');
   }
 

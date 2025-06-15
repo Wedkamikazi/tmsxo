@@ -7,7 +7,7 @@
 import * as tf from '@tensorflow/tfjs';
 import { eventBus } from './eventBus';
 import { systemIntegrityService } from './systemIntegrityService';
-import { isDebugMode } from '../utils/debugMode';
+import { isDebugMode as checkDebugMode } from '../utils/debugMode';
 
 export interface PerformanceMetrics {
   memoryUsage: number;

@@ -795,7 +795,26 @@ if (isDebugMode) {
     setCache: () => {},
     getCache: () => null,
     startOperation: () => () => {},
-    dispose: () => Promise.resolve()
+    recordError: () => {}, // Add missing recordError method
+    dispose: () => Promise.resolve(),
+    // Add other commonly used methods
+    getMemoryStats: () => ({
+      used: 25,
+      total: 100,
+      percentage: 25
+    }),
+    getMetrics: () => ({
+      memoryUsage: 25,
+      cacheSize: 0,
+      operationCount: 0,
+      averageResponseTime: 0,
+      errorCount: 0,
+      lastCleanup: new Date()
+    }),
+    touchModel: () => {},
+    unregisterModel: () => {},
+    clearCache: () => {},
+    batchProcess: (items: any[], processor: any) => Promise.resolve(items.map(processor))
   } as any;
 } else {
   performanceManager = new PerformanceManager();

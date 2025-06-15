@@ -48,6 +48,23 @@
   opacity: 0.9;
 }
 
+.refresh-status-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  margin-left: 8px;
+  transition: all 0.2s ease;
+}
+
+.refresh-status-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(180deg);
+}
+
 .clear-chat-btn {
   background: rgba(255, 255, 255, 0.2);
   color: white;

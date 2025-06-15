@@ -232,6 +232,9 @@ class ServiceOrchestrator {
       const systemStatus = this.getSystemStatus();
       console.log(`✅ System Initialization Complete (${Date.now() - this.systemStartTime}ms)`);
       
+      // Initialize ML services in background (non-blocking)
+      this.initializeMLServicesInBackground();
+      
       // Emit system ready event
       eventBus.emit('DATA_CLEARED', {
         systemReady: {

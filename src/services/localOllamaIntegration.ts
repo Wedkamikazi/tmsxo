@@ -584,8 +584,8 @@ const debugModeActive = isDebugMode();
 // Export singleton instance (skip in debug mode)
 let localOllamaIntegration: LocalOllamaIntegration;
 
-if (isDebugMode) {
-  console.log('🚨 LocalOllamaIntegration: Debug mode detected - creating mock instance');
+if (debugModeActive) {
+  console.log('🔧 LocalOllamaIntegration: Debug mode detected - creating mock instance');
   localOllamaIntegration = {
     ensureInitialized: () => Promise.resolve(),
     analyzeTransaction: () => Promise.resolve({ category: 'Other', confidence: 0.5, reasoning: 'Debug mode' }),

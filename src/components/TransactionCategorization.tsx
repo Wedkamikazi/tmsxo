@@ -862,6 +862,41 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
         </div>
       )}
 
+      {/* Category Management Modal */}
+      {showCategoryModal && (
+        <div className="modal-overlay" onClick={() => setShowCategoryModal(false)}>
+          <div className="modal category-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>📋 Manage Categories</h3>
+              <button className="modal-close" onClick={() => setShowCategoryModal(false)}>×</button>
+            </div>
+            <div className="modal-content">
+              <div className="categories-list">
+                <h4>Existing Categories</h4>
+                {categories.length === 0 ? (
+                  <p>No categories available</p>
+                ) : (
+                  <div className="category-items">
+                    {categories.map(category => (
+                      <div key={category.id} className="category-item">
+                        <div className="category-color" style={{ backgroundColor: category.color }}></div>
+                        <span className="category-name">{category.name}</span>
+                        <span className="category-description">{category.description}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={() => setShowCategoryModal(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ML Configuration Modal */}
       {showMLConfigModal && (
         <div className="modal-overlay" onClick={() => setShowMLConfigModal(false)}>

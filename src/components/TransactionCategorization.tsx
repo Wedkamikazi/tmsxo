@@ -385,7 +385,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
                 <div className="stat-label">Avg Response Time</div>
               </div>
               <div className="stat-card qwen-stat">
-                <div className="stat-value">{formatConfidence(stats.qwenStats.averageConfidence)}</div>
+                <div className="stat-value">{formatConfidence(stats.qwenStats.modelAccuracy)}</div>
                 <div className="stat-label">Qwen Confidence</div>
               </div>
             </>

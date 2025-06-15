@@ -756,7 +756,7 @@ class MLNaturalLanguageService {
     
     // Convert to language patterns
     this.languagePatterns = Array.from(patterns.entries())
-      .filter(([pattern, data]) => data.count >= 3) // Minimum frequency
+      .filter(([, data]) => data.count >= 3) // Minimum frequency
       .map(([pattern, data]) => ({
         pattern,
         frequency: data.count,

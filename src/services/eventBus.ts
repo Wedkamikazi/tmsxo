@@ -20,8 +20,12 @@ export interface EventDeliveryResult {
 
 class EventBus {
   private listeners: Map<string, EventCallback[]> = new Map();
+  private errorHandlers: Map<string, ErrorCallback[]> = new Map();
   private eventHistory: DataEvent[] = [];
   private maxHistorySize = 100;
+  private maxRetries = 3;
+  private deliveryQueue: DataEvent[] = [];
+  private isProcessingQueue = false;
 
   // Subscribe to events
   on(eventType: string, callback: EventCallback): () => void {

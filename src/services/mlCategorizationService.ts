@@ -912,7 +912,13 @@ class MLCategorizationService {
       }
       
     } catch (error) {
-      console.error('❌ Failed to save models:', error);
+      systemIntegrityService.logServiceError(
+        'MLCategorizationService',
+        'saveModelsToStorage',
+        error instanceof Error ? error : new Error(String(error)),
+        'high',
+        { component: 'modelManagement', operation: 'save' }
+      );
     }
   }
 

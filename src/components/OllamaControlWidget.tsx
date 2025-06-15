@@ -91,25 +91,32 @@ const OllamaControlWidget: React.FC = () => {
     setStatus(prev => ({ ...prev, isLoading: true }));
     
     try {
-      // In browser environment, we can't actually kill processes
-      // Show instructions to user
-      setStatus(prev => ({ 
-        ...prev, 
-        isLoading: false, 
-        error: 'Browser Limitation: Please manually stop Ollama in terminal with Ctrl+C or run: taskkill /F /IM ollama.exe' 
-      }));
+      const response = await fetch('http://localhost:3001/api/ollama/stop', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
       
-      // Log the command for reference
-      console.log('🛑 MANUAL ACTION REQUIRED: Stop Ollama with one of these methods:');
-      console.log('   Method 1: Go to Ollama terminal and press Ctrl+C');
-      console.log('   Method 2: Run in PowerShell: taskkill /F /IM ollama.exe');
-      console.log('   Method 3: Use Task Manager to end ollama.exe process');
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log('✅ Ollama stopped successfully:', result.message);
+        setStatus({
+          isRunning: false,
+          isLoading: false
+        });
+      } else {
+        setStatus(prev => ({ 
+          ...prev, 
+          isLoading: false, 
+          error: result.message 
+        }));
+      }
       
     } catch (error) {
       setStatus(prev => ({ 
         ...prev, 
         isLoading: false, 
-        error: 'Failed to stop Ollama' 
+        error: 'Failed to stop Ollama - Is the process controller running?' 
       }));
     }
   };

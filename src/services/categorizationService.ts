@@ -394,7 +394,6 @@ class CategorizationService {
     const categories = this.getAllCategories();
     
     const categoryMap = new Map(categories.map(cat => [cat.id, cat.name]));
-    const categorizedTransactionIds = new Set(categorizations.map(c => c.transactionId));
     
     // Count by category
     const categoryCounts = new Map<string, number>();

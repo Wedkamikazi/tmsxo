@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import { Transaction, BankAccount } from '../types';
+
 import { localStorageManager } from './localStorageManager';
 import { bankBalanceService } from './bankBalanceService';
 

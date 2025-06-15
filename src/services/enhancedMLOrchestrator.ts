@@ -330,7 +330,7 @@ class EnhancedMLOrchestrator {
     this.currentStrategy = ollamaAvailable ? 'hybrid' : 'tensorflow-only';
   }
 
-  private updatePerformanceMetrics(model: string, responseTime: number, success: boolean): void {
+  private updatePerformanceMetrics(_model: string, responseTime: number, _success: boolean): void {
     this.performanceMetrics.averageResponseTime = responseTime;
   }
 

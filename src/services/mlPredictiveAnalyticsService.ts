@@ -1,7 +1,6 @@
 import * as tf from '@tensorflow/tfjs';
 
 import { localStorageManager } from './localStorageManager';
-import { bankBalanceService } from './bankBalanceService';
 
 // ADVANCED ML PREDICTIVE ANALYTICS SERVICE
 // COMBINES MULTIPLE AI MODELS FOR FINANCIAL FORECASTING

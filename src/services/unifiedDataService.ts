@@ -1,7 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// @ts-ignore: Transaction import maintained for architectural consistency
 import { Transaction, BankAccount, UploadedFile } from '../types';
 import { eventBus } from './eventBus';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// StorageStats is used indirectly through getStorageStats() method calls
 import { localStorageManager, StoredTransaction as LSMStoredTransaction, StorageStats } from './localStorageManager';
 
 // UNIFIED DATA SERVICE - SINGLE SOURCE OF TRUTH

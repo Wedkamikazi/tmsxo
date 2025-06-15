@@ -314,7 +314,13 @@ class MLCategorizationService {
       return enhancedResult;
       
     } catch (error) {
-      console.error('❌ ML Categorization Error:', error);
+      systemIntegrityService.logServiceError(
+        'MLCategorizationService',
+        'categorizeTransaction',
+        error instanceof Error ? error : new Error(String(error)),
+        'high',
+        { transactionId: transaction.id, description: transaction.description.substring(0, 50) }
+      );
       // Fallback to rule-based categorization
       return this.fallbackRuleBasedCategorization(transaction);
     }

@@ -266,10 +266,10 @@ class MLCategorizationService {
     }
 
     // Track model access for memory management
-    memoryManagementService.touchModel('categorization-model');
-    memoryManagementService.touchModel('sentiment-model');
-    memoryManagementService.touchModel('anomaly-model');
-    memoryManagementService.touchModel('pattern-model');
+    performanceManager.touchModel('categorization-model');
+    performanceManager.touchModel('sentiment-model');
+    performanceManager.touchModel('anomaly-model');
+    performanceManager.touchModel('pattern-model');
 
     try {
       // Prepare input features

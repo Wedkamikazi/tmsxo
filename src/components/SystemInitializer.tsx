@@ -99,21 +99,7 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
   };
 
   const getSystemStatus = () => {
-    if (!systemSafetyManager.isHealthy()) {
-      return {
-        isHealthy: false,
-        runningProcesses: systemSafetyManager.getRunningProcesses(),
-        memoryUsage: systemSafetyManager.getMemoryUsage(),
-        warnings: systemSafetyManager.getWarnings()
-      };
-    }
-    
-    return {
-      isHealthy: true,
-      runningProcesses: systemSafetyManager.getRunningProcesses(),
-      memoryUsage: systemSafetyManager.getMemoryUsage(),
-      warnings: []
-    };
+    return systemSafetyManager.getSystemStatus();
   };
 
   const handleDebugToggle = () => {

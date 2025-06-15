@@ -182,21 +182,48 @@ class StorageQuotaManager {
   }
 
   /**
-   * Estimate total localStorage quota size
+   * Estimate total localStorage quota size (optimized for fast startup)
    */
   private async estimateQuotaSize(): Promise<number> {
-    // Try to determine localStorage quota through testing
+    // Check if we have a cached estimate
     try {
+      const cached = localStorage.getItem('tms_quota_estimate');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        const age = Date.now() - parsed.timestamp;
+        // Use cached value if less than 24 hours old
+        if (age < 24 * 60 * 60 * 1000) {
+          return parsed.size;
+        }
+      }
+    } catch {}
+    
+    // Fast estimation: Use a reasonable default for quick startup
+    // We'll do the expensive estimation later in the background
+    const fastEstimate = 10 * 1024 * 1024; // 10MB default
+    
+    // Schedule expensive estimation for later (after initialization)
+    setTimeout(() => this.performDetailedQuotaEstimation(), 5000);
+    
+    return fastEstimate;
+  }
+
+  /**
+   * Perform detailed quota estimation in background (non-blocking)
+   */
+  private async performDetailedQuotaEstimation(): Promise<void> {
+    try {
+      console.log('🔍 Running detailed quota estimation in background...');
       const testKey = 'tms_quota_test';
       let quotaSize = 0;
       
-      // Binary search for quota size
+      // Binary search for quota size (smaller bounds for faster search)
       let low = 0;
-      let high = 50 * 1024 * 1024; // Start with 50MB upper bound
+      let high = 20 * 1024 * 1024; // Start with 20MB upper bound
       
       while (low < high) {
         const mid = Math.floor((low + high) / 2);
-        const testValue = 'x'.repeat(mid);
+        const testValue = 'x'.repeat(Math.min(mid, 100000)); // Test in smaller chunks
         
         try {
           localStorage.setItem(testKey, testValue);
@@ -206,6 +233,11 @@ class StorageQuotaManager {
         } catch (error) {
           high = mid;
         }
+        
+        // Add small delay to avoid blocking UI
+        if (quotaSize > 0 && quotaSize % (1024 * 1024) === 0) {
+          await new Promise(resolve => setTimeout(resolve, 10));
+        }
       }
       
       // Clean up
@@ -213,12 +245,23 @@ class StorageQuotaManager {
         localStorage.removeItem(testKey);
       } catch {}
       
-      // Default to 10MB if estimation fails
-      return quotaSize > 0 ? quotaSize * 2 : 10 * 1024 * 1024; // UTF-16 factor
+      const finalSize = quotaSize > 0 ? quotaSize * 2 : 10 * 1024 * 1024;
+      
+      // Cache the result
+      try {
+        localStorage.setItem('tms_quota_estimate', JSON.stringify({
+          size: finalSize,
+          timestamp: Date.now()
+        }));
+      } catch {}
+      
+      console.log(`✅ Quota estimation complete: ${Math.round(finalSize / 1024 / 1024)}MB`);
+      
+      // Update current quota info with new estimate
+      await this.updateQuotaInfo();
       
     } catch (error) {
-      console.warn('Could not estimate quota size, using default 10MB');
-      return 10 * 1024 * 1024; // 10MB default
+      console.warn('Background quota estimation failed:', error);
     }
   }
 

@@ -217,8 +217,8 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
         await Promise.all(
           batch.map(async (transaction) => {
             try {
-                             // Use enhanced categorization service
-               const result = await enhancedCategorizationService.categorizeTransaction(transaction);
+                             // Use unified categorization service
+               const result = await unifiedCategorizationService.categorizeTransaction(transaction);
 
                // Store enhanced analysis if available from metadata
                if (result.metadata) {

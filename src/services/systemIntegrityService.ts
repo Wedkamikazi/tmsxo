@@ -852,7 +852,7 @@ class SystemIntegrityService {
       const highErrors = errorStats.errorsBySeverity.high || 0;
       healthScore -= criticalErrors * 8;
       healthScore -= highErrors * 3;
-      healthScore -= Math.min(errorStats.recentErrorRate * 10, 15);
+      healthScore -= Math.min(errorStats.errorRate * 10, 15);
       
       // Memory health penalties
       if (memoryHealth.status === 'emergency') healthScore -= 20;

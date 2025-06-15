@@ -1,6 +1,6 @@
 import { Transaction, TransactionCategory } from '../types';
 import { enhancedMLOrchestrator, EnhancedMLResult } from './enhancedMLOrchestrator';
-import { localOllamaIntegration } from './localOllamaIntegration';
+// import { localOllamaIntegration } from './localOllamaIntegration';
 import { categorizationService } from './categorizationService';
 import { systemIntegrityService } from './systemIntegrityService';
 import { localStorageManager } from './localStorageManager';

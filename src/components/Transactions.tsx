@@ -288,7 +288,6 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
       });
     }
     
-    console.log('FILTERING DEBUG: Final filtered result:', filtered.length);
     return filtered;
   }, [transactions, filters, sortField, sortDirection, showDuplicatesOnly, duplicateGroups, bankAccounts]);
 

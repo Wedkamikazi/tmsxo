@@ -585,12 +585,10 @@ class EnhancedCategorizationService {
   }
 }
 
+import { isDebugMode } from '../utils/debugMode';
+
 // Check for debug mode
-const isDebugMode = typeof window !== 'undefined' && (
-  window.location.search.includes('debug') || 
-  localStorage.getItem('debugMode') === 'true' ||
-  (window as any).__TREASURY_DEBUG_MODE === true
-);
+const debugModeActive = isDebugMode();
 
 // Export singleton instance (skip in debug mode)
 let enhancedCategorizationService: EnhancedCategorizationService;

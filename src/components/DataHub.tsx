@@ -374,6 +374,7 @@ export const DataHub: React.FC = () => {
 
   return (
     <div className="datahub">
+      {debugBanner}
       <div className="datahub-header">
         <div className="container">
           <h1 className="datahub-title">DataHub</h1>

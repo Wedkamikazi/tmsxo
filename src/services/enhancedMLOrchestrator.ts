@@ -355,7 +355,7 @@ class EnhancedMLOrchestrator {
   }
 
   private logMLError(operation: string, error: unknown, severity: string): void {
-    console.error(`ML Error in ${operation}:`, error);
+    console.error(`[${severity.toUpperCase()}] ML Error in ${operation}:`, error);
   }
 }
 

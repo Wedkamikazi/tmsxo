@@ -402,6 +402,11 @@ export class UnifiedCategorizationService {
     };
   }
 
+  // UTILITY METHODS
+  async ensureInitialized(): Promise<void> {
+    await this.initialize();
+  }
+
   // CLEANUP
   dispose(): void {
     this.registry.dispose();

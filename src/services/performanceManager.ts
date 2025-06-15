@@ -8,7 +8,7 @@ import * as tf from '@tensorflow/tfjs';
 import { eventBus } from './eventBus';
 import { systemIntegrityService } from './systemIntegrityService';
 
-interface PerformanceMetrics {
+export interface PerformanceMetrics {
   memoryUsage: number;
   cacheSize: number;
   operationCount: number;

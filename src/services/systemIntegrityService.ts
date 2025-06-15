@@ -992,6 +992,315 @@ class SystemIntegrityService {
       };
     }
   }
+
+  // CONSOLIDATED DATA INTEGRITY VALIDATION
+  // Replaces scattered validation logic from unifiedDataService and duplicateDetectionService
+  async performComprehensiveDataIntegrity(): Promise<{
+    isValid: boolean;
+    issues: IntegrityIssue[];
+    duplicateReport: {
+      duplicates: any[];
+      confidenceScores: number[];
+      avgSimilarity: number;
+    };
+    anomalies: string[];
+    recommendations: string[];
+    integrityScore: number;
+    summary: {
+      totalTransactions: number;
+      totalFiles: number;
+      totalAccounts: number;
+      orphanedTransactions: number;
+      orphanedFiles: number;
+      duplicateTransactions: number;
+    };
+  }> {
+    const issues: IntegrityIssue[] = [];
+    const anomalies: string[] = [];
+    const recommendations: string[] = [];
+
+    console.log('🔍 Performing Comprehensive Data Integrity Check...');
+
+    // Get all data for analysis
+    const transactions = localStorageManager.getAllTransactions();
+    const accounts = localStorageManager.getAllAccounts();
+    const files = localStorageManager.getAllFiles();
+
+    // ENHANCED DUPLICATE DETECTION (from duplicateDetectionService)
+    const duplicateReport = this.findSophisticatedDuplicates(transactions);
+
+    // ORPHANED DATA DETECTION (consolidated from all services)
+    const { orphanedTransactions, orphanedFiles } = this.detectOrphanedData(transactions, accounts, files, issues);
+
+    // DATA ANOMALY DETECTION (from unifiedDataService)
+    const detectedAnomalies = this.detectDataAnomalies(transactions, accounts);
+    anomalies.push(...detectedAnomalies);
+
+    // BALANCE CONSISTENCY CHECK (enhanced)
+    const balanceIssues = this.validateBalanceConsistency(transactions);
+    anomalies.push(...balanceIssues);
+
+    // RUN CORE CONSISTENCY CHECKS
+    await this.checkTransactionAccountReferences(issues);
+    await this.checkFileTransactionReferences(issues);
+    await this.checkBalanceCalculations(issues);
+    await this.checkDuplicateIds(issues);
+
+    // CALCULATE INTEGRITY SCORE (0-100)
+    let integrityScore = 100;
+    integrityScore -= issues.length * 5; // Storage issues
+    integrityScore -= orphanedTransactions * 2; // Orphaned transactions
+    integrityScore -= orphanedFiles * 2; // Orphaned files
+    integrityScore -= duplicateReport.duplicates.length * 3; // Duplicates
+    integrityScore -= anomalies.length * 2; // Anomalies
+    integrityScore = Math.max(0, integrityScore);
+
+    // GENERATE RECOMMENDATIONS
+    if (duplicateReport.duplicates.length > 0) {
+      recommendations.push(`Remove ${duplicateReport.duplicates.length} duplicate transactions`);
+    }
+    if (orphanedTransactions > 0) {
+      recommendations.push(`Clean up ${orphanedTransactions} orphaned transactions`);
+    }
+    if (orphanedFiles > 0) {
+      recommendations.push(`Fix ${orphanedFiles} file-transaction mismatches`);
+    }
+    if (anomalies.length > 0) {
+      recommendations.push(`Review ${anomalies.length} data anomalies`);
+    }
+    const storageStats = localStorageManager.getStorageStats();
+    if (storageStats.totalSize > 5000) {
+      recommendations.push('Consider archiving old data (storage > 5MB)');
+    }
+
+    return {
+      isValid: issues.length === 0 && duplicateReport.duplicates.length === 0 && anomalies.length === 0,
+      issues,
+      duplicateReport,
+      anomalies,
+      recommendations,
+      integrityScore,
+      summary: {
+        totalTransactions: transactions.length,
+        totalFiles: files.length,
+        totalAccounts: accounts.length,
+        orphanedTransactions,
+        orphanedFiles,
+        duplicateTransactions: duplicateReport.duplicates.length
+      }
+    };
+  }
+
+  // SOPHISTICATED DUPLICATE DETECTION (consolidated from duplicateDetectionService)
+  private findSophisticatedDuplicates(transactions: any[]): {
+    duplicates: any[];
+    confidenceScores: number[];
+    avgSimilarity: number;
+  } {
+    const seen = new Map<string, any>();
+    const duplicates: any[] = [];
+    const confidenceScores: number[] = [];
+
+    transactions.forEach(transaction => {
+      // Create a sophisticated duplicate detection key
+      const normalizedDesc = transaction.description.trim().toLowerCase();
+      const key = [
+        transaction.accountId,
+        transaction.date,
+        transaction.debitAmount || 0,
+        transaction.creditAmount || 0,
+        normalizedDesc.substring(0, 50) // First 50 chars of description
+      ].join('|');
+      
+      if (seen.has(key)) {
+        // Additional validation - check if they're really duplicates
+        const existing = seen.get(key)!;
+        const similarity = this.calculateTransactionSimilarity(existing, transaction);
+        if (similarity > 0.9) {
+          duplicates.push(transaction);
+          confidenceScores.push(similarity);
+        }
+      } else {
+        seen.set(key, transaction);
+      }
+    });
+
+    return {
+      duplicates,
+      confidenceScores,
+      avgSimilarity: confidenceScores.length > 0 ? 
+        confidenceScores.reduce((sum, score) => sum + score, 0) / confidenceScores.length : 0
+    };
+  }
+
+  // ENHANCED DUPLICATE DETECTION WITH SIMILARITY SCORING
+  private calculateTransactionSimilarity(t1: any, t2: any): number {
+    // Same basic data
+    if (t1.accountId !== t2.accountId || t1.date !== t2.date) return 0;
+    if (t1.debitAmount !== t2.debitAmount || t1.creditAmount !== t2.creditAmount) return 0;
+    
+    // Similar descriptions (allow for minor variations)
+    const desc1 = t1.description.trim().toLowerCase();
+    const desc2 = t2.description.trim().toLowerCase();
+    return this.calculateStringSimilarity(desc1, desc2);
+  }
+
+  // STRING SIMILARITY USING LEVENSHTEIN DISTANCE
+  private calculateStringSimilarity(str1: string, str2: string): number {
+    const longer = str1.length > str2.length ? str1 : str2;
+    const shorter = str1.length > str2.length ? str2 : str1;
+    
+    if (longer.length === 0) return 1.0;
+    
+    const editDistance = this.levenshteinDistance(longer, shorter);
+    return (longer.length - editDistance) / longer.length;
+  }
+
+  private levenshteinDistance(str1: string, str2: string): number {
+    const matrix = [];
+    
+    for (let i = 0; i <= str2.length; i++) {
+      matrix[i] = [i];
+    }
+    
+    for (let j = 0; j <= str1.length; j++) {
+      matrix[0][j] = j;
+    }
+    
+    for (let i = 1; i <= str2.length; i++) {
+      for (let j = 1; j <= str1.length; j++) {
+        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          );
+        }
+      }
+    }
+    
+    return matrix[str2.length][str1.length];
+  }
+
+  // ORPHANED DATA DETECTION (consolidated from all services)
+  private detectOrphanedData(transactions: any[], accounts: any[], files: any[], issues: IntegrityIssue[]): {
+    orphanedTransactions: number;
+    orphanedFiles: number;
+  } {
+    const accountIds = new Set(accounts.map(a => a.id));
+    const fileIds = new Set(files.map(f => f.id));
+    
+    const orphanedTransactions = transactions.filter(t => !accountIds.has(t.accountId));
+    const orphanedFiles = transactions.filter(t => t.fileId && !fileIds.has(t.fileId));
+    
+    if (orphanedTransactions.length > 0) {
+      issues.push({
+        severity: 'high',
+        component: 'transactions',
+        description: `Found ${orphanedTransactions.length} transactions with invalid account references`,
+        affectedData: orphanedTransactions.map(t => t.id),
+        resolution: 'Clean up orphaned transactions or fix account references',
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    if (orphanedFiles.length > 0) {
+      issues.push({
+        severity: 'medium',
+        component: 'files',
+        description: `Found ${orphanedFiles.length} transactions with invalid file references`,
+        affectedData: orphanedFiles.map(t => t.id),
+        resolution: 'Fix file references or remove invalid file IDs',
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    return {
+      orphanedTransactions: orphanedTransactions.length,
+      orphanedFiles: orphanedFiles.length
+    };
+  }
+
+  // DATA ANOMALY DETECTION (consolidated from unifiedDataService)
+  private detectDataAnomalies(transactions: any[], accounts: any[]): string[] {
+    const anomalies: string[] = [];
+
+    // Check for transactions with impossible dates
+    const now = new Date();
+    const twoYearsAgo = new Date(now.getFullYear() - 2, now.getMonth(), now.getDate());
+    const oneYearAhead = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate());
+
+    const oldTransactions = transactions.filter(t => new Date(t.date) < twoYearsAgo);
+    const futureTransactions = transactions.filter(t => new Date(t.date) > oneYearAhead);
+
+    if (oldTransactions.length > 0) {
+      anomalies.push(`${oldTransactions.length} transactions are older than 2 years`);
+    }
+
+    if (futureTransactions.length > 0) {
+      anomalies.push(`${futureTransactions.length} transactions are dated in the future`);
+    }
+
+    // Check for extremely large transactions
+    const largeTransactions = transactions.filter(t => 
+      (t.debitAmount && t.debitAmount > 1000000) || 
+      (t.creditAmount && t.creditAmount > 1000000)
+    );
+
+    if (largeTransactions.length > 0) {
+      anomalies.push(`${largeTransactions.length} transactions have amounts over 1,000,000`);
+    }
+
+    // Check for accounts with no transactions
+    const accountsWithTransactions = new Set(transactions.map(t => t.accountId));
+    const emptyAccounts = accounts.filter(a => !accountsWithTransactions.has(a.id));
+
+    if (emptyAccounts.length > 0) {
+      anomalies.push(`${emptyAccounts.length} accounts have no transactions`);
+    }
+
+    return anomalies;
+  }
+
+  // BALANCE CONSISTENCY VALIDATION (enhanced from unifiedDataService)
+  private validateBalanceConsistency(transactions: any[]): string[] {
+    const issues: string[] = [];
+    const transactionsByAccount = new Map<string, any[]>();
+    
+    // Group transactions by account
+    transactions.forEach(t => {
+      if (!transactionsByAccount.has(t.accountId)) {
+        transactionsByAccount.set(t.accountId, []);
+      }
+      transactionsByAccount.get(t.accountId)!.push(t);
+    });
+
+    // Check each account's balance consistency
+    for (const [accountId, accountTransactions] of transactionsByAccount) {
+      const sortedTransactions = accountTransactions.sort((a, b) => 
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+
+      let calculatedBalance = 0;
+      let inconsistentCount = 0;
+
+      for (const transaction of sortedTransactions) {
+        calculatedBalance += (transaction.creditAmount || 0) - (transaction.debitAmount || 0);
+        
+        if (Math.abs(transaction.balance - calculatedBalance) > 0.01) {
+          inconsistentCount++;
+        }
+      }
+
+      if (inconsistentCount > 0) {
+        issues.push(`Account ${accountId}: ${inconsistentCount} transactions with balance inconsistencies`);
+      }
+    }
+
+    return issues;
+  }
 }
 
 // Export singleton instance

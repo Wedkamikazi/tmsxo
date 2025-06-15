@@ -344,7 +344,7 @@ class SystemIntegrityService {
       if (!integrityResult.isValid) {
         // Attempt to fix common issues
         try {
-          const snapshot = localStorageManager.createSnapshot('auto_repair');
+          localStorageManager.createSnapshot('auto_repair');
           // Add specific repair logic here
           repairedIssues.push('Fixed data integrity issues');
         } catch (error) {

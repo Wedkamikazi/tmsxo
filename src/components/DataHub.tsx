@@ -40,6 +40,7 @@ export const DataHub: React.FC = () => {
   const [eventBus, setEventBus] = useState<any>(null);
   const [unifiedDataService, setUnifiedDataService] = useState<any>(null);
   const [initializationSkipped, setInitializationSkipped] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     // PROFESSIONAL STATE MANAGEMENT: Skip reinitialization if services are fresh

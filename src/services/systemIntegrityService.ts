@@ -437,9 +437,8 @@ class SystemIntegrityService {
 
   private async validateAccountConsistency(payload: any): Promise<void> {
     // Reserved for future account-specific consistency check implementation
-    // @ts-ignore: payloadData reserved for future implementation
-    const payloadData = payload || {};
-    // TODO: Implement account-specific consistency checks using payloadData.accountId and payloadData.action
+    const _payloadData = payload || {};
+    // TODO: Implement account-specific consistency checks using _payloadData.accountId and _payloadData.action
   }
 
   private async validateFileConsistency(payload: any): Promise<void> {

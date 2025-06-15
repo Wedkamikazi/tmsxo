@@ -29,7 +29,7 @@ interface CacheEntry<T> {
   lastAccessed: number;
 }
 
-interface MemoryStats {
+export interface MemoryStats {
   used: number;
   total: number;
   percentage: number;

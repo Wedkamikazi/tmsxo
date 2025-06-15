@@ -29,7 +29,7 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
         // Set a maximum timeout of 8 seconds for initialization
         const INITIALIZATION_TIMEOUT = 8000;
         
-        const initPromise = serviceOrchestrator.initializeSystem();
+        const initPromise = serviceOrchestrator.initializeSystem(true); // Use fast mode
         const timeoutPromise = new Promise<never>((_, reject) => {
           initializationTimeout = setTimeout(() => {
             reject(new Error('System initialization timeout - proceeding with partial initialization'));

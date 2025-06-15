@@ -48,12 +48,20 @@ export const OllamaChat: React.FC = () => {
 
   const checkOllamaStatus = async () => {
     try {
+      console.log('🔄 Checking Ollama status...');
       const health = await localOllamaIntegration.checkOllamaHealth();
+      console.log('📊 Ollama health check result:', health);
       setIsOllamaAvailable(health.isReachable);
       setCurrentModel(health.preferredModel);
+      
+      if (health.isReachable) {
+        console.log('✅ Ollama is available');
+      } else {
+        console.log('❌ Ollama is not available');
+      }
     } catch (error) {
-      setIsOllamaAvailable(false);
       console.error('Failed to check Ollama status:', error);
+      setIsOllamaAvailable(false);
     }
   };
 

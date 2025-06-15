@@ -1,4 +1,4 @@
-import { Transaction, TransactionCategory, MLCategorizationResult } from '../types';
+import { Transaction, TransactionCategory } from '../types';
 import { enhancedMLOrchestrator, EnhancedMLResult } from './enhancedMLOrchestrator';
 import { localOllamaIntegration } from './localOllamaIntegration';
 import { categorizationService } from './categorizationService';

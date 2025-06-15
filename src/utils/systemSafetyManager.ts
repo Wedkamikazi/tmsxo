@@ -314,12 +314,13 @@ class SystemSafetyManager {
         this.performCleanup();
       });
 
-      window.addEventListener('unload', () => {
+      // Use 'pagehide' instead of deprecated 'unload' event
+      window.addEventListener('pagehide', () => {
         this.performCleanup();
       });
     }
 
-    console.log('✅ Cleanup handlers registered');
+    console.log('✅ Cleanup handlers registered (using modern event listeners)');
   }
 
   /**

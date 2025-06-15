@@ -34,26 +34,15 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
     localStorage.setItem('debugMode', 'true');
     (window as any).__TREASURY_DEBUG_MODE = true;
     
-    // Simulate brief loading then go to emergency mode
+    // Simulate brief loading then go directly to ready
     const loadingTimeout = setTimeout(() => {
       if (mounted) {
         setInitState({
-          status: 'emergency',
-          progress: 100,
-          error: 'Debug mode - services bypassed'
+          status: 'ready',
+          progress: 100
         });
-        
-        // Auto-continue after 2 seconds
-        setTimeout(() => {
-          if (mounted) {
-            setInitState(prev => ({
-              ...prev,
-              status: 'ready'
-            }));
-          }
-        }, 2000);
       }
-    }, 1000);
+    }, 1500);
 
     return () => {
       mounted = false;

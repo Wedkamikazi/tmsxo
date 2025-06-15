@@ -352,7 +352,7 @@ class LocalStorageManager {
   }
 
   // SNAPSHOT AND BACKUP OPERATIONS
-  createSnapshot(operationType: string): string {
+  createSnapshot(_operationType: string): string {
     const timestamp = new Date().toISOString();
     const snapshot: StorageSnapshot = {
       timestamp,

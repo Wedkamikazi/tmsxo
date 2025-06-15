@@ -4,7 +4,6 @@ import { localOllamaIntegration } from './localOllamaIntegration';
 // import { systemIntegrityService } from './systemIntegrityService';
 // import { performanceManager } from './performanceManager';
 import { cleanupManager } from './cleanupManager';
-import { systemSafetyManager } from '../utils/systemSafetyManager';
 import { localStorageManager } from './localStorageManager';
 import { categorizationService } from './categorizationService';
 import { isDebugMode } from '../utils/debugMode';

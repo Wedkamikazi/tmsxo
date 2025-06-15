@@ -606,52 +606,139 @@ class ServiceOrchestrator {
     }
   }
 
-  // GET SERVICE HEALTH REPORT
-  getHealthReport(): {
+  // GET COMPREHENSIVE SYSTEM HEALTH REPORT (UNIFIED)
+  async getHealthReport(): Promise<{
     overall: string;
-    services: Array<{
-      name: string;
-      status: string;
-      healthStatus: string;
-      uptime?: number;
-      error?: string;
-    }>;
-    recommendations: string[];
-  } {
-    const systemStatus = this.getSystemStatus();
-    const now = Date.now();
-    
-    const services = Array.from(systemStatus.services.values()).map(status => ({
-      name: status.name,
-      status: status.status,
-      healthStatus: status.healthStatus,
-      uptime: status.readyTime ? now - status.readyTime : undefined,
-      error: status.error
-    }));
-
-    const recommendations: string[] = [];
-    
-    const failedServices = services.filter(s => s.status === 'failed');
-    if (failedServices.length > 0) {
-      recommendations.push(`${failedServices.length} services failed to initialize - consider restarting`);
-    }
-    
-    const degradedServices = services.filter(s => s.healthStatus === 'degraded');
-    if (degradedServices.length > 0) {
-      recommendations.push(`${degradedServices.length} services are degraded - monitor closely`);
-    }
-
-    if (systemStatus.overall === 'failed') {
-      recommendations.push('System is in failed state - immediate attention required');
-    } else if (systemStatus.overall === 'degraded') {
-      recommendations.push('System is degraded - some functionality may be limited');
-    }
-
-    return {
-      overall: systemStatus.overall,
-      services,
-      recommendations
+    score: number;
+    orchestrator: {
+      services: Array<{
+        name: string;
+        status: string;
+        healthStatus: string;
+        uptime?: number;
+        error?: string;
+      }>;
+      serviceInitialization: 'complete' | 'partial' | 'failed';
     };
+    systemHealth: Awaited<ReturnType<typeof systemIntegrityService.getUnifiedSystemHealth>>;
+    recommendations: string[];
+  }> {
+    try {
+      // Get orchestrator-specific status
+      const systemStatus = this.getSystemStatus();
+      const now = Date.now();
+      
+      const orchestratorServices = Array.from(systemStatus.services.values()).map(status => ({
+        name: status.name,
+        status: status.status,
+        healthStatus: status.healthStatus,
+        uptime: status.readyTime ? now - status.readyTime : undefined,
+        error: status.error
+      }));
+
+      // Get comprehensive system health from unified monitoring
+      const unifiedHealth = await systemIntegrityService.getUnifiedSystemHealth();
+      
+      // Determine service initialization status
+      let serviceInitialization: 'complete' | 'partial' | 'failed';
+      const failedServices = orchestratorServices.filter(s => s.status === 'failed');
+      const readyServices = orchestratorServices.filter(s => s.status === 'ready');
+      
+      if (failedServices.length === 0 && readyServices.length === orchestratorServices.length) {
+        serviceInitialization = 'complete';
+      } else if (readyServices.length > 0) {
+        serviceInitialization = 'partial';
+      } else {
+        serviceInitialization = 'failed';
+      }
+
+      // Combine recommendations from orchestrator and unified health
+      const orchestratorRecommendations: string[] = [];
+      
+      if (failedServices.length > 0) {
+        orchestratorRecommendations.push(`${failedServices.length} services failed to initialize - consider restarting`);
+      }
+      
+      const degradedServices = orchestratorServices.filter(s => s.healthStatus === 'degraded');
+      if (degradedServices.length > 0) {
+        orchestratorRecommendations.push(`${degradedServices.length} services are degraded - monitor closely`);
+      }
+
+      if (systemStatus.overall === 'failed') {
+        orchestratorRecommendations.push('System is in failed state - immediate attention required');
+      }
+
+      // Combine all recommendations, prioritizing critical ones
+      const allRecommendations = [
+        ...orchestratorRecommendations,
+        ...unifiedHealth.recommendations
+      ];
+      
+      // Remove duplicates and limit
+      const uniqueRecommendations = Array.from(new Set(allRecommendations)).slice(0, 10);
+
+      return {
+        overall: unifiedHealth.overall,
+        score: unifiedHealth.score,
+        orchestrator: {
+          services: orchestratorServices,
+          serviceInitialization
+        },
+        systemHealth: unifiedHealth,
+        recommendations: uniqueRecommendations
+      };
+      
+    } catch (error) {
+      // Fallback to basic orchestrator health if unified health fails
+      systemIntegrityService.logServiceError(
+        'ServiceOrchestrator',
+        'getHealthReport',
+        error instanceof Error ? error : new Error(String(error)),
+        'medium',
+        { fallbackMode: true }
+      );
+      
+      const systemStatus = this.getSystemStatus();
+      const services = Array.from(systemStatus.services.values()).map(status => ({
+        name: status.name,
+        status: status.status,
+        healthStatus: status.healthStatus,
+        uptime: status.readyTime ? Date.now() - status.readyTime : undefined,
+        error: status.error
+      }));
+
+      return {
+        overall: 'warning',
+        score: 50,
+        orchestrator: {
+          services,
+          serviceInitialization: 'partial'
+        },
+        systemHealth: {
+          overall: 'warning',
+          score: 50,
+          services: {
+            storage: { status: 'unknown', details: {} },
+            performance: { status: 'unknown', details: {} },
+            dataIntegrity: { status: 'unknown', details: {} },
+            eventBus: { status: 'unknown', details: {} },
+            crossTabSync: { status: 'unknown', details: {} }
+          },
+          errorSummary: {
+            totalErrors: 0,
+            criticalErrors: 0,
+            recentErrorRate: 0,
+            topErrorServices: []
+          },
+          recommendations: ['Health monitoring temporarily unavailable'],
+          lastCheck: new Date().toISOString()
+        },
+        recommendations: [
+          'Health monitoring system unavailable - using fallback mode',
+          'Check system integrity service status'
+        ]
+      };
+    }
   }
 }
 

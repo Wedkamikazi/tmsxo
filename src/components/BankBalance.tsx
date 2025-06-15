@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { unifiedBalanceService, type DailyBalance, type BalanceFilters, type BalanceStats } from '../services/unifiedBalanceService';
+import { 
+  bankBalanceService, 
+  type DailyBalance, 
+  type BankBalanceFilters, 
+  type BankBalanceStats 
+} from '../services/bankBalanceService';
 import { unifiedDataService } from '../services/unifiedDataService';
 import { BankAccount } from '../types';
 import './BankBalance.css';
@@ -8,7 +13,7 @@ interface BankBalanceProps {
   refreshTrigger?: number;
 }
 
-type SortField = 'date' | 'accountName' | 'closingBalance' | 'openingBalance' | 'dailyMovement' | 'transactionCount';
+type SortField = 'date' | 'accountName' | 'openingBalance' | 'closingBalance' | 'movement' | 'transactionCount';
 type SortDirection = 'asc' | 'desc';
 
 const ITEMS_PER_PAGE_OPTIONS = [25, 50, 100, 200];
@@ -17,10 +22,11 @@ const DEFAULT_ITEMS_PER_PAGE = 50;
 export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
   // State management
   const [balances, setBalances] = useState<DailyBalance[]>([]);
+  const [filteredBalances, setFilteredBalances] = useState<DailyBalance[]>([]);
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
+  const [stats, setStats] = useState<BankBalanceStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,25 +37,20 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   
   // Filtering state
-  const [filters, setFilters] = useState<BalanceFilters>({
+  const [filters, setFilters] = useState<BankBalanceFilters>({
     accountId: '',
     dateFrom: '',
     dateTo: '',
-    balanceFrom: '',
-    balanceTo: '',
-    movementFrom: '',
-    movementTo: ''
+    balanceMin: '',
+    balanceMax: '',
+    movementMin: '',
+    movementMax: ''
   });
 
-  // Load data on component mount and refresh
+  // Load data
   const loadData = useCallback(async () => {
     try {
-      // Show refreshing indicator if not initial load
-      if (balances.length > 0) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
-      }
+      setLoading(true);
       setError(null);
       
       // Load bank accounts
@@ -57,307 +58,205 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
       setBankAccounts(accounts);
       
       // Load daily balances
-      const dailyBalances = unifiedBalanceService.getDailyBalances();
+      const dailyBalances = bankBalanceService.getDailyBalances();
       setBalances(dailyBalances);
+      
+      // Apply filters and sorting
+      const filtered = bankBalanceService.getFilteredBalances(filters, sortField, sortDirection);
+      setFilteredBalances(filtered);
+      
+      // Calculate stats
+      const balanceStats = bankBalanceService.getBalanceStats(filtered);
+      setStats(balanceStats);
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load bank balances');
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
-  }, [balances.length]);
+  }, [filters, sortField, sortDirection]);
 
   useEffect(() => {
     loadData();
-  }, [refreshTrigger]); // Only depend on refreshTrigger to avoid infinite loops
+  }, [loadData, refreshTrigger]);
 
-  // Initial load effect
-  useEffect(() => {
-    loadData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Filtered and sorted balances
-  const filteredAndSortedBalances = useMemo(() => {
-    if (!balances || balances.length === 0) {
-      return [];
-    }
-    
-    // Apply filters
-    const filtered = unifiedBalanceService.filterBalances(balances, filters);
-    
-    // Apply sorting
-    const sorted = [...filtered].sort((a, b) => {
-      let aValue: string | number;
-      let bValue: string | number;
-      
-      switch (sortField) {
-        case 'date':
-          aValue = a.date;
-          bValue = b.date;
-          break;
-        case 'accountName':
-          aValue = a.accountName;
-          bValue = b.accountName;
-          break;
-        case 'closingBalance':
-          aValue = a.closingBalance;
-          bValue = b.closingBalance;
-          break;
-        case 'openingBalance':
-          aValue = a.openingBalance;
-          bValue = b.openingBalance;
-          break;
-        case 'dailyMovement':
-          aValue = a.dailyMovement;
-          bValue = b.dailyMovement;
-          break;
-        case 'transactionCount':
-          aValue = a.transactionCount;
-          bValue = b.transactionCount;
-          break;
-        default:
-          aValue = a.date;
-          bValue = b.date;
-      }
-      
-      let comparison = 0;
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        comparison = aValue.localeCompare(bValue);
-      } else {
-        comparison = Number(aValue) - Number(bValue);
-      }
-      
-      return sortDirection === 'desc' ? -comparison : comparison;
-    });
-    
-    return sorted;
-  }, [balances, filters, sortField, sortDirection]);
-
-  // Paginated data
-  const paginatedBalances = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return filteredAndSortedBalances.slice(startIndex, endIndex);
-  }, [filteredAndSortedBalances, currentPage, itemsPerPage]);
-
-  // Statistics
-  const stats: BalanceStats = useMemo(() => {
-    return unifiedBalanceService.getBalanceStats(filteredAndSortedBalances);
-  }, [filteredAndSortedBalances]);
-
-  // Pagination calculations
-  const totalPages = Math.ceil(filteredAndSortedBalances.length / itemsPerPage);
-  const startItem = (currentPage - 1) * itemsPerPage + 1;
-  const endItem = Math.min(currentPage * itemsPerPage, filteredAndSortedBalances.length);
-
-  // Event handlers
+  // Handle sorting
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortField(field);
       setSortDirection('desc');
     }
-    setCurrentPage(1);
   };
 
-  const handleFilterChange = (key: keyof BalanceFilters, value: string) => {
+  // Handle filter changes
+  const handleFilterChange = (key: keyof BankBalanceFilters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page when filters change
   };
 
+  // Clear all filters
   const clearFilters = () => {
     setFilters({
       accountId: '',
       dateFrom: '',
       dateTo: '',
-      balanceFrom: '',
-      balanceTo: '',
-      movementFrom: '',
-      movementTo: ''
+      balanceMin: '',
+      balanceMax: '',
+      movementMin: '',
+      movementMax: ''
     });
     setCurrentPage(1);
   };
 
-  const handleExport = () => {
+  // Export to CSV
+  const handleExportCSV = () => {
     try {
-      const csvContent = unifiedBalanceService.exportToCSV(filteredAndSortedBalances);
+      const csvContent = bankBalanceService.exportToCSV(filteredBalances);
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
-      
-      if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', `bank_balances_${new Date().toISOString().split('T')[0]}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `bank-balances-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (err) {
-      console.error('Export failed:', err);
-      setError('Failed to export data');
+      setError('Failed to export CSV');
     }
   };
 
-  // Utility functions
-  const formatCurrency = (amount: number, currency: string = 'USD'): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(amount);
+  // Pagination calculations
+  const paginatedBalances = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredBalances.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredBalances, currentPage, itemsPerPage]);
+
+  const totalPages = Math.ceil(filteredBalances.length / itemsPerPage);
+
+  // Handle page changes
+  const handlePageChange = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
 
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
+  // Format currency
+  const formatCurrency = (amount: number): string => {
+    const isNegative = amount < 0;
+    const absAmount = Math.abs(amount);
+    return (isNegative ? '-$' : '$') + absAmount.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     });
   };
 
-  const getAmountClass = (amount: number): string => {
-    if (amount > 0) return 'amount-positive';
-    if (amount < 0) return 'amount-negative';
-    return 'amount-zero';
+  // Format date
+  const formatDate = (dateString: string): string => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
-  const getSortClass = (field: SortField): string => {
-    if (sortField !== field) return 'sortable';
-    return `sortable sorted-${sortDirection}`;
+  // Get sort icon
+  const getSortIcon = (field: SortField): string => {
+    if (sortField !== field) return '↕️';
+    return sortDirection === 'asc' ? '↑' : '↓';
   };
 
-  // Render loading state
+  // Get movement color class
+  const getMovementColorClass = (movement: number): string => {
+    if (movement > 0) return 'movement-positive';
+    if (movement < 0) return 'movement-negative';
+    return 'movement-neutral';
+  };
+
   if (loading) {
     return (
-      <div className="bank-balance-container">
-        <div className="bank-balance-loading">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M21 12a9 9 0 11-6.219-8.56" />
-          </svg>
-          <p>Loading bank balances...</p>
-        </div>
+      <div className="bank-balance-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading bank balances...</p>
       </div>
     );
   }
 
-  // Render error state
   if (error) {
     return (
-      <div className="bank-balance-container">
-        <div className="bank-balance-error">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="15" y1="9" x2="9" y2="15" />
-            <line x1="9" y1="9" x2="15" y2="15" />
-          </svg>
-          <h3>Error Loading Data</h3>
-          <p>{error}</p>
-          <button
-            onClick={() => {
-              setError(null);
-              loadData();
-            }}
-            className="bank-balance-refresh-btn"
-            style={{ marginTop: '16px' }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="23 4 23 10 17 10" />
-              <polyline points="1 20 1 14 7 14" />
-              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
-            </svg>
-            Retry
-          </button>
-        </div>
+      <div className="bank-balance-error">
+        <h3>Error Loading Bank Balances</h3>
+        <p>{error}</p>
+        <button onClick={loadData} className="retry-button">
+          Try Again
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="bank-balance-container">
-      {/* Header */}
+    <div className="bank-balance">
       <div className="bank-balance-header">
-        <h1 className="bank-balance-title">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="2" y="6" width="20" height="12" rx="2" />
-            <circle cx="12" cy="12" r="2" />
-            <path d="M6 12h.01M18 12h.01" />
-          </svg>
-          Bank Balance
-        </h1>
-        <div className="bank-balance-actions">
-          <button
-            onClick={loadData}
-            disabled={refreshing}
-            className="bank-balance-refresh-btn"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="23 4 23 10 17 10" />
-              <polyline points="1 20 1 14 7 14" />
-              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
-            </svg>
-            {refreshing ? 'Refreshing...' : 'Refresh'}
-          </button>
-          <button
-            onClick={handleExport}
-            className="bank-balance-export-btn"
-            disabled={filteredAndSortedBalances.length === 0}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            Export CSV
-          </button>
-        </div>
+        <h2>Bank Balance Overview</h2>
+        <p>Daily closing balances extracted from transaction data</p>
       </div>
 
-      {/* Statistics */}
-      {filteredAndSortedBalances.length > 0 && (
-        <div className="bank-balance-stats">
-          <div className="balance-stat-card">
-            <div className="balance-stat-label">Total Days</div>
-            <div className="balance-stat-value">{stats.totalDays.toLocaleString()}</div>
+      {/* Statistics Cards */}
+      {stats && (
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-icon">📊</div>
+            <div className="stat-content">
+              <div className="stat-value">{stats.totalDays}</div>
+              <div className="stat-label">Total Days</div>
+            </div>
           </div>
-          <div className="balance-stat-card">
-            <div className="balance-stat-label">Total Accounts</div>
-            <div className="balance-stat-value">{stats.totalAccounts}</div>
+          
+          <div className="stat-card">
+            <div className="stat-icon">🏦</div>
+            <div className="stat-content">
+              <div className="stat-value">{stats.totalAccounts}</div>
+              <div className="stat-label">Accounts</div>
+            </div>
           </div>
-          <div className="balance-stat-card">
-            <div className="balance-stat-label">Average Balance</div>
-            <div className="balance-stat-value">{formatCurrency(stats.averageBalance)}</div>
+          
+          <div className="stat-card">
+            <div className="stat-icon">💰</div>
+            <div className="stat-content">
+              <div className="stat-value">{formatCurrency(stats.avgDailyBalance)}</div>
+              <div className="stat-label">Avg Daily Balance</div>
+            </div>
           </div>
-          <div className="balance-stat-card">
-            <div className="balance-stat-label">Highest Balance</div>
-            <div className="balance-stat-value">{formatCurrency(stats.highestBalance)}</div>
+          
+          <div className="stat-card">
+            <div className="stat-icon">📈</div>
+            <div className="stat-content">
+              <div className="stat-value">{stats.positiveMovementDays}</div>
+              <div className="stat-label">Positive Days</div>
+            </div>
           </div>
-          <div className="balance-stat-card">
-            <div className="balance-stat-label">Lowest Balance</div>
-            <div className="balance-stat-value">{formatCurrency(stats.lowestBalance)}</div>
+          
+          <div className="stat-card">
+            <div className="stat-icon">📉</div>
+            <div className="stat-content">
+              <div className="stat-value">{stats.negativeMovementDays}</div>
+              <div className="stat-label">Negative Days</div>
+            </div>
           </div>
-          <div className="balance-stat-card">
-            <div className="balance-stat-label">Date Range</div>
-            <div className="balance-stat-value">
-              {stats.dateRange.from ? `${formatDate(stats.dateRange.from)} - ${formatDate(stats.dateRange.to)}` : 'N/A'}
+          
+          <div className="stat-card">
+            <div className="stat-icon">⬆️</div>
+            <div className="stat-content">
+              <div className="stat-value">{formatCurrency(stats.highestBalance)}</div>
+              <div className="stat-label">Highest Balance</div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Filters */}
-      <div className="bank-balance-filters">
-        <div className="bank-balance-filters-header">
-          <h3 className="bank-balance-filters-title">Filters</h3>
-          <button onClick={clearFilters} className="bank-balance-clear-filters">
-            Clear All
-          </button>
-        </div>
-        <div className="bank-balance-filters-grid">
+      {/* Filters and Controls */}
+      <div className="controls-section">
+        <div className="filters-grid">
           <div className="filter-group">
             <label>Account</label>
             <select
@@ -367,11 +266,12 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
               <option value="">All Accounts</option>
               {bankAccounts.map(account => (
                 <option key={account.id} value={account.id}>
-                  {account.name} ({account.accountNumber})
+                  {account.name}
                 </option>
               ))}
             </select>
           </div>
+          
           <div className="filter-group">
             <label>Date From</label>
             <input
@@ -380,6 +280,7 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
               onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
             />
           </div>
+          
           <div className="filter-group">
             <label>Date To</label>
             <input
@@ -388,163 +289,174 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
               onChange={(e) => handleFilterChange('dateTo', e.target.value)}
             />
           </div>
+          
           <div className="filter-group">
             <label>Min Balance</label>
             <input
               type="number"
               step="0.01"
               placeholder="0.00"
-              value={filters.balanceFrom}
-              onChange={(e) => handleFilterChange('balanceFrom', e.target.value)}
+              value={filters.balanceMin}
+              onChange={(e) => handleFilterChange('balanceMin', e.target.value)}
             />
           </div>
+          
           <div className="filter-group">
             <label>Max Balance</label>
             <input
               type="number"
               step="0.01"
               placeholder="0.00"
-              value={filters.balanceTo}
-              onChange={(e) => handleFilterChange('balanceTo', e.target.value)}
+              value={filters.balanceMax}
+              onChange={(e) => handleFilterChange('balanceMax', e.target.value)}
             />
           </div>
+          
           <div className="filter-group">
             <label>Min Movement</label>
             <input
               type="number"
               step="0.01"
               placeholder="0.00"
-              value={filters.movementFrom}
-              onChange={(e) => handleFilterChange('movementFrom', e.target.value)}
+              value={filters.movementMin}
+              onChange={(e) => handleFilterChange('movementMin', e.target.value)}
+            />
+          </div>
+          
+          <div className="filter-group">
+            <label>Max Movement</label>
+            <input
+              type="number"
+              step="0.01"
+              placeholder="0.00"
+              value={filters.movementMax}
+              onChange={(e) => handleFilterChange('movementMax', e.target.value)}
             />
           </div>
         </div>
+        
+        <div className="controls-actions">
+          <button onClick={clearFilters} className="clear-filters-button">
+            Clear Filters
+          </button>
+          <button onClick={handleExportCSV} className="export-button">
+            Export CSV
+          </button>
+        </div>
       </div>
 
-      {/* Table */}
-      {filteredAndSortedBalances.length === 0 ? (
-        <div className="bank-balance-empty">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="2" y="6" width="20" height="12" rx="2" />
-            <circle cx="12" cy="12" r="2" />
-            <path d="M6 12h.01M18 12h.01" />
-          </svg>
-          <h3>No Balance Data</h3>
-          <p>No daily balance records found. Import bank statements to see balance history.</p>
-        </div>
-      ) : (
-        <div className="bank-balance-table-container">
-          <table className="bank-balance-table">
-            <thead>
-              <tr>
-                <th className={getSortClass('date')} onClick={() => handleSort('date')}>
-                  Date
-                </th>
-                <th className={getSortClass('accountName')} onClick={() => handleSort('accountName')}>
-                  Account
-                </th>
-                <th className={getSortClass('openingBalance')} onClick={() => handleSort('openingBalance')}>
-                  Opening Balance
-                </th>
-                <th className={getSortClass('closingBalance')} onClick={() => handleSort('closingBalance')}>
-                  Closing Balance
-                </th>
-                <th className={getSortClass('dailyMovement')} onClick={() => handleSort('dailyMovement')}>
-                  Daily Movement
-                </th>
-                <th className={getSortClass('transactionCount')} onClick={() => handleSort('transactionCount')}>
-                  Transactions
-                </th>
-                <th>Last Transaction Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedBalances.map((balance) => (
-                <tr key={balance.id}>
-                  <td className="date-cell">{formatDate(balance.date)}</td>
-                  <td>
-                    <div className="account-info">
-                      <div className="account-name">{balance.accountName}</div>
-                      <div className="account-details">
-                        {balance.accountNumber} • {balance.bankName}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="currency-value">
-                    {formatCurrency(balance.openingBalance, balance.currency)}
-                  </td>
-                  <td className="currency-value">
-                    {formatCurrency(balance.closingBalance, balance.currency)}
-                  </td>
-                  <td className={`currency-value ${getAmountClass(balance.dailyMovement)}`}>
-                    {formatCurrency(balance.dailyMovement, balance.currency)}
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    {balance.transactionCount}
-                  </td>
-                  <td style={{ textAlign: 'center', fontFamily: 'monospace' }}>
-                    {balance.lastTransactionTime}
-                  </td>
-                </tr>
+      {/* Results Info */}
+      <div className="results-info">
+        <span>
+          Showing {paginatedBalances.length} of {filteredBalances.length} daily balances
+        </span>
+        <div className="pagination-controls">
+          <label>
+            Items per page:
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+            >
+              {ITEMS_PER_PAGE_OPTIONS.map(size => (
+                <option key={size} value={size}>{size}</option>
               ))}
-            </tbody>
-          </table>
+            </select>
+          </label>
+        </div>
+      </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="bank-balance-pagination">
-              <div className="pagination-info">
-                Showing {startItem.toLocaleString()} to {endItem.toLocaleString()} of {filteredAndSortedBalances.length.toLocaleString()} records
-              </div>
-              <div className="pagination-controls">
-                <select
-                  value={itemsPerPage}
-                  onChange={(e) => {
-                    setItemsPerPage(Number(e.target.value));
-                    setCurrentPage(1);
-                  }}
-                  className="pagination-select"
+      {/* Balance Table */}
+      <div className="table-container">
+        <table className="balance-table">
+          <thead>
+            <tr>
+              <th onClick={() => handleSort('date')} className="sortable">
+                Date {getSortIcon('date')}
+              </th>
+              <th onClick={() => handleSort('accountName')} className="sortable">
+                Account {getSortIcon('accountName')}
+              </th>
+              <th onClick={() => handleSort('openingBalance')} className="sortable">
+                Opening Balance {getSortIcon('openingBalance')}
+              </th>
+              <th onClick={() => handleSort('closingBalance')} className="sortable">
+                Closing Balance {getSortIcon('closingBalance')}
+              </th>
+              <th onClick={() => handleSort('movement')} className="sortable">
+                Movement {getSortIcon('movement')}
+              </th>
+              <th onClick={() => handleSort('transactionCount')} className="sortable">
+                Transactions {getSortIcon('transactionCount')}
+              </th>
+              <th>Last Transaction</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedBalances.map(balance => (
+              <tr key={balance.id}>
+                <td className="date-cell">{formatDate(balance.date)}</td>
+                <td className="account-cell">{balance.accountName}</td>
+                <td className="currency-cell">{formatCurrency(balance.openingBalance)}</td>
+                <td className="currency-cell">{formatCurrency(balance.closingBalance)}</td>
+                <td className={`currency-cell ${getMovementColorClass(balance.movement)}`}>
+                  {formatCurrency(balance.movement)}
+                </td>
+                <td className="count-cell">{balance.transactionCount}</td>
+                <td className="time-cell">{balance.lastTransactionTime.substring(0, 5)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="pagination-button"
+          >
+            Previous
+          </button>
+          
+          <div className="pagination-info">
+            Page {currentPage} of {totalPages}
+          </div>
+          
+          <div className="pagination-numbers">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  className={`pagination-number ${currentPage === pageNum ? 'active' : ''}`}
                 >
-                  {ITEMS_PER_PAGE_OPTIONS.map(size => (
-                    <option key={size} value={size}>{size} per page</option>
-                  ))}
-                </select>
-                <div className="pagination-buttons">
-                  <button
-                    onClick={() => setCurrentPage(1)}
-                    disabled={currentPage === 1}
-                    className="pagination-btn"
-                  >
-                    First
-                  </button>
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    disabled={currentPage === 1}
-                    className="pagination-btn"
-                  >
-                    Previous
-                  </button>
-                  <span className="pagination-btn active">
-                    {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                    disabled={currentPage === totalPages}
-                    className="pagination-btn"
-                  >
-                    Next
-                  </button>
-                  <button
-                    onClick={() => setCurrentPage(totalPages)}
-                    disabled={currentPage === totalPages}
-                    className="pagination-btn"
-                  >
-                    Last
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
+          
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="pagination-button"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {filteredBalances.length === 0 && !loading && (
+        <div className="no-results">
+          <div className="no-results-icon">📊</div>
+          <h3>No bank balances found</h3>
+          <p>Try adjusting your filters or import some transaction data first.</p>
         </div>
       )}
     </div>

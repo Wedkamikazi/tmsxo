@@ -899,7 +899,7 @@ class MLNaturalLanguageService {
     };
     vocabularySize: number;
     languagePatterns: number;
-    modelConfig: typeof this.modelConfig;
+    modelConfig: any;
     tfMemory: any;
   } {
     return {

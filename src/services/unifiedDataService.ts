@@ -4,9 +4,7 @@ import { eventBus } from './eventBus';
 import { localStorageManager, StoredTransaction as LSMStoredTransaction } from './localStorageManager';
 import { systemIntegrityService } from './systemIntegrityService';
 
-// Type aliases to satisfy linter while preserving architectural consistency
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type _UnusedStorageStats = _StorageStats;
+
 
 // UNIFIED DATA SERVICE - SINGLE SOURCE OF TRUTH
 // Coordinates all data operations across the application using localStorageManager

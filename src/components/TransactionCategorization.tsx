@@ -45,6 +45,14 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
   const timerCleanup = useTimerCleanup('TransactionCategorization');
   const eventCleanup = useEventListenerCleanup('TransactionCategorization');
 
+  // Use cleanup hooks for component lifecycle management
+  useEffect(() => {
+    return () => {
+      cleanup.cleanup();
+      eventCleanup.cleanup();
+    };
+  }, [cleanup, eventCleanup]);
+
   // State management
   const [transactions, setTransactions] = useState<StoredTransaction[]>([]);
   const [categories, setCategories] = useState<TransactionCategory[]>([]);

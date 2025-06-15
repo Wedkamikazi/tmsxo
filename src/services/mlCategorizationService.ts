@@ -837,7 +837,7 @@ class MLCategorizationService {
     
     console.log('🏋️ Training categorization model...');
     
-    const history = await this.categorizationModel.fit(
+    await this.categorizationModel.fit(
       trainingData.inputs,
       trainingData.labels,
       {

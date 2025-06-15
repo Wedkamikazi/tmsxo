@@ -171,10 +171,10 @@ class BankBalanceService {
         // Use unique transactions for balance calculation to avoid duplicate impact
         const transactionsToProcess = uniqueTransactions;
         
-        // Sort transactions by postDateTime (or fallback to time)
+        // Sort transactions by postDateTime (or fallback to formatted date + time)
         transactionsToProcess.sort((a, b) => {
-          const aDateTime = a.postDateTime || `${a.postDate || a.date}T${a.time || '00:00'}:00`;
-          const bDateTime = b.postDateTime || `${b.postDate || b.date}T${b.time || '00:00'}:00`;
+          const aDateTime = a.postDateTime || `${a.date}T${a.time || '00:00'}:00`;
+          const bDateTime = b.postDateTime || `${b.date}T${b.time || '00:00'}:00`;
           return new Date(aDateTime).getTime() - new Date(bDateTime).getTime();
         });
         

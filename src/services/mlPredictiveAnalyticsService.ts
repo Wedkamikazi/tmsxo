@@ -156,10 +156,18 @@ class MLPredictiveAnalyticsService {
         }),
         tf.layers.globalMaxPooling1d(),
         tf.layers.dropout({ rate: 0.3 }),
-        tf.layers.dense({ units: 128, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 96, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.batchNormalization(),
         tf.layers.dropout({ rate: 0.3 }),
-        tf.layers.dense({ units: 64, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 48, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.dense({ units: 8, activation: 'sigmoid' }) // Pattern classification
       ]
     });

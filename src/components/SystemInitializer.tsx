@@ -23,6 +23,9 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
     // TEMPORARY DEBUG MODE - Skip all service initialization
     console.log('🚨 DEBUG MODE: Skipping service initialization');
     
+    // Set debug mode flag for other components
+    localStorage.setItem('debugMode', 'true');
+    
     // Simulate brief loading then go to emergency mode
     const loadingTimeout = setTimeout(() => {
       if (mounted) {

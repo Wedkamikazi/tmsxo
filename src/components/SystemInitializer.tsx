@@ -7,13 +7,6 @@ interface SystemInitializerProps {
   children: React.ReactNode;
 }
 
-interface InitializationState {
-  status: 'initializing' | 'ready' | 'error' | 'debug';
-  error?: string;
-  progress: number;
-  debugMode: boolean;
-}
-
 export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }) => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [initializationStatus, setInitializationStatus] = useState('Starting...');

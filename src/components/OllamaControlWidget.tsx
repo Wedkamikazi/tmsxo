@@ -17,17 +17,14 @@ const OllamaControlWidget: React.FC = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState<'start' | 'stop' | null>(null);
 
-  // Check Ollama status function
+  // Check Ollama status using process controller
   const checkStatus = async () => {
     try {
-      const response = await fetch('http://localhost:11434/api/tags', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const response = await fetch('http://localhost:3001/api/ollama/status');
+      const data = await response.json();
       
-      if (response.ok) {
-        const data = await response.json();
-        const qwenModel = data.models?.find((m: any) => m.name.includes('qwen'));
+      if (data.isRunning && data.models) {
+        const qwenModel = data.models.find((m: any) => m.name.includes('qwen'));
         
         setStatus({
           isRunning: true,
@@ -38,13 +35,15 @@ const OllamaControlWidget: React.FC = () => {
       } else {
         setStatus({
           isRunning: false,
-          isLoading: false
+          isLoading: false,
+          error: data.error
         });
       }
     } catch (error) {
       setStatus({
         isRunning: false,
-        isLoading: false
+        isLoading: false,
+        error: 'Process controller not available - Start the backend server'
       });
     }
   };

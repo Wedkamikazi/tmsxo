@@ -293,7 +293,7 @@ class EnhancedMLOrchestrator {
     });
   }
 
-  private async categorizeWithTensorFlowPrimary(transaction: Transaction): Promise<EnhancedMLResult> {
+  private async categorizeWithTensorFlowPrimary(_transaction: Transaction): Promise<EnhancedMLResult> {
     return {
       categoryId: 'Other',
       confidence: 0.7,

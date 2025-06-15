@@ -795,6 +795,67 @@ class ServiceOrchestrator {
   }
 }
 
-// Create and export singleton instance
-export const serviceOrchestrator = new ServiceOrchestrator();
+// Create and export singleton instance (skip in debug mode)
+let serviceOrchestrator: ServiceOrchestrator;
+
+if (isDebugMode) {
+  console.log('🚨 ServiceOrchestrator: Creating mock instance for debug mode');
+  // Create a mock service orchestrator for debug mode
+  serviceOrchestrator = {
+    initializeSystem: () => Promise.resolve({
+      overall: 'ready' as const,
+      services: new Map(),
+      startupTime: Date.now(),
+      readyTime: Date.now(),
+      criticalServicesReady: true,
+      totalServices: 0,
+      readyServices: 0,
+      failedServices: 0
+    }),
+    getSystemStatus: () => ({
+      overall: 'ready' as const,
+      services: new Map(),
+      startupTime: Date.now(),
+      readyTime: Date.now(),
+      criticalServicesReady: true,
+      totalServices: 0,
+      readyServices: 0,
+      failedServices: 0
+    }),
+    shutdown: () => Promise.resolve(),
+    restartService: () => Promise.resolve(true),
+    getHealthReport: () => Promise.resolve({
+      overall: 'good',
+      score: 100,
+      orchestrator: {
+        services: [],
+        serviceInitialization: 'complete' as const
+      },
+      systemHealth: {
+        overall: 'good',
+        score: 100,
+        services: {
+          storage: { status: 'healthy', details: {} },
+          performance: { status: 'healthy', details: {} },
+          dataIntegrity: { status: 'healthy', details: {} },
+          eventBus: { status: 'healthy', details: {} },
+          crossTabSync: { status: 'healthy', details: {} }
+        },
+        errorSummary: {
+          totalErrors: 0,
+          criticalErrors: 0,
+          recentErrorRate: 0,
+          topErrorServices: []
+        },
+        recommendations: [],
+        lastCheck: new Date().toISOString()
+      },
+      recommendations: ['Debug mode active - all services mocked']
+    })
+  } as any;
+} else {
+  serviceOrchestrator = new ServiceOrchestrator();
+}
+
+export { serviceOrchestrator };
 export default serviceOrchestrator; 

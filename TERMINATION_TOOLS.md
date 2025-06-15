@@ -249,6 +249,7 @@ node processController.js
 ```
 
 The cleanup system will automatically reinitialize:
+
 - Cleanup Manager will restart with fresh state
 - System Safety Manager will register new processes
 - React components will register resources using cleanup hooks

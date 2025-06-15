@@ -19,7 +19,7 @@ const isDebugMode = typeof window !== 'undefined' && (
 );
 
 export const DataHub: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'bankStatement' | 'accounts' | 'transactions' | 'fileManager' | 'qwenStatus' | 'dataCleanup' | 'payroll' | 'investments' | 'reports'>('bankStatement');
+  const [activeTab, setActiveTab] = useState<'bankStatement' | 'accounts' | 'transactions' | 'fileManager' | 'qwenStatus' | 'dataCleanup' | 'ollamaChat' | 'payroll' | 'investments' | 'reports'>('bankStatement');
   const [dataRefreshTrigger, setDataRefreshTrigger] = useState(0);
   const [servicesLoaded, setServicesLoaded] = useState(false);
   const [eventBus, setEventBus] = useState<any>(null);

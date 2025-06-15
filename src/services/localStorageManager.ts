@@ -1,5 +1,6 @@
 import { Transaction, BankAccount, UploadedFile, TransactionCategory, TransactionCategorization } from '../types';
 import { performanceManager } from './performanceManager';
+import { systemIntegrityService } from './systemIntegrityService';
 
 export interface StorageSnapshot {
   timestamp: string;

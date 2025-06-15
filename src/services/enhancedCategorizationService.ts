@@ -586,8 +586,6 @@ class EnhancedCategorizationService {
   }
 }
 
-import { isDebugMode } from '../utils/debugMode';
-
 // Check for debug mode
 const debugModeActive = isDebugMode();
 

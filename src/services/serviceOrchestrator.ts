@@ -92,6 +92,7 @@ class ServiceOrchestrator {
       name: 'performanceManager',
       service: performanceManager,
       dependencies: [],
+      healthCheckMethod: 'getMemoryHealthStatus',
       timeout: 5000,
       critical: true,
       retryAttempts: 2

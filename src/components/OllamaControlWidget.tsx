@@ -48,16 +48,9 @@ const OllamaControlWidget: React.FC = () => {
     }
   };
 
-  // Check Ollama status periodically
+  // Check status only on mount - no more annoying 5-second polling
   useEffect(() => {
-
-    // Initial check
     checkStatus();
-    
-    // Check every 5 seconds
-    const interval = setInterval(checkStatus, 5000);
-    
-    return () => clearInterval(interval);
   }, []);
 
   const handleStartOllama = async () => {

@@ -862,6 +862,64 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
         </div>
       )}
 
+      {/* ML Configuration Modal */}
+      {showMLConfigModal && (
+        <div className="modal-overlay" onClick={() => setShowMLConfigModal(false)}>
+          <div className="modal ml-config-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>⚙️ ML Configuration Settings</h3>
+              <button className="modal-close" onClick={() => setShowMLConfigModal(false)}>×</button>
+            </div>
+            <div className="modal-content">
+              <div className="config-section">
+                <h4>Processing Strategy</h4>
+                <select 
+                  value={mlConfig.strategy}
+                  onChange={(e) => setMLConfig(prev => ({ ...prev, strategy: e.target.value as any }))}
+                  className="form-select"
+                >
+                  <option value="hybrid">Hybrid (TensorFlow.js + Ollama)</option>
+                  <option value="local">Local TensorFlow.js Only</option>
+                  <option value="ollama">Ollama Only</option>
+                </select>
+              </div>
+              
+              <div className="config-section">
+                <h4>Batch Processing</h4>
+                <label>
+                  Batch Size:
+                  <input
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={mlConfig.batchSize}
+                    onChange={(e) => setMLConfig(prev => ({ ...prev, batchSize: parseInt(e.target.value) }))}
+                    className="form-input"
+                  />
+                </label>
+              </div>
+              
+              <div className="config-section">
+                <h4>Learning Options</h4>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={mlConfig.enableLearning}
+                    onChange={(e) => setMLConfig(prev => ({ ...prev, enableLearning: e.target.checked }))}
+                  />
+                  Enable Learning from Manual Corrections
+                </label>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={() => setShowMLConfigModal(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Enhanced Analysis Modal */}
       {showAnalysisModal && selectedAnalysis && (
         <div className="modal-overlay" onClick={() => setShowAnalysisModal(false)}>

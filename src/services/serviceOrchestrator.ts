@@ -3,7 +3,6 @@ import { localStorageManager } from './localStorageManager';
 import { unifiedDataService } from './unifiedDataService';
 import { performanceManager } from './performanceManager';
 import { systemIntegrityService } from './systemIntegrityService';
-import { memoryManagementService } from './memoryManagementService';
 import { crossTabSyncService } from './crossTabSyncService';
 import { mlCategorizationService } from './mlCategorizationService';
 import { mlNaturalLanguageService } from './mlNaturalLanguageService';

@@ -290,7 +290,7 @@ class MLNaturalLanguageService {
           })
         }),
         tf.layers.dense({ units: embeddingDim, activation: 'tanh' }),
-        tf.layers.unitNormalization({ axis: 1 }) // Normalize for cosine similarity
+        tf.layers.batchNormalization() // Normalize for better training
       ]
     });
 

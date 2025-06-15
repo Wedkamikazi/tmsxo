@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { systemSafetyManager } from '../utils/systemSafetyManager';
-import { checkOllamaStatus, startOllamaProcess, stopOllamaProcess } from '../utils/processController';
 import './OllamaControlWidget.css';
 
 interface OllamaStatus {

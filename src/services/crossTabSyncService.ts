@@ -264,7 +264,7 @@ class CrossTabSyncService {
 
   // SYNC FILE UPDATES ACROSS TABS
   private syncFileUpdates(payload: any, _sourceTabId: string): void {
-    const { fileId, fileName, action, fileData } = payload.data || {};
+    const { fileId, action, fileData } = payload.data || {};
     
     if (action === 'uploaded' && fileData) {
       const existingFiles = unifiedDataService.getAllFiles();

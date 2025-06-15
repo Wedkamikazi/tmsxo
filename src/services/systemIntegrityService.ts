@@ -1614,7 +1614,7 @@ class SystemIntegrityService {
           topErrorServices: errorStats.topErrorServices,
           errorTrends: {
             increasing: errorStats.recentErrors.length > (errorStats.totalErrors * 0.3),
-            frequentServices: errorStats.topErrorServices.slice(0, 3).map(s => s.service),
+            frequentServices: errorStats.topErrorServices.slice(0, 3).map((s: { service: string; count: number }) => s.service),
             criticalPatterns: this.analyzeCriticalErrorPatterns(errorStats.recentErrors)
           }
         },

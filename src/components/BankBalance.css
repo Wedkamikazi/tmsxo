@@ -342,6 +342,14 @@
   border-bottom: none;
 }
 
+.balance-table tbody tr.has-duplicates {
+  background: #fef3cd;
+}
+
+.balance-table tbody tr.has-duplicates:hover {
+  background: #fed7aa;
+}
+
 .balance-table td {
   padding: var(--spacing-lg);
   border-right: 1px solid var(--color-neutral-100);

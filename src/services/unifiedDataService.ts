@@ -353,7 +353,13 @@ class UnifiedDataService {
           
           localStorage.removeItem(legacyFileKey);
         } catch (error) {
-          console.error('Error migrating legacy files:', error);
+          systemIntegrityService.logServiceError(
+            'UnifiedDataService',
+            'migrateLegacyFiles',
+            error instanceof Error ? error : new Error(String(error)),
+            'medium',
+            { migratedFilesCount: migratedFiles }
+          );
         }
       }
       
@@ -371,7 +377,13 @@ class UnifiedDataService {
       });
       
     } catch (error) {
-      console.error('Error during legacy data migration:', error);
+      systemIntegrityService.logServiceError(
+        'UnifiedDataService',
+        'migrateLegacyData',
+        error instanceof Error ? error : new Error(String(error)),
+        'high',
+        { migratedTransactions, migratedFiles }
+      );
     }
     
     return { migratedTransactions, migratedFiles };

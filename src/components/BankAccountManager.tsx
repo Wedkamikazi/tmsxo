@@ -79,6 +79,12 @@ export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccoun
     }
   }, [onAccountsUpdated, isAddingAccount]);
 
+  const handleUpdateBalances = useCallback(() => {
+    console.log('🔄 BANK ACCOUNTS: Manually updating all account balances...');
+    unifiedDataService.updateAllAccountBalances();
+    refreshAccounts();
+  }, [refreshAccounts]);
+
   // Register for global refresh
   useEffect(() => {
     registerGlobalRefresh('BankAccountManager', refreshAccounts);

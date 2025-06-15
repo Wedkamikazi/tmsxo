@@ -407,21 +407,39 @@ class PerformanceManager {
     const tfMemory = memoryStats.tensorflow?.numBytes || 0;
 
     if (tfMemory > this.thresholds.emergency) {
-      console.warn('🚨 EMERGENCY: TensorFlow.js memory usage critical!');
+      systemIntegrityService.logServiceError(
+        'PerformanceManager',
+        'memoryThresholdCheck',
+        'TensorFlow.js memory usage critical - emergency cleanup required',
+        'critical',
+        { usage: tfMemory, threshold: this.thresholds.emergency, usagePercent: (tfMemory / this.thresholds.emergency * 100).toFixed(1) }
+      );
       this.performTensorFlowCleanup(true);
       eventBus.emit('MEMORY_EMERGENCY', { 
         usage: tfMemory, 
         threshold: this.thresholds.emergency 
       }, 'PerformanceManager');
     } else if (tfMemory > this.thresholds.critical) {
-      console.warn('⚠️ CRITICAL: TensorFlow.js memory usage high');
+      systemIntegrityService.logServiceError(
+        'PerformanceManager',
+        'memoryThresholdCheck',
+        'TensorFlow.js memory usage high - cleanup recommended',
+        'high',
+        { usage: tfMemory, threshold: this.thresholds.critical, usagePercent: (tfMemory / this.thresholds.critical * 100).toFixed(1) }
+      );
       this.performTensorFlowCleanup(false);
       eventBus.emit('MEMORY_CRITICAL', { 
         usage: tfMemory, 
         threshold: this.thresholds.critical 
       }, 'PerformanceManager');
     } else if (tfMemory > this.thresholds.warning) {
-      console.log('📊 Warning: TensorFlow.js memory usage elevated');
+      systemIntegrityService.logServiceError(
+        'PerformanceManager',
+        'memoryThresholdCheck',
+        'TensorFlow.js memory usage elevated - monitoring recommended',
+        'medium',
+        { usage: tfMemory, threshold: this.thresholds.warning, usagePercent: (tfMemory / this.thresholds.warning * 100).toFixed(1) }
+      );
       eventBus.emit('MEMORY_WARNING', { 
         usage: tfMemory, 
         threshold: this.thresholds.warning 

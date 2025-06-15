@@ -6,7 +6,7 @@ interface SystemInitializerProps {
 }
 
 interface InitializationState {
-  status: 'initializing' | 'ready' | 'error';
+  status: 'initializing' | 'ready' | 'error' | 'partial';
   systemStatus?: SystemStatus;
   error?: string;
   progress: number;
@@ -20,34 +20,117 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
 
   useEffect(() => {
     let mounted = true;
+    let initializationTimeout: NodeJS.Timeout;
     
     const initializeSystem = async () => {
       try {
         console.log('🚀 Starting Treasury Management System...');
         
-        // Start system initialization
-        const systemStatus = await serviceOrchestrator.initializeSystem();
+        // Set a maximum timeout of 8 seconds for initialization
+        const INITIALIZATION_TIMEOUT = 8000;
         
-        if (!mounted) return;
-        
-        setInitState({
-          status: 'ready',
-          systemStatus,
-          progress: 100
+        const initPromise = serviceOrchestrator.initializeSystem();
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          initializationTimeout = setTimeout(() => {
+            reject(new Error('System initialization timeout - proceeding with partial initialization'));
+          }, INITIALIZATION_TIMEOUT);
         });
         
-        console.log('✅ Treasury Management System Ready');
+        try {
+          // Try full initialization with timeout
+          const systemStatus = await Promise.race([initPromise, timeoutPromise]);
+          
+          if (!mounted) return;
+          
+          clearTimeout(initializationTimeout);
+          
+          setInitState({
+            status: 'ready',
+            systemStatus,
+            progress: 100
+          });
+          
+          console.log('✅ Treasury Management System Ready');
+          
+        } catch (timeoutError) {
+          // If initialization times out, try to get partial system status
+          console.warn('⚠️ Full initialization timeout, attempting partial initialization...');
+          
+          try {
+            const partialStatus = serviceOrchestrator.getSystemStatus();
+            
+            if (!mounted) return;
+            
+            setInitState({
+              status: 'partial',
+              systemStatus: partialStatus,
+              progress: 70
+            });
+            
+            // Allow the app to continue with partial functionality
+            setTimeout(() => {
+              if (mounted) {
+                setInitState(prev => ({
+                  ...prev,
+                  status: 'ready',
+                  progress: 100
+                }));
+              }
+            }, 1000);
+            
+            console.log('⚡ Treasury Management System Ready (Partial Mode)');
+            
+          } catch (partialError) {
+            throw timeoutError; // Fall back to original timeout error
+          }
+        }
         
       } catch (error) {
         console.error('❌ System initialization failed:', error);
         
         if (!mounted) return;
         
-        setInitState({
-          status: 'error',
-          error: error instanceof Error ? error.message : 'Unknown initialization error',
-          progress: 0
-        });
+        clearTimeout(initializationTimeout);
+        
+        // Check if we can still provide basic functionality
+        try {
+          const basicStatus = serviceOrchestrator.getSystemStatus();
+          const readyServices = basicStatus.readyServices;
+          
+          if (readyServices > 0) {
+            // Some services are ready, allow partial functionality
+            setInitState({
+              status: 'partial',
+              systemStatus: basicStatus,
+              error: `Initialization incomplete: ${error instanceof Error ? error.message : 'Unknown error'}`,
+              progress: 50
+            });
+            
+            // Auto-transition to ready after showing the warning
+            setTimeout(() => {
+              if (mounted) {
+                setInitState(prev => ({
+                  ...prev,
+                  status: 'ready',
+                  progress: 100
+                }));
+              }
+            }, 2000);
+            
+          } else {
+            setInitState({
+              status: 'error',
+              error: error instanceof Error ? error.message : 'Unknown initialization error',
+              progress: 0
+            });
+          }
+        } catch {
+          setInitState({
+            status: 'error',
+            error: error instanceof Error ? error.message : 'Unknown initialization error',
+            progress: 0
+          });
+        }
       }
     };
 
@@ -70,6 +153,9 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
     return () => {
       mounted = false;
       clearInterval(progressInterval);
+      if (initializationTimeout) {
+        clearTimeout(initializationTimeout);
+      }
     };
   }, []);
 
@@ -83,8 +169,88 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
     window.location.reload();
   };
 
+  const handleContinuePartial = () => {
+    setInitState(prev => ({
+      ...prev,
+      status: 'ready',
+      progress: 100
+    }));
+  };
+
   if (initState.status === 'ready') {
     return <>{children}</>;
+  }
+
+  if (initState.status === 'partial') {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #ff7b47 0%, #ff6b35 100%)',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      }}>
+        <div style={{
+          background: 'white',
+          borderRadius: '16px',
+          padding: '48px',
+          maxWidth: '500px',
+          textAlign: 'center',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)'
+        }}>
+          <div style={{ fontSize: '64px', marginBottom: '24px' }}>⚡</div>
+          <h1 style={{
+            color: '#1a1a1a',
+            margin: '0 0 16px 0',
+            fontSize: '24px',
+            fontWeight: 600
+          }}>Partial Initialization</h1>
+          <p style={{
+            color: '#666',
+            margin: '0 0 24px 0',
+            lineHeight: 1.5
+          }}>
+            Some services are still initializing, but core functionality is available.
+            {initState.error && (
+              <><br/><br/>
+              <span style={{ fontSize: '14px', color: '#ff6b35' }}>
+                {initState.error}
+              </span>
+              </>
+            )}
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+            <button onClick={handleContinuePartial} style={{
+              background: '#007AFF',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}>
+              Continue Anyway
+            </button>
+            <button onClick={handleRetry} style={{
+              background: '#666',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}>
+              🔄 Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (initState.status === 'error') {
@@ -249,7 +415,7 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
               background: '#007AFF',
               animation: 'pulse 1.5s ease-in-out infinite'
             }}></span>
-            <span>Initializing ML models...</span>
+            <span>Loading data services...</span>
           </div>
           <div style={{
             display: 'flex',
@@ -265,8 +431,16 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
               background: '#007AFF',
               animation: 'pulse 1.5s ease-in-out infinite'
             }}></span>
-            <span>Validating data integrity...</span>
+            <span>Validating system integrity...</span>
           </div>
+        </div>
+        
+        <div style={{ 
+          marginTop: '24px',
+          fontSize: '12px',
+          color: '#999'
+        }}>
+          Maximum wait time: 8 seconds
         </div>
       </div>
       

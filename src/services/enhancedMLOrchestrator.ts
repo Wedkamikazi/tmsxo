@@ -241,11 +241,41 @@ class EnhancedMLOrchestrator {
   }
 
   dispose(): void {
-    this.categorizationModel?.dispose();
-    this.sentimentModel?.dispose();
-    this.anomalyModel?.dispose();
-    this.embeddingModel?.dispose();
+    console.log('🧹 Disposing Enhanced ML Orchestrator...');
+    
+    // Unregister models from cleanup manager
+    if (this.categorizationModel) {
+      cleanupManager.unregisterResource('enhanced-orchestrator-categorization-model');
+      this.categorizationModel.dispose();
+      this.categorizationModel = null;
+    }
+    
+    if (this.sentimentModel) {
+      cleanupManager.unregisterResource('enhanced-orchestrator-sentiment-model');
+      this.sentimentModel.dispose();
+      this.sentimentModel = null;
+    }
+    
+    if (this.anomalyModel) {
+      cleanupManager.unregisterResource('enhanced-orchestrator-anomaly-model');
+      this.anomalyModel.dispose();
+      this.anomalyModel = null;
+    }
+    
+    if (this.embeddingModel) {
+      cleanupManager.unregisterResource('enhanced-orchestrator-embedding-model');
+      this.embeddingModel.dispose();
+      this.embeddingModel = null;
+    }
+    
+    // Clear caches
+    this.vocabulary.clear();
+    this.categoryMapping.clear();
+    this.reverseCategoryMapping.clear();
+    
     this.isInitialized = false;
+    
+    console.log('✅ Enhanced ML Orchestrator disposed');
   }
 
   // HELPER METHODS - SIMPLIFIED FOR SPACE

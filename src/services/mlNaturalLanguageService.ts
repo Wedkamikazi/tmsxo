@@ -879,6 +879,7 @@ class MLNaturalLanguageService {
   }
 
   // SAVE/LOAD MODELS
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private async saveModelsToStorage(): Promise<void> {
     try {
       if (this.sentimentModel) {

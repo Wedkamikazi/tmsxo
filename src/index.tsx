@@ -1,3 +1,6 @@
+// Import debug mode first before any service imports can happen
+import './utils/debugMode';
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';

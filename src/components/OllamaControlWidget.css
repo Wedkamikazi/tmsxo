@@ -211,19 +211,51 @@
 /* Error Display */
 .ollama-error {
   margin-top: 12px;
-  padding: 8px 12px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
   color: #dc2626;
-  font-size: 12px;
+  font-size: 13px;
   display: flex;
-  align-items: center;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .error-icon {
-  font-size: 14px;
+  font-size: 16px;
+  color: #ef4444;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.error-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.error-message {
+  line-height: 1.4;
+}
+
+.refresh-button {
+  align-self: flex-start;
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.refresh-button:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
 }
 
 /* Confirmation Dialog */

@@ -148,7 +148,7 @@ class MLNaturalLanguageService {
   private tokenizeAdvanced(text: string): string[] {
     // Convert to lowercase and normalize
     let processed = text.toLowerCase()
-      .replace(/[^\w\s\-\.]/g, ' ')
+      .replace(/[^\w\s\-.]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
     

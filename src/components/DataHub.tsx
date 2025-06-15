@@ -5,6 +5,7 @@ import { Transactions } from './Transactions';
 import { FileManager } from './FileManager';
 import QwenIntegrationStatus from './QwenIntegrationStatus';
 import SimpleDataCleanup from './SimpleDataCleanup';
+import { OllamaChat } from './OllamaChat';
 import { ErrorBoundary } from './ErrorBoundary';
 import SystemHealthMonitor from './SystemHealthMonitor';
 import OllamaControlWidget from './OllamaControlWidget';

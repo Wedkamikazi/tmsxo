@@ -107,26 +107,25 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
   const checkServiceStatus = useCallback(async () => {
     try {
       // Check Ollama status
-      const ollamaStatus = await localOllamaIntegration.getStatus();
-      const currentModel = await localOllamaIntegration.getCurrentModel();
+      const ollamaHealth = localOllamaIntegration.getHealthStatus();
+      const currentModel = localOllamaIntegration.getCurrentModel();
       
       // Check ML Orchestrator status
-      const orchestratorStatus = enhancedMLOrchestrator.getStatus();
-      const orchestratorPerformance = enhancedMLOrchestrator.getPerformanceMetrics();
+      const orchestratorModelStatus = enhancedMLOrchestrator.getModelStatus();
       
       // Check Enhanced Categorization status
       const categorizationPerformance = enhancedCategorizationService.getPerformanceMetrics();
 
       setServiceStatus({
         ollama: {
-          available: ollamaStatus.available,
+          available: ollamaHealth.isReachable,
           model: currentModel || 'none',
           loading: false
         },
         mlOrchestrator: {
-          initialized: orchestratorStatus.initialized,
-          strategy: orchestratorStatus.currentStrategy,
-          performance: orchestratorPerformance
+          initialized: orchestratorModelStatus.tensorflowJS.categorization,
+          strategy: orchestratorModelStatus.performance.recommendedStrategy,
+          performance: orchestratorModelStatus.performance
         },
         enhancedCategorization: {
           initialized: true,

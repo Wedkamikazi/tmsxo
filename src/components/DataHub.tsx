@@ -43,6 +43,15 @@ export const DataHub: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
+    // Register DataHub for global refresh
+    const refreshDataHub = () => {
+      console.log('🔄 DATAHUB: Refreshing data...');
+      const newTrigger = incrementDataRefresh();
+      setDataRefreshTrigger(newTrigger);
+    };
+    
+    registerGlobalRefresh('DataHub', refreshDataHub);
+    
     // PROFESSIONAL STATE MANAGEMENT: Skip reinitialization if services are fresh
     if (!shouldReinitializeServices()) {
       console.log('🚀 INSTANT LOAD: Using cached services - no reinitialization needed');
@@ -58,7 +67,9 @@ export const DataHub: React.FC = () => {
         setUnifiedDataService(unifiedDataServiceModule.unifiedDataService);
       });
       
-      return;
+      return () => {
+        unregisterGlobalRefresh('DataHub');
+      };
     }
 
     // Skip service operations in debug mode
@@ -66,7 +77,9 @@ export const DataHub: React.FC = () => {
       console.log('🚨 DataHub: Running in debug mode - skipping service operations');
       setServicesLoaded(true);
       setInitializationSkipped(true);
-      return;
+      return () => {
+        unregisterGlobalRefresh('DataHub');
+      };
     }
 
     console.log('🔄 First-time initialization: Loading services from scratch...');
@@ -91,6 +104,10 @@ export const DataHub: React.FC = () => {
     };
 
     loadServices();
+    
+    return () => {
+      unregisterGlobalRefresh('DataHub');
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {

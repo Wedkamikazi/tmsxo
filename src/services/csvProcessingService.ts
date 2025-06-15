@@ -311,6 +311,12 @@ class CSVProcessingService {
         const part2 = parseInt(parts[1]);
         const year = parseInt(parts[2]);
         
+        // Log for debugging
+        if (isNaN(part1) || isNaN(part2) || isNaN(year)) {
+          console.warn(`Invalid date parts in formatDate: "${dateString}" -> [${part1}, ${part2}, ${year}]`);
+          return dateString; // Return original if parsing fails
+        }
+        
         let month: number, day: number;
         
         // Determine if it's MM/DD/YYYY or DD/MM/YYYY format

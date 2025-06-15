@@ -1,6 +1,6 @@
 import { eventBus, DataEvent } from './eventBus';
 import { localStorageManager } from './localStorageManager';
-import { unifiedDataService, StoredTransaction } from './unifiedDataService';
+import { unifiedDataService } from './unifiedDataService';
 import { performanceManager } from './performanceManager';
 import { crossTabSyncService } from './crossTabSyncService';
 import { Transaction, BankAccount, UploadedFile } from '../types';

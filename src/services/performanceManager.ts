@@ -759,7 +759,8 @@ class PerformanceManager {
 // Check for debug mode
 const isDebugMode = typeof window !== 'undefined' && (
   window.location.search.includes('debug') || 
-  localStorage.getItem('debugMode') === 'true'
+  localStorage.getItem('debugMode') === 'true' ||
+  (window as any).__TREASURY_DEBUG_MODE === true
 );
 
 // Export singleton instance (skip TensorFlow initialization in debug mode)

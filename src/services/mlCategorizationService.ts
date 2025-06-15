@@ -629,7 +629,6 @@ class MLCategorizationService {
     };
 
     const description = transaction.description.toLowerCase();
-    const amount = Math.abs(transaction.debitAmount || transaction.creditAmount || 0);
 
     for (const category of categories) {
       let confidence = 0;

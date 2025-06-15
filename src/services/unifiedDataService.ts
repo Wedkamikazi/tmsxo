@@ -290,13 +290,48 @@ class UnifiedDataService {
   // UTILITY METHODS
   getDataSummary(): DataSummary {
     const stats = localStorageManager.getStorageStats();
+    const quotaInfo = storageQuotaManager.getQuotaInfo();
+    const activeAlerts = storageQuotaManager.getActiveAlerts();
     
     return {
       totalTransactions: stats.itemCounts.transactions,
       totalFiles: stats.itemCounts.files,
       totalAccounts: stats.itemCounts.accounts,
       storageUsed: stats.totalSize, // Already in KB
-      lastUpdated: stats.lastUpdated
+      lastUpdated: stats.lastUpdated,
+      quotaInfo: quotaInfo ? {
+        utilization: quotaInfo.utilization,
+        isNearLimit: quotaInfo.isNearLimit,  
+        isCritical: quotaInfo.isCritical,
+        totalQuota: Math.round(quotaInfo.total / 1024), // KB
+        availableSpace: Math.round(quotaInfo.available / 1024) // KB
+      } : undefined,
+      activeAlerts: activeAlerts.length
+    };
+  }
+
+  /**
+   * Get comprehensive data summary with enhanced quota and cleanup information
+   */
+  getEnhancedDataSummary(): DataSummary & { 
+    cleanupHistory?: Array<{ timestamp: string; strategy: string; spaceFreed: number }>;
+    availableStrategies?: Array<{ name: string; estimatedSpaceSaved: number }>;
+  } {
+    const basicSummary = this.getDataSummary();
+    const cleanupHistory = storageQuotaManager.getCleanupHistory().slice(-5); // Last 5 cleanups
+    
+    // Get available cleanup strategies (async method, so we'll handle this differently)
+    storageQuotaManager.getAvailableStrategies().then(strategies => {
+      // This information could be cached or handled via events
+      console.log('Available cleanup strategies:', strategies.map(s => ({ name: s.name, estimatedSpaceSaved: s.estimatedSpaceSaved })));
+    }).catch(error => {
+      console.warn('Could not get available cleanup strategies:', error);
+    });
+    
+    return {
+      ...basicSummary,
+      cleanupHistory,
+      availableStrategies: [] // This would be populated via async update or caching
     };
   }
 

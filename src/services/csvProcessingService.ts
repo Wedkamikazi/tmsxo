@@ -396,9 +396,17 @@ class CSVProcessingService {
       }
     }
     
-    // Combine date and time
+    // Combine date and time - add debug logging for invalid dates
     const dateTimeString = `${formattedDate}T${timeString}:00`;
-    return new Date(dateTimeString);
+    const result = new Date(dateTimeString);
+    
+    if (isNaN(result.getTime())) {
+      console.warn(`Invalid datetime created: "${dateTimeString}" from postDate: "${postDate}", time: "${time}"`);
+      // Return current date as fallback
+      return new Date();
+    }
+    
+    return result;
   }
 
   // Process file and generate import summary

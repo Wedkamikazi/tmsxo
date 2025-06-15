@@ -121,7 +121,7 @@ class CreditTransactionService {
         forecastEntry,
         matchConfidence: undefined,
         reconciliationStatus,
-        postDateTime: `${transaction.date}T${transaction.time || '00:00'}:00`
+        postDateTime: createPostDateTime(transaction.date, transaction.time)
       };
     }).sort((a, b) => new Date(b.postDateTime).getTime() - new Date(a.postDateTime).getTime());
   }

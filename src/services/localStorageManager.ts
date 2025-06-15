@@ -363,7 +363,7 @@ class LocalStorageManager {
       categorizations: this.getAllCategorizations()
     };
 
-    const snapshots = this.getStorageData(this.STORAGE_KEYS.snapshots, []);
+    const snapshots = this.getStorageData<StorageSnapshot[]>(this.STORAGE_KEYS.snapshots, []);
     snapshots.push(snapshot);
 
     // Keep only the most recent snapshots

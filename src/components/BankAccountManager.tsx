@@ -643,8 +643,8 @@ export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccoun
             
             <div className="balance-history">
               {(() => {
-                const history = balanceManagementService.getBalanceHistory(account.id);
-                const adjustments = balanceManagementService.getBalanceAdjustments(account.id);
+                      const history = unifiedBalanceService.getBalanceHistory(account.id);
+      const adjustments = unifiedBalanceService.getBalanceAdjustments(account.id);
                 
                 if (history.length === 0 && adjustments.length === 0) {
                   return (

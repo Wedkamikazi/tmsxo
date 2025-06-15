@@ -2,6 +2,7 @@ import { systemIntegrityService } from './systemIntegrityService';
 // import { performanceManager } from './performanceManager';
 import { localStorageManager } from './localStorageManager';
 import { isDebugMode } from '../utils/debugMode';
+import { systemSafetyManager } from '../utils/systemSafetyManager';
 
 // LOCAL OLLAMA INTEGRATION SERVICE
 // Handles communication with local Ollama server for enhanced NLP capabilities
@@ -119,6 +120,12 @@ class LocalOllamaIntegration {
   // INITIALIZE OLLAMA INTEGRATION
   private async initializeOllamaIntegration(): Promise<void> {
     try {
+      // SAFETY CHECK: Verify no duplicate Ollama instances
+      if (systemSafetyManager.isProcessRunning('ollama')) {
+        console.warn('⚠️ SAFETY: Ollama already registered - skipping duplicate initialization');
+        return;
+      }
+
       // Check if Ollama is disabled by user preference
       if (!this.ollamaEnabled) {
         console.info('ℹ️ Ollama integration disabled by user preference - TensorFlow.js only mode');
@@ -132,6 +139,14 @@ class LocalOllamaIntegration {
       await this.checkOllamaHealth();
       
       if (this.healthStatus.isReachable) {
+        // SAFETY: Register Ollama process with safety manager
+        const canRegister = systemSafetyManager.registerProcess('ollama', 11434);
+        if (!canRegister) {
+          console.error('❌ SAFETY VIOLATION: Cannot register Ollama - duplicate detected');
+          this.isInitialized = false;
+          return;
+        }
+
         // Get available models
         await this.loadAvailableModels();
         
@@ -143,14 +158,17 @@ class LocalOllamaIntegration {
         
         this.isInitialized = true;
         console.log(`✅ Ollama Integration Ready - Using model: ${this.currentModel}`);
+        
+        // Register cleanup handler with safety manager
+        systemSafetyManager.addCleanupHandler(() => {
+          this.cleanup();
+        });
       } else {
-        console.info('ℹ️ Ollama not available - System will use TensorFlow.js only (this is normal)');
+        console.info('ℹ️ Ollama not available - System will use TensorFlow.js only mode');
         this.isInitialized = false;
       }
-      
     } catch (error) {
-      this.logOllamaError('initializeOllamaIntegration', error, 'low'); // Reduced severity
-      console.info('ℹ️ Ollama initialization skipped - TensorFlow.js fallback active');
+      this.logOllamaError('initializeOllamaIntegration', error, 'medium');
       this.isInitialized = false;
     }
   }
@@ -557,6 +575,12 @@ Provide detailed analysis in JSON format.`;
 
   // Enable/disable Ollama integration
   enableOllamaIntegration(): void {
+    // SAFETY CHECK: Ensure no duplicates
+    if (systemSafetyManager.isProcessRunning('ollama')) {
+      console.warn('⚠️ SAFETY: Ollama already running - cannot enable duplicate');
+      return;
+    }
+
     this.ollamaEnabled = true;
     localStorage.setItem('ollamaEnabled', 'true');
     console.info('✅ Ollama integration enabled - will attempt connection on next initialization');
@@ -566,6 +590,10 @@ Provide detailed analysis in JSON format.`;
     this.ollamaEnabled = false;
     localStorage.setItem('ollamaEnabled', 'false');
     this.isInitialized = false;
+    
+    // SAFETY: Unregister from safety manager
+    systemSafetyManager.unregisterProcess('ollama');
+    
     console.info('❌ Ollama integration disabled - TensorFlow.js only mode');
   }
 
@@ -605,6 +633,28 @@ Provide detailed analysis in JSON format.`;
     this.requestQueue.length = 0;
     this.isProcessingQueue = false;
     this.isInitialized = false;
+  }
+
+  // CLEANUP METHOD
+  private cleanup(): void {
+    console.log('🧹 Cleaning up Ollama integration...');
+    
+    // Unregister from safety manager
+    systemSafetyManager.unregisterProcess('ollama');
+    
+    // Clear model and reset state
+    this.currentModel = null;
+    this.isInitialized = false;
+    this.healthStatus = {
+      isRunning: false,
+      isReachable: false,
+      availableModels: [],
+      responseTime: 0,
+      lastChecked: new Date(),
+      error: null
+    };
+    
+    console.log('✅ Ollama integration cleanup completed');
   }
 }
 

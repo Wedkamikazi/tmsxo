@@ -1303,6 +1303,562 @@ class SystemIntegrityService {
 
     return issues;
   }
+
+  // CONSOLIDATED HEALTH MONITORING - SINGLE SOURCE OF TRUTH
+  // Replaces scattered health monitoring from serviceOrchestrator, performanceManager, and other services
+  async getConsolidatedSystemHealth(): Promise<{
+    overall: 'excellent' | 'good' | 'warning' | 'critical' | 'failure';
+    score: number; // 0-100
+    timestamp: string;
+    uptime: number;
+    services: {
+      orchestration: { 
+        status: 'healthy' | 'degraded' | 'failed'; 
+        details: {
+          totalServices: number;
+          readyServices: number;
+          failedServices: number;
+          criticalServicesReady: boolean;
+          initializationTime?: number;
+        };
+      };
+      storage: { status: string; details: any };
+      performance: { 
+        status: string; 
+        details: {
+          memoryUsage: number;
+          cacheHitRate: number;
+          modelCount: number;
+          averageResponseTime: number;
+          operationCount: number;
+          tensorflowMemory: any;
+        };
+      };
+      dataIntegrity: { status: string; details: any };
+      eventBus: { status: string; details: any };
+      crossTabSync: { status: string; details: any };
+      mlServices: {
+        categorization: { status: 'healthy' | 'degraded' | 'failed'; details: any };
+        predictiveAnalytics: { status: 'healthy' | 'degraded' | 'failed'; details: any };
+        naturalLanguage: { status: 'healthy' | 'degraded' | 'failed'; details: any };
+      };
+    };
+    performance: {
+      memory: {
+        jsHeap: { used: number; total: number; percentage: number };
+        tensorflow: { numBytes: number; numTensors: number; peakBytes: number };
+        modelRegistry: { total: number; active: number; inactive: number };
+        recommendations: string[];
+      };
+      cache: { size: number; hitRate: number; efficiency: number };
+      operations: { count: number; averageTime: number; errorRate: number };
+    };
+    healthHistory: Array<{
+      timestamp: string;
+      score: number;
+      status: string;
+      criticalIssues: number;
+    }>;
+    errorSummary: {
+      totalErrors: number;
+      criticalErrors: number;
+      recentErrorRate: number;
+      topErrorServices: Array<{ service: string; count: number }>;
+      errorTrends: {
+        increasing: boolean;
+        frequentServices: string[];
+        criticalPatterns: string[];
+      };
+    };
+    recommendations: {
+      critical: string[];
+      high: string[];
+      medium: string[];
+      performance: string[];
+      maintenance: string[];
+    };
+    alerts: Array<{
+      severity: 'critical' | 'high' | 'medium' | 'low';
+      message: string;
+      service: string;
+      timestamp: string;
+      actionRequired: boolean;
+    }>;
+  }> {
+    const startTime = Date.now();
+    const systemStartTime = performance.now();
+    
+    try {
+      console.log('🏥 Performing Consolidated System Health Assessment...');
+
+      // GATHER ALL HEALTH DATA IN PARALLEL
+      const [
+        storageHealth,
+        eventBusHealth,
+        crossTabSyncHealth,
+        integrityReport,
+        performanceReport,
+        memoryHealth,
+        errorStats,
+        serviceOrchestratorHealth,
+        mlServicesHealth
+      ] = await Promise.all([
+        this.checkStorageHealth(),
+        this.checkEventBusHealth(),
+        this.checkCrossTabSyncHealth(),
+        this.performComprehensiveDataIntegrity(),
+        performanceManager.getPerformanceReport(),
+        performanceManager.getMemoryHealthStatus(),
+        this.getErrorStats(),
+        this.getServiceOrchestratorHealth(),
+        this.getMLServicesHealth()
+      ]);
+
+      // CALCULATE COMPREHENSIVE HEALTH SCORE (0-100)
+      let healthScore = 100;
+      
+      // Service orchestration health (25 points)
+      if (serviceOrchestratorHealth.status === 'failed') healthScore -= 25;
+      else if (serviceOrchestratorHealth.status === 'degraded') healthScore -= 15;
+      else if (!serviceOrchestratorHealth.details.criticalServicesReady) healthScore -= 10;
+      
+      // Storage health (20 points)
+      if (storageHealth === 'failed') healthScore -= 20;
+      else if (storageHealth === 'degraded') healthScore -= 10;
+      
+      // Performance & memory health (20 points)
+      if (memoryHealth.status === 'emergency') healthScore -= 20;
+      else if (memoryHealth.status === 'critical') healthScore -= 15;
+      else if (memoryHealth.status === 'warning') healthScore -= 8;
+      
+      // Data integrity health (15 points)
+      const integrityPenalty = Math.round((100 - integrityReport.integrityScore) * 0.15);
+      healthScore -= integrityPenalty;
+      
+      // Error rate impact (10 points)
+      const criticalErrors = errorStats.errorsBySeverity.critical || 0;
+      const highErrors = errorStats.errorsBySeverity.high || 0;
+      healthScore -= Math.min(criticalErrors * 5 + highErrors * 2, 10);
+      
+      // Event bus & sync health (10 points)
+      if (eventBusHealth === 'failed') healthScore -= 6;
+      else if (eventBusHealth === 'degraded') healthScore -= 3;
+      if (crossTabSyncHealth === 'failed') healthScore -= 4;
+      else if (crossTabSyncHealth === 'degraded') healthScore -= 2;
+
+      healthScore = Math.max(0, healthScore);
+
+      // DETERMINE OVERALL STATUS
+      let overall: 'excellent' | 'good' | 'warning' | 'critical' | 'failure' = 'excellent';
+      if (healthScore >= 90) overall = 'excellent';
+      else if (healthScore >= 75) overall = 'good';
+      else if (healthScore >= 50) overall = 'warning';
+      else if (healthScore >= 25) overall = 'critical';
+      else overall = 'failure';
+
+      // GENERATE CATEGORIZED RECOMMENDATIONS
+      const recommendations = {
+        critical: [] as string[],
+        high: [] as string[],
+        medium: [] as string[],
+        performance: [] as string[],
+        maintenance: [] as string[]
+      };
+
+      // Critical recommendations
+      if (serviceOrchestratorHealth.status === 'failed') {
+        recommendations.critical.push('Service orchestration failed - system restart may be required');
+      }
+      if (storageHealth === 'failed') {
+        recommendations.critical.push('Storage system failed - data operations unavailable');
+      }
+      if (memoryHealth.status === 'emergency') {
+        recommendations.critical.push('Memory usage critical - immediate cleanup required');
+      }
+
+      // High priority recommendations
+      if (integrityReport.integrityScore < 60) {
+        recommendations.high.push(`Data integrity compromised (${integrityReport.integrityScore}%) - run repair`);
+      }
+      if (criticalErrors > 0) {
+        recommendations.high.push(`${criticalErrors} critical errors detected - investigate immediately`);
+      }
+
+      // Performance recommendations
+      recommendations.performance.push(...memoryHealth.recommendations);
+      recommendations.performance.push(...performanceReport.recommendations);
+      
+      // Maintenance recommendations
+      if (integrityReport.duplicateReport.duplicates.length > 0) {
+        recommendations.maintenance.push(`${integrityReport.duplicateReport.duplicates.length} duplicate transactions found`);
+      }
+
+      // GENERATE ALERTS
+      const alerts = [];
+      
+      if (overall === 'critical' || overall === 'failure') {
+        alerts.push({
+          severity: 'critical' as const,
+          message: `System health critical (${healthScore}%) - immediate attention required`,
+          service: 'SystemIntegrityService',
+          timestamp: new Date().toISOString(),
+          actionRequired: true
+        });
+      }
+      
+      if (memoryHealth.status === 'critical' || memoryHealth.status === 'emergency') {
+        alerts.push({
+          severity: 'high' as const,
+          message: `Memory usage ${memoryHealth.status} (${memoryHealth.currentUsage}MB)`,
+          service: 'PerformanceManager',
+          timestamp: new Date().toISOString(),
+          actionRequired: true
+        });
+      }
+
+      // UPDATE HEALTH HISTORY
+      this.updateHealthHistory({
+        timestamp: new Date().toISOString(),
+        score: healthScore,
+        status: overall,
+        criticalIssues: criticalErrors
+      });
+
+      const checkDuration = Date.now() - startTime;
+      console.log(`✅ Consolidated health check completed in ${checkDuration}ms (Score: ${healthScore})`);
+
+      return {
+        overall,
+        score: Math.round(healthScore),
+        timestamp: new Date().toISOString(),
+        uptime: systemStartTime,
+        services: {
+          orchestration: serviceOrchestratorHealth,
+          storage: { 
+            status: storageHealth, 
+            details: { 
+              responsiveness: 'measured', 
+              errors: errorStats.errorsByService.LocalStorageManager || 0,
+              storageUsed: localStorageManager.getStorageStats().totalSize
+            }
+          },
+          performance: { 
+            status: memoryHealth.status,
+            details: {
+              memoryUsage: memoryHealth.currentUsage,
+              cacheHitRate: memoryHealth.cacheStats.hitRate,
+              modelCount: memoryHealth.modelStats.total,
+              averageResponseTime: performanceReport.metrics.averageResponseTime,
+              operationCount: performanceReport.metrics.operationCount,
+              tensorflowMemory: performanceReport.metrics.tensorflowMemory
+            }
+          },
+          dataIntegrity: { 
+            status: integrityReport.integrityScore > 80 ? 'healthy' : integrityReport.integrityScore > 60 ? 'degraded' : 'failed',
+            details: {
+              score: integrityReport.integrityScore,
+              duplicates: integrityReport.duplicateReport.duplicates.length,
+              anomalies: integrityReport.anomalies.length,
+              orphanedData: integrityReport.summary.orphanedTransactions + integrityReport.summary.orphanedFiles
+            }
+          },
+          eventBus: { 
+            status: eventBusHealth,
+            details: { errors: errorStats.errorsByService.EventBus || 0 }
+          },
+          crossTabSync: { 
+            status: crossTabSyncHealth,
+            details: { errors: errorStats.errorsByService.CrossTabSyncService || 0 }
+          },
+          mlServices: mlServicesHealth
+        },
+        performance: {
+          memory: {
+            jsHeap: {
+              used: memoryHealth.cacheStats.memoryUsage,
+              total: performanceReport.memoryStats.total,
+              percentage: performanceReport.memoryStats.percentage
+            },
+            tensorflow: performanceReport.metrics.tensorflowMemory || { numBytes: 0, numTensors: 0, peakBytes: 0 },
+            modelRegistry: {
+              total: memoryHealth.modelStats.total,
+              active: memoryHealth.modelStats.active,
+              inactive: memoryHealth.modelStats.inactive
+            },
+            recommendations: memoryHealth.recommendations
+          },
+          cache: {
+            size: memoryHealth.cacheStats.size,
+            hitRate: memoryHealth.cacheStats.hitRate,
+            efficiency: memoryHealth.cacheStats.hitRate * 100
+          },
+          operations: {
+            count: performanceReport.metrics.operationCount,
+            averageTime: performanceReport.metrics.averageResponseTime,
+            errorRate: (errorStats.totalErrors / Math.max(performanceReport.metrics.operationCount, 1)) * 100
+          }
+        },
+        healthHistory: this.getHealthHistory(),
+        errorSummary: {
+          totalErrors: errorStats.totalErrors,
+          criticalErrors,
+          recentErrorRate: errorStats.recentErrors.length,
+          topErrorServices: errorStats.topErrorServices,
+          errorTrends: {
+            increasing: errorStats.recentErrors.length > (errorStats.totalErrors * 0.3),
+            frequentServices: errorStats.topErrorServices.slice(0, 3).map(s => s.service),
+            criticalPatterns: this.analyzeCriticalErrorPatterns(errorStats.recentErrors)
+          }
+        },
+        recommendations,
+        alerts
+      };
+      
+    } catch (error) {
+      this.logServiceError(
+        'SystemIntegrityService',
+        'getConsolidatedSystemHealth',
+        error instanceof Error ? error : new Error(String(error)),
+        'critical',
+        { checkDuration: Date.now() - startTime }
+      );
+      
+      // Return failure status on health check error
+      return this.getEmergencyHealthStatus();
+    }
+  }
+
+  // CONSOLIDATED SERVICE ORCHESTRATOR HEALTH (replaces serviceOrchestrator health checks)
+  private async getServiceOrchestratorHealth(): Promise<{
+    status: 'healthy' | 'degraded' | 'failed';
+    details: {
+      totalServices: number;
+      readyServices: number;
+      failedServices: number;
+      criticalServicesReady: boolean;
+      initializationTime?: number;
+    };
+  }> {
+    try {
+      // Import serviceOrchestrator dynamically to avoid circular dependencies
+      const { serviceOrchestrator } = await import('./serviceOrchestrator');
+      const systemStatus = serviceOrchestrator.getSystemStatus();
+      
+      const criticalServices = ['eventBus', 'localStorageManager', 'unifiedDataService', 'systemIntegrityService'];
+      const criticalReady = criticalServices.every(serviceName => {
+        const serviceStatus = Array.from(systemStatus.services.values()).find(s => s.name === serviceName);
+        return serviceStatus?.status === 'ready';
+      });
+
+      let status: 'healthy' | 'degraded' | 'failed' = 'healthy';
+      if (systemStatus.overall === 'failed') status = 'failed';
+      else if (systemStatus.overall === 'degraded' || !criticalReady) status = 'degraded';
+
+      return {
+        status,
+        details: {
+          totalServices: systemStatus.totalServices,
+          readyServices: systemStatus.readyServices,
+          failedServices: systemStatus.failedServices,
+          criticalServicesReady: criticalReady,
+          initializationTime: systemStatus.readyTime ? systemStatus.readyTime - systemStatus.startupTime : undefined
+        }
+      };
+    } catch (error) {
+      this.logServiceError('SystemIntegrityService', 'getServiceOrchestratorHealth', error instanceof Error ? error : new Error(String(error)), 'high');
+      
+      return {
+        status: 'failed',
+        details: {
+          totalServices: 0,
+          readyServices: 0,
+          failedServices: 0,
+          criticalServicesReady: false
+        }
+      };
+    }
+  }
+
+  // CONSOLIDATED ML SERVICES HEALTH
+  private async getMLServicesHealth(): Promise<{
+    categorization: { status: 'healthy' | 'degraded' | 'failed'; details: any };
+    predictiveAnalytics: { status: 'healthy' | 'degraded' | 'failed'; details: any };
+    naturalLanguage: { status: 'healthy' | 'degraded' | 'failed'; details: any };
+  }> {
+    const checkMLService = async (serviceName: string, serviceModule: any) => {
+      try {
+        if (!serviceModule || typeof serviceModule.getServiceStatus !== 'function') {
+          return { status: 'failed', details: { error: 'Service not available' } };
+        }
+        
+        const status = serviceModule.getServiceStatus();
+        const isHealthy = status.isInitialized && status.modelLoaded;
+        
+        return {
+          status: isHealthy ? 'healthy' : 'degraded',
+          details: {
+            initialized: status.isInitialized,
+            modelLoaded: status.modelLoaded,
+            vocabularySize: status.vocabularySize,
+            lastCheck: new Date().toISOString()
+          }
+        };
+      } catch (error) {
+        this.logServiceError('SystemIntegrityService', `getMLServicesHealth-${serviceName}`, error instanceof Error ? error : new Error(String(error)), 'medium');
+        return { status: 'failed', details: { error: 'Health check failed' } };
+      }
+    };
+
+    const [categorization, predictiveAnalytics, naturalLanguage] = await Promise.allSettled([
+      checkMLService('mlCategorizationService', (await import('./mlCategorizationService')).mlCategorizationService),
+      checkMLService('mlPredictiveAnalyticsService', (await import('./mlPredictiveAnalyticsService')).mlPredictiveAnalyticsService),
+      checkMLService('mlNaturalLanguageService', (await import('./mlNaturalLanguageService')).mlNaturalLanguageService)
+    ]);
+
+    return {
+      categorization: categorization.status === 'fulfilled' ? categorization.value : { status: 'failed', details: { error: 'Import failed' } },
+      predictiveAnalytics: predictiveAnalytics.status === 'fulfilled' ? predictiveAnalytics.value : { status: 'failed', details: { error: 'Import failed' } },
+      naturalLanguage: naturalLanguage.status === 'fulfilled' ? naturalLanguage.value : { status: 'failed', details: { error: 'Import failed' } }
+    };
+  }
+
+  // HEALTH HISTORY MANAGEMENT
+  private healthHistory: Array<{
+    timestamp: string;
+    score: number;
+    status: string;
+    criticalIssues: number;
+  }> = [];
+
+  private updateHealthHistory(entry: { timestamp: string; score: number; status: string; criticalIssues: number }): void {
+    this.healthHistory.push(entry);
+    
+    // Keep only last 50 entries
+    if (this.healthHistory.length > 50) {
+      this.healthHistory = this.healthHistory.slice(-50);
+    }
+  }
+
+  private getHealthHistory(): Array<{ timestamp: string; score: number; status: string; criticalIssues: number }> {
+    return [...this.healthHistory];
+  }
+
+  // CRITICAL ERROR PATTERN ANALYSIS
+  private analyzeCriticalErrorPatterns(recentErrors: typeof this.errorLog): string[] {
+    const patterns: string[] = [];
+    
+    // Group errors by component
+    const errorsByComponent = recentErrors.reduce((acc, error) => {
+      acc[error.component] = (acc[error.component] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    // Identify concerning patterns
+    Object.entries(errorsByComponent).forEach(([component, count]) => {
+      if (count >= 5) {
+        patterns.push(`${component}: ${count} recent errors`);
+      }
+    });
+    
+    // Check for cascading failures
+    const timeWindows = this.groupErrorsByTimeWindow(recentErrors, 5 * 60 * 1000); // 5-minute windows
+    timeWindows.forEach((windowErrors, index) => {
+      if (windowErrors.length >= 3) {
+        patterns.push(`Time window ${index}: ${windowErrors.length} errors (potential cascade)`);
+      }
+    });
+    
+    return patterns;
+  }
+
+  private groupErrorsByTimeWindow(errors: typeof this.errorLog, windowMs: number): typeof this.errorLog[] {
+    const windows: typeof this.errorLog[][] = [];
+    const sortedErrors = [...errors].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    
+    if (sortedErrors.length === 0) return windows;
+    
+    let currentWindow: typeof this.errorLog = [];
+    let windowStart = new Date(sortedErrors[0].timestamp).getTime();
+    
+    sortedErrors.forEach(error => {
+      const errorTime = new Date(error.timestamp).getTime();
+      
+      if (errorTime - windowStart <= windowMs) {
+        currentWindow.push(error);
+      } else {
+        if (currentWindow.length > 0) {
+          windows.push([...currentWindow]);
+        }
+        currentWindow = [error];
+        windowStart = errorTime;
+      }
+    });
+    
+    if (currentWindow.length > 0) {
+      windows.push(currentWindow);
+    }
+    
+    return windows;
+  }
+
+  // EMERGENCY HEALTH STATUS (for when health check itself fails)
+  private getEmergencyHealthStatus(): Awaited<ReturnType<SystemIntegrityService['getConsolidatedSystemHealth']>> {
+    return {
+      overall: 'failure',
+      score: 0,
+      timestamp: new Date().toISOString(),
+      uptime: 0,
+      services: {
+        orchestration: { status: 'failed', details: { totalServices: 0, readyServices: 0, failedServices: 0, criticalServicesReady: false } },
+        storage: { status: 'unknown', details: {} },
+        performance: { status: 'unknown', details: { memoryUsage: 0, cacheHitRate: 0, modelCount: 0, averageResponseTime: 0, operationCount: 0, tensorflowMemory: {} } },
+        dataIntegrity: { status: 'unknown', details: {} },
+        eventBus: { status: 'unknown', details: {} },
+        crossTabSync: { status: 'unknown', details: {} },
+        mlServices: {
+          categorization: { status: 'failed', details: {} },
+          predictiveAnalytics: { status: 'failed', details: {} },
+          naturalLanguage: { status: 'failed', details: {} }
+        }
+      },
+      performance: {
+        memory: {
+          jsHeap: { used: 0, total: 0, percentage: 0 },
+          tensorflow: { numBytes: 0, numTensors: 0, peakBytes: 0 },
+          modelRegistry: { total: 0, active: 0, inactive: 0 },
+          recommendations: []
+        },
+        cache: { size: 0, hitRate: 0, efficiency: 0 },
+        operations: { count: 0, averageTime: 0, errorRate: 100 }
+      },
+      healthHistory: [],
+      errorSummary: {
+        totalErrors: this.errorLog.length,
+        criticalErrors: 0,
+        recentErrorRate: 0,
+        topErrorServices: [],
+        errorTrends: {
+          increasing: false,
+          frequentServices: [],
+          criticalPatterns: ['Health check system failure']
+        }
+      },
+      recommendations: {
+        critical: ['System health monitoring failed - manual investigation required', 'Consider system restart'],
+        high: [],
+        medium: [],
+        performance: [],
+        maintenance: []
+      },
+      alerts: [{
+        severity: 'critical',
+        message: 'System health monitoring failed - critical system failure',
+        service: 'SystemIntegrityService',
+        timestamp: new Date().toISOString(),
+        actionRequired: true
+      }]
+    };
+  }
 }
 
 // Export singleton instance

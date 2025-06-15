@@ -54,6 +54,7 @@ export const DataHub: React.FC = () => {
     if (!shouldReinitializeServices()) {
       console.log('🚀 INSTANT LOAD: Using cached services - no reinitialization needed');
       console.log('📂 Restoring tab:', activeTab);
+      console.log('⚡ INSTANT REFRESH: Services ready without delay');
       setInitializationSkipped(true);
       setServicesLoaded(true);
       

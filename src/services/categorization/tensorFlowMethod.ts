@@ -1337,33 +1337,4 @@ export class TensorFlowMethod implements CategorizationStrategy {
       await this.initializeTensorFlow();
     }
   }
-
-  dispose(): void {
-    // Dispose TensorFlow models
-    if (this.categorizationModel) {
-      this.categorizationModel.dispose();
-      this.categorizationModel = null;
-    }
-    if (this.sentimentModel) {
-      this.sentimentModel.dispose();
-      this.sentimentModel = null;
-    }
-    if (this.anomalyModel) {
-      this.anomalyModel.dispose();
-      this.anomalyModel = null;
-    }
-    if (this.patternModel) {
-      this.patternModel.dispose();
-      this.patternModel = null;
-    }
-    
-    // Clear data structures
-    this.vocabulary.clear();
-    this.categoryMapping.clear();
-    this.reverseCategoryMapping.clear();
-    this.trainingHistory = [];
-    
-    this.isInitialized = false;
-    console.log('🧹 TensorFlow method disposed and memory cleaned');
-  }
 } 

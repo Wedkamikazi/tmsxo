@@ -107,7 +107,7 @@ export const MLIntegrationDashboard: React.FC = () => {
         recentTransactions.map(async transaction => {
           const [nlpResult, mlResult] = await Promise.all([
             mlNaturalLanguageService.analyzeTransaction(transaction),
-            mlCategorizationService.categorizeTransaction(transaction)
+            unifiedCategorizationService.categorizeTransaction(transaction)
           ]);
           return { transaction, nlpResult, mlResult };
         })

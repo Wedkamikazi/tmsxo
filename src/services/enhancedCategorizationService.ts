@@ -172,7 +172,7 @@ class EnhancedCategorizationService {
       }
 
       // Emit categorization event
-      eventBus.emit('TRANSACTION_CATEGORIZED', {
+      eventBus.emit('CATEGORIES_UPDATED', {
         transactionId: transaction.id,
         categoryId: result.categoryId,
         method: result.method,

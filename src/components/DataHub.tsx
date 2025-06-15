@@ -28,11 +28,13 @@ const isDebugMode = typeof window !== 'undefined' && (
 );
 
 export const DataHub: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'bankStatement' | 'accounts' | 'transactions' | 'fileManager' | 'qwenStatus' | 'dataCleanup' | 'ollamaChat' | 'payroll' | 'investments' | 'reports'>('bankStatement');
-  const [dataRefreshTrigger, setDataRefreshTrigger] = useState(0);
+  // Professional state management - persists across refreshes
+  const [activeTab, setActiveTab] = useState<'bankStatement' | 'accounts' | 'transactions' | 'fileManager' | 'qwenStatus' | 'dataCleanup' | 'ollamaChat' | 'payroll' | 'investments' | 'reports'>(() => getActiveTab() as any);
+  const [dataRefreshTrigger, setDataRefreshTrigger] = useState(() => getDataRefreshTrigger());
   const [servicesLoaded, setServicesLoaded] = useState(false);
   const [eventBus, setEventBus] = useState<any>(null);
   const [unifiedDataService, setUnifiedDataService] = useState<any>(null);
+  const [initializationSkipped, setInitializationSkipped] = useState(false);
 
   useEffect(() => {
     // Skip service operations in debug mode

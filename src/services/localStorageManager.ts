@@ -1,6 +1,7 @@
 import { Transaction, BankAccount, UploadedFile, TransactionCategory, TransactionCategorization } from '../types';
 import { performanceManager } from './performanceManager';
 import { systemIntegrityService } from './systemIntegrityService';
+import { eventBus } from './eventBus';
 
 export interface StorageSnapshot {
   timestamp: string;
@@ -639,6 +640,7 @@ class LocalStorageManager {
         const mostRecentTransaction = accountTransactions[0];
         accounts[accountIndex].currentBalance = mostRecentTransaction.balance;
         console.log(`🔄 Updated account ${accounts[accountIndex].name} balance to ${mostRecentTransaction.balance} based on most recent transaction`);
+        eventBus.emit('account_update', { accountId, balance: mostRecentTransaction.balance });
       } else {
         // No transactions left for this account - reset to 0 or keep existing balance
         console.log(`⚠️ No transactions remaining for account ${accounts[accountIndex].name}, keeping current balance`);

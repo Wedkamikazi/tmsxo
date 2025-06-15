@@ -528,6 +528,27 @@ class SystemIntegrityService {
     }
   }
 
+  private async checkCrossTabSyncHealth(): Promise<'healthy' | 'degraded' | 'failed'> {
+    try {
+      const syncStats = crossTabSyncService.getSyncStats();
+      const pendingConflicts = crossTabSyncService.getPendingConflicts();
+      
+      // Check for excessive unresolved conflicts
+      const unresolvedConflicts = pendingConflicts.filter(c => !c.resolved).length;
+      
+      if (unresolvedConflicts > 5) return 'failed';
+      if (unresolvedConflicts > 2) return 'degraded';
+      
+      // Check sync latency
+      if (syncStats.syncLatency > 1000) return 'degraded'; // More than 1 second
+      if (syncStats.syncLatency > 5000) return 'failed'; // More than 5 seconds
+      
+      return 'healthy';
+    } catch {
+      return 'failed';
+    }
+  }
+
   private async checkTransactionAccountReferences(issues: IntegrityIssue[]): Promise<void> {
     const transactions = unifiedDataService.getAllTransactions();
     const accounts = unifiedDataService.getAllAccounts();

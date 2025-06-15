@@ -189,4 +189,12 @@ export interface CreditTransactionView {
 }
 
 // Collection Types
-export type CollectionType = 'transactions' | 'accounts' | 'files' | 'categories' | 'categorizations'; 
+export interface CollectionType {
+  id: string;
+  name: string;
+  description: string;
+  patterns: string[];
+  color: string;
+  isSystemType: boolean;
+  createdDate: string;
+} 

@@ -12,6 +12,8 @@ export interface DailyBalance {
   transactionCount: number;
   lastTransactionTime: string; // Time of the last transaction that determined the closing balance
   lastTransactionId: string; // ID of the last transaction
+  hasDuplicates?: boolean; // Flag to indicate if duplicates were detected
+  duplicateCount?: number; // Number of duplicates found for this day
 }
 
 export interface BankBalanceFilters {
@@ -35,6 +37,7 @@ export interface BankBalanceStats {
   lowestBalance: number;
   highestMovement: number;
   lowestMovement: number;
+  daysWithDuplicates?: number; // Number of days that had duplicate transactions
 }
 
 type SortField = 'date' | 'accountName' | 'openingBalance' | 'closingBalance' | 'movement' | 'transactionCount';
@@ -42,8 +45,81 @@ type SortDirection = 'asc' | 'desc';
 
 class BankBalanceService {
   /**
+   * Detects potential duplicate transactions within a day's transactions
+   * Uses sophisticated matching similar to the system's duplicate detection
+   */
+  private detectDayDuplicates(transactions: StoredTransaction[]): {
+    uniqueTransactions: StoredTransaction[];
+    duplicates: StoredTransaction[];
+  } {
+    if (transactions.length <= 1) {
+      return { uniqueTransactions: transactions, duplicates: [] };
+    }
+
+    const seen = new Map<string, StoredTransaction>();
+    const duplicates: StoredTransaction[] = [];
+    const uniqueTransactions: StoredTransaction[] = [];
+
+    transactions.forEach(transaction => {
+      // Create sophisticated duplicate detection key
+      const normalizedDesc = transaction.description.trim().toLowerCase();
+      const key = [
+        transaction.accountId,
+        transaction.date,
+        transaction.debitAmount || 0,
+        transaction.creditAmount || 0,
+        normalizedDesc.substring(0, 50) // First 50 chars of description
+      ].join('|');
+      
+      if (seen.has(key)) {
+        // Additional validation - check if they're really duplicates
+        const existing = seen.get(key)!;
+        const similarity = this.calculateTransactionSimilarity(existing, transaction);
+        if (similarity > 0.9) {
+          duplicates.push(transaction);
+          return; // Skip adding to unique transactions
+        }
+      }
+      
+      seen.set(key, transaction);
+      uniqueTransactions.push(transaction);
+    });
+
+    return { uniqueTransactions, duplicates };
+  }
+
+  /**
+   * Calculate similarity between two transactions for duplicate detection
+   */
+  private calculateTransactionSimilarity(t1: StoredTransaction, t2: StoredTransaction): number {
+    // Same basic data required
+    if (t1.accountId !== t2.accountId || t1.date !== t2.date) return 0;
+    if (t1.debitAmount !== t2.debitAmount || t1.creditAmount !== t2.creditAmount) return 0;
+    
+    // Calculate description similarity
+    const desc1 = t1.description.trim().toLowerCase();
+    const desc2 = t2.description.trim().toLowerCase();
+    
+    // Simple similarity calculation
+    if (desc1 === desc2) return 1.0;
+    
+    const longer = desc1.length > desc2.length ? desc1 : desc2;
+    const shorter = desc1.length > desc2.length ? desc2 : desc1;
+    
+    if (longer.length === 0) return 1.0;
+    
+    let matches = 0;
+    for (let i = 0; i < shorter.length; i++) {
+      if (longer.includes(shorter[i])) matches++;
+    }
+    
+    return matches / longer.length;
+  }
+
+  /**
    * Extracts daily closing balances from transaction data
    * Uses the last transaction of each day by postDateTime to determine closing balance
+   * NOW WITH DUPLICATE DETECTION AND HANDLING
    */
   getDailyBalances(): DailyBalance[] {
     const transactions = unifiedDataService.getAllTransactions();
@@ -89,22 +165,29 @@ class BankBalanceService {
       sortedDates.forEach((date, index) => {
         const dayTransactions = dateMap.get(date)!;
         
+        // DUPLICATE DETECTION AND HANDLING
+        const { uniqueTransactions, duplicates } = this.detectDayDuplicates(dayTransactions);
+        const hasDuplicates = duplicates.length > 0;
+        
+        // Use unique transactions for balance calculation to avoid duplicate impact
+        const transactionsToProcess = uniqueTransactions;
+        
         // Sort transactions by postDateTime (or fallback to time)
-        dayTransactions.sort((a, b) => {
+        transactionsToProcess.sort((a, b) => {
           const aDateTime = a.postDateTime || `${a.postDate || a.date}T${a.time || '00:00'}:00`;
           const bDateTime = b.postDateTime || `${b.postDate || b.date}T${b.time || '00:00'}:00`;
           return new Date(aDateTime).getTime() - new Date(bDateTime).getTime();
         });
         
         // Last transaction determines the closing balance
-        const lastTransaction = dayTransactions[dayTransactions.length - 1];
+        const lastTransaction = transactionsToProcess[transactionsToProcess.length - 1];
         const closingBalance = lastTransaction.balance;
         
         // Opening balance is either previous day's closing or calculated from first transaction
         let openingBalance: number;
         if (index === 0) {
           // For first day, calculate opening balance from first transaction
-          const firstTransaction = dayTransactions[0];
+          const firstTransaction = transactionsToProcess[0];
           openingBalance = firstTransaction.balance - (firstTransaction.creditAmount - firstTransaction.debitAmount);
         } else {
           openingBalance = previousClosingBalance;
@@ -121,9 +204,11 @@ class BankBalanceService {
           openingBalance,
           closingBalance,
           movement,
-          transactionCount: dayTransactions.length,
+          transactionCount: transactionsToProcess.length, // Count of unique transactions only
           lastTransactionTime,
-          lastTransactionId: lastTransaction.id
+          lastTransactionId: lastTransaction.id,
+          hasDuplicates,
+          duplicateCount: duplicates.length
         });
         
         previousClosingBalance = closingBalance;
@@ -234,6 +319,7 @@ class BankBalanceService {
 
   /**
    * Calculate statistics for bank balances
+   * NOW INCLUDES DUPLICATE DETECTION STATS
    */
   getBalanceStats(balances: DailyBalance[]): BankBalanceStats {
     if (balances.length === 0) {
@@ -247,7 +333,8 @@ class BankBalanceService {
         highestBalance: 0,
         lowestBalance: 0,
         highestMovement: 0,
-        lowestMovement: 0
+        lowestMovement: 0,
+        daysWithDuplicates: 0
       };
     }
     
@@ -256,6 +343,7 @@ class BankBalanceService {
     const totalMovement = balances.reduce((sum, b) => sum + Math.abs(b.movement), 0);
     const positiveMovementDays = balances.filter(b => b.movement > 0).length;
     const negativeMovementDays = balances.filter(b => b.movement < 0).length;
+    const daysWithDuplicates = balances.filter(b => b.hasDuplicates).length;
     
     const closingBalances = balances.map(b => b.closingBalance);
     const movements = balances.map(b => b.movement);
@@ -270,12 +358,14 @@ class BankBalanceService {
       highestBalance: Math.max(...closingBalances),
       lowestBalance: Math.min(...closingBalances),
       highestMovement: Math.max(...movements),
-      lowestMovement: Math.min(...movements)
+      lowestMovement: Math.min(...movements),
+      daysWithDuplicates
     };
   }
 
   /**
    * Export balances to CSV format
+   * NOW INCLUDES DUPLICATE INFORMATION
    */
   exportToCSV(balances: DailyBalance[]): string {
     const headers = [
@@ -285,7 +375,9 @@ class BankBalanceService {
       'Closing Balance',
       'Movement',
       'Transaction Count',
-      'Last Transaction Time'
+      'Last Transaction Time',
+      'Has Duplicates',
+      'Duplicate Count'
     ];
     
     const formatCurrency = (amount: number): string => {
@@ -304,7 +396,9 @@ class BankBalanceService {
         formatCurrency(balance.closingBalance),
         formatCurrency(balance.movement),
         balance.transactionCount,
-        balance.lastTransactionTime
+        balance.lastTransactionTime,
+        balance.hasDuplicates ? 'Yes' : 'No',
+        balance.duplicateCount || 0
       ].join(','))
     ].join('\n');
     

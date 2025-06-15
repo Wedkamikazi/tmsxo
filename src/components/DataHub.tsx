@@ -40,19 +40,31 @@ export const DataHub: React.FC = () => {
   useEffect(() => {
     // PROFESSIONAL STATE MANAGEMENT: Skip reinitialization if services are fresh
     if (!shouldReinitializeServices()) {
-      console.log('⚡ PERFORMANCE BOOST: Skipping service reinitialization - using cached state');
+      console.log('🚀 INSTANT LOAD: Using cached services - no reinitialization needed');
+      console.log('📂 Restoring tab:', activeTab);
       setInitializationSkipped(true);
       setServicesLoaded(true);
+      
+      // Set services as available immediately when using cache
+      import('../services/eventBus').then(eventBusModule => {
+        setEventBus(eventBusModule.eventBus);
+      });
+      import('../services/unifiedDataService').then(unifiedDataServiceModule => {
+        setUnifiedDataService(unifiedDataServiceModule.unifiedDataService);
+      });
+      
       return;
     }
 
     // Skip service operations in debug mode
     if (isDebugMode) {
       console.log('🚨 DataHub: Running in debug mode - skipping service operations');
+      setServicesLoaded(true);
+      setInitializationSkipped(true);
       return;
     }
 
-    console.log('🔄 Loading services (first time or cache expired)...');
+    console.log('🔄 First-time initialization: Loading services from scratch...');
     
     // Dynamically load services only when necessary
     const loadServices = async () => {
@@ -66,13 +78,15 @@ export const DataHub: React.FC = () => {
         setUnifiedDataService(unifiedDataServiceModule.unifiedDataService);
         setServicesLoaded(true);
         markServicesInitialized(); // Save that services are loaded
+        console.log('✅ Services loaded and cached for future refreshes');
       } catch (error) {
         console.warn('Failed to load services:', error);
+        setServicesLoaded(true); // Set as loaded to prevent infinite loops
       }
     };
 
     loadServices();
-  }, []);
+  }, [activeTab]);
 
   useEffect(() => {
     // Skip service operations if in debug mode or services not loaded

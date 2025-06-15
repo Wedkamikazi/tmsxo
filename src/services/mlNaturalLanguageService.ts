@@ -879,26 +879,6 @@ class MLNaturalLanguageService {
   }
 
   // SAVE/LOAD MODELS
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private async saveModelsToStorage(): Promise<void> {
-    try {
-      if (this.sentimentModel) {
-        await this.sentimentModel.save('localstorage://tms-nlp-sentiment-model');
-      }
-      if (this.intentClassificationModel) {
-        await this.intentClassificationModel.save('localstorage://tms-nlp-intent-model');
-      }
-      if (this.embeddingModel) {
-        await this.embeddingModel.save('localstorage://tms-nlp-embedding-model');
-      }
-      if (this.topicModelingModel) {
-        await this.topicModelingModel.save('localstorage://tms-nlp-topic-model');
-      }
-      console.log('💾 NLP models saved to localStorage');
-    } catch (error) {
-      console.error('❌ Failed to save NLP models:', error);
-    }
-  }
 
   private async loadModelsFromStorage(): Promise<void> {
     this.sentimentModel = await tf.loadLayersModel('localstorage://tms-nlp-sentiment-model');

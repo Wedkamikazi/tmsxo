@@ -117,6 +117,15 @@ export class MLEnhancedMethod implements CategorizationStrategy {
         this.storeLearningData(transaction, result);
       }
 
+      // Check if confidence is above threshold, otherwise try fallback
+      if (result.confidence < this.strategy.confidenceThreshold) {
+        console.log(`🔄 Low confidence (${result.confidence}), trying fallback strategy`);
+        const fallbackResult = await this.tryFallbackStrategy(transaction);
+        if (fallbackResult.confidence > result.confidence) {
+          result = fallbackResult;
+        }
+      }
+
       // Emit categorization event
       eventBus.emit('CATEGORIES_UPDATED', {
         transactionId: transaction.id,

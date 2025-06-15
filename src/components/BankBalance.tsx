@@ -7,6 +7,13 @@ import {
 } from '../services/bankBalanceService';
 import { unifiedDataService } from '../services/unifiedDataService';
 import { BankAccount } from '../types';
+import { 
+  registerGlobalRefresh, 
+  unregisterGlobalRefresh, 
+  shouldComponentUseCache,
+  setComponentState,
+  getComponentState 
+} from '../utils/stateManager';
 import './BankBalance.css';
 
 interface BankBalanceProps {

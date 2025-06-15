@@ -1153,7 +1153,51 @@ if (isDebugMode) {
     categorizeTransaction: () => Promise.resolve({ category: 'Other', confidence: 0.5, reasoning: 'Debug mode' }),
     analyzeTransactions: () => Promise.resolve([]),
     getModelInfo: () => ({ modelSize: 0, modelType: 'mock', isReady: true }),
-    dispose: () => Promise.resolve()
+    dispose: () => Promise.resolve(),
+    getModelStatus: () => ({
+      isAvailable: false,
+      modelLoaded: false,
+      localModelLoaded: false,
+      vocabularySize: 0,
+      categoriesCount: 0,
+      lastCheck: new Date().toISOString(),
+      modelStats: {
+        totalPredictions: 0,
+        accuratePredictions: 0,
+        averageConfidence: 0,
+        modelVersion: 'mock',
+        lastTrainingDate: new Date().toISOString(),
+        trainingDataSize: 0
+      },
+      tfVersion: 'mock',
+      modelsLoaded: {
+        categorization: false,
+        sentiment: false,
+        anomaly: false,
+        pattern: false
+      }
+    }),
+    testCategorization: () => Promise.resolve({
+      success: false,
+      error: 'Debug mode - mock service',
+      latency: 0
+    }),
+    getAdvancedPerformanceStats: () => ({
+      modelName: 'Mock ML Pipeline',
+      averageLatency: 0,
+      totalCategorizations: 0,
+      totalRequests: 0,
+      successRate: 0,
+      confidenceDistribution: [],
+      lastUpdated: new Date().toISOString(),
+      tensorflowMemory: { numTensors: 0, numDataBuffers: 0, numBytes: 0 },
+      modelAccuracy: 0,
+      trainingHistory: 0,
+      anomaliesDetected: 0,
+      patternTypes: {}
+    }),
+    categorizeTransactionsBatch: () => Promise.resolve([]),
+    retrainModels: () => Promise.resolve({ success: false, improvement: 0 })
   } as any;
 } else {
   mlCategorizationService = new MLCategorizationService();

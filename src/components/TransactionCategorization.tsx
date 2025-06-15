@@ -381,7 +381,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
                 <div className="stat-label">Qwen Requests</div>
               </div>
               <div className="stat-card qwen-stat">
-                <div className="stat-value">{stats.qwenStats.averageResponseTime}ms</div>
+                <div className="stat-value">{stats.qwenStats.averageLatency}ms</div>
                 <div className="stat-label">Avg Response Time</div>
               </div>
               <div className="stat-card qwen-stat">

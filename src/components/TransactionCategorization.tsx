@@ -85,7 +85,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
   const checkQwenStatus = useCallback(async () => {
     try {
       const status = mlCategorizationService.getModelStatus();
-      const qwenStats = mlCategorizationService.getQwenPerformanceStats();
+      const qwenStats = mlCategorizationService.getAdvancedPerformanceStats();
 
       setQwenStatus({
         available: status.isAvailable,

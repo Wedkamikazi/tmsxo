@@ -63,11 +63,11 @@ Files to modify:
 
 > **🔍 PRE-TASK VERIFICATION**: Scan for existing cleanup patterns, disposal methods, or resource management utilities. Check for files like `cleanup.ts`, `disposal.ts`, `resourceManager.ts`, or similar patterns in services and components. Verify no existing cleanup mechanisms will conflict.
 
-#### **Objective**
+#### **Objective (Task 1.2)**
 
 Add comprehensive cleanup patterns to prevent memory leaks and resource exhaustion.
 
-#### **Technical Specifications**
+#### **Technical Specifications (Task 1.2)**
 
 Files to modify:
 
@@ -94,7 +94,7 @@ Files to modify:
    - Event listener removal
    - Timer clearance
 
-#### **Acceptance Criteria**
+#### **Acceptance Criteria (Task 1.2)**
 
 - [ ] No memory leaks detected in browser dev tools
 - [ ] TensorFlow.js models properly disposed

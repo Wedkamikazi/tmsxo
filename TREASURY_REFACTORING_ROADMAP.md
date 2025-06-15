@@ -912,11 +912,11 @@ Implement investment portfolio tracking and performance analysis.
 
 > **🔍 PRE-TASK VERIFICATION**: Search for existing reporting functionality, PDF generation utilities, or chart/graph components. Check for files like `report.ts`, `export.ts`, `pdf.ts`, or data visualization libraries. Verify data aggregation patterns.
 
-#### **Objective**
+#### **Objective (Task 4.3)**
 
 Create comprehensive financial reporting with PDF export capabilities.
 
-#### **Technical Specifications**
+#### **Technical Specifications (Task 4.3)**
 
 **Report Types:**
 
@@ -927,7 +927,7 @@ Create comprehensive financial reporting with PDF export capabilities.
 - Category Analysis
 - Trend Analysis
 
-#### **Implementation Details**
+#### **Implementation Details (Task 4.3)**
 
 1. **Report Generation Engine**
    - Template-based reporting
@@ -945,7 +945,7 @@ Create comprehensive financial reporting with PDF export capabilities.
    - Drill-down capabilities
    - Real-time data updates
 
-#### **Files to Create**
+#### **Files to Create (Task 4.3)**
 
 - `src/services/reportGenerator.ts`
 - `src/components/ReportDashboard.tsx`
@@ -953,7 +953,7 @@ Create comprehensive financial reporting with PDF export capabilities.
 - `src/components/ReportViewer.tsx`
 - `src/utils/pdfGenerator.ts`
 
-#### **Acceptance Criteria**
+#### **Acceptance Criteria (Task 4.3)**
 
 - [ ] Multiple report types supported
 - [ ] Interactive report building

@@ -2,22 +2,37 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Transaction, TransactionCategory, TransactionCategorization as TransactionCategorizationData } from '../types';
 import { unifiedDataService, type StoredTransaction } from '../services/unifiedDataService';
 import { categorizationService } from '../services/categorizationService';
-import { mlCategorizationService } from '../services/mlCategorizationService';
+import { enhancedCategorizationService } from '../services/enhancedCategorizationService';
+import { enhancedMLOrchestrator } from '../services/enhancedMLOrchestrator';
+import { localOllamaIntegration } from '../services/localOllamaIntegration';
 import './TransactionCategorization.css';
 
 interface TransactionCategorizationProps {
   refreshTrigger?: number;
 }
 
-type ViewMode = 'uncategorized' | 'all' | 'ml-pending' | 'low-confidence';
-type SortField = 'date' | 'amount' | 'confidence' | 'description';
+type ViewMode = 'uncategorized' | 'all' | 'ml-pending' | 'low-confidence' | 'enhanced';
+type SortField = 'date' | 'amount' | 'confidence' | 'description' | 'sentiment';
 type SortDirection = 'asc' | 'desc';
 
 interface CategoryFilter {
   categoryId: string;
-  method: 'all' | 'manual' | 'ml' | 'rule';
+  method: 'all' | 'manual' | 'ml' | 'rule' | 'enhanced';
   confidenceMin: number;
   confidenceMax: number;
+  sentimentFilter: 'all' | 'positive' | 'negative' | 'neutral';
+}
+
+interface EnhancedAnalysis {
+  sentiment?: {
+    score: number;
+    label: 'positive' | 'negative' | 'neutral';
+    confidence: number;
+  };
+  anomalies?: string[];
+  patterns?: string[];
+  contextualInfo?: string;
+  reasoning?: string;
 }
 
 export const TransactionCategorization: React.FC<TransactionCategorizationProps> = ({ refreshTrigger }) => {
@@ -25,6 +40,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
   const [transactions, setTransactions] = useState<StoredTransaction[]>([]);
   const [categories, setCategories] = useState<TransactionCategory[]>([]);
   const [categorizations, setCategorizations] = useState<TransactionCategorizationData[]>([]);
+  const [enhancedAnalyses, setEnhancedAnalyses] = useState<Record<string, EnhancedAnalysis>>({});
   const [loading, setLoading] = useState(true);
   const [processingML, setProcessingML] = useState(false);
   const [mlProgress, setMLProgress] = useState({ current: 0, total: 0 });
@@ -34,30 +50,36 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
   const [viewMode, setViewMode] = useState<ViewMode>('uncategorized');
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  const [categoryFilter] = useState<CategoryFilter>({
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>({
     categoryId: '',
     method: 'all',
     confidenceMin: 0,
-    confidenceMax: 1
+    confidenceMax: 1,
+    sentimentFilter: 'all'
   });
 
-  // ML Configuration state
-  const [mlConfig] = useState({
+  // Enhanced ML Configuration state
+  const [mlConfig, setMLConfig] = useState({
+    strategy: 'hybrid' as 'ollama-primary' | 'tensorflow-primary' | 'hybrid' | 'tensorflow-only',
     confidenceThreshold: 0.7,
     batchSize: 10,
-    autoApplyHighConfidence: true
+    autoApplyHighConfidence: true,
+    enableEnhancedAnalysis: true,
+    enableLearning: true
   });
 
-  // Qwen status state
-  const [qwenStatus, setQwenStatus] = useState({
-    available: false,
-    modelLoaded: false,
-    loading: true
+  // Service status state
+  const [serviceStatus, setServiceStatus] = useState({
+    ollama: { available: false, model: '', loading: true },
+    mlOrchestrator: { initialized: false, strategy: '', performance: {} },
+    enhancedCategorization: { initialized: false, performance: {} }
   });
 
   // Modal state
-  const [, setShowMLConfigModal] = useState(false);
-  const [, setShowCategoryModal] = useState(false);
+  const [showMLConfigModal, setShowMLConfigModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+  const [selectedAnalysis, setSelectedAnalysis] = useState<EnhancedAnalysis | null>(null);
 
   // Load data
   const loadData = useCallback(async () => {
@@ -81,37 +103,53 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
     }
   }, []);
 
-  // Check Qwen 2.5:32B status
-  const checkQwenStatus = useCallback(async () => {
+  // Check service status
+  const checkServiceStatus = useCallback(async () => {
     try {
-      const status = mlCategorizationService.getModelStatus();
-      const qwenStats = mlCategorizationService.getAdvancedPerformanceStats();
+      // Check Ollama status
+      const ollamaStatus = await localOllamaIntegration.getStatus();
+      const currentModel = await localOllamaIntegration.getCurrentModel();
+      
+      // Check ML Orchestrator status
+      const orchestratorStatus = enhancedMLOrchestrator.getStatus();
+      const orchestratorPerformance = enhancedMLOrchestrator.getPerformanceMetrics();
+      
+      // Check Enhanced Categorization status
+      const categorizationPerformance = enhancedCategorizationService.getPerformanceMetrics();
 
-      setQwenStatus({
-        available: status.isAvailable,
-        modelLoaded: status.modelLoaded,
-        loading: false
-      });
-
-      console.log('Qwen 2.5:32B Status:', {
-        available: status.isAvailable,
-        modelLoaded: status.modelLoaded,
-        performance: qwenStats
+      setServiceStatus({
+        ollama: {
+          available: ollamaStatus.available,
+          model: currentModel || 'none',
+          loading: false
+        },
+        mlOrchestrator: {
+          initialized: orchestratorStatus.initialized,
+          strategy: orchestratorStatus.currentStrategy,
+          performance: orchestratorPerformance
+        },
+        enhancedCategorization: {
+          initialized: true,
+          performance: categorizationPerformance
+        }
       });
     } catch (error) {
-      console.error('Failed to check Qwen status:', error);
-      setQwenStatus({
-        available: false,
-        modelLoaded: false,
-        loading: false
-      });
+      console.error('Failed to check service status:', error);
+      setServiceStatus(prev => ({
+        ...prev,
+        ollama: { ...prev.ollama, loading: false }
+      }));
     }
   }, []);
 
   useEffect(() => {
     loadData();
-    checkQwenStatus();
-  }, [loadData, refreshTrigger, checkQwenStatus]);
+    checkServiceStatus();
+    
+    // Refresh status every 30 seconds
+    const statusInterval = setInterval(checkServiceStatus, 30000);
+    return () => clearInterval(statusInterval);
+  }, [loadData, refreshTrigger, checkServiceStatus]);
 
   // Get categorization data for a transaction
   const getTransactionCategorization = useCallback((transactionId: string): TransactionCategorizationData | undefined => {
@@ -122,6 +160,126 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
   const getCategoryById = useCallback((categoryId: string): TransactionCategory | undefined => {
     return categories.find(cat => cat.id === categoryId);
   }, [categories]);
+
+  // Handle enhanced ML categorization
+  const handleEnhancedCategorization = useCallback(async (transactionIds?: string[]) => {
+    try {
+      setProcessingML(true);
+      
+      const transactionsToProcess = transactionIds 
+        ? transactions.filter(t => transactionIds.includes(t.id))
+        : transactions.filter(t => !getTransactionCategorization(t.id));
+
+      if (transactionsToProcess.length === 0) {
+        console.log('No transactions to process');
+        return;
+      }
+
+      setMLProgress({ current: 0, total: transactionsToProcess.length });
+
+      // Convert to expected format
+      const mlTransactions: Transaction[] = transactionsToProcess.map(t => ({
+        id: t.id,
+        date: t.postDateTime,
+        description: t.description,
+        debitAmount: t.debitAmount || 0,
+        creditAmount: t.creditAmount || 0,
+        balance: t.balance,
+        reference: t.reference
+      }));
+
+      const newAnalyses: Record<string, EnhancedAnalysis> = {};
+
+      // Process in batches
+      for (let i = 0; i < mlTransactions.length; i += mlConfig.batchSize) {
+        const batch = mlTransactions.slice(i, i + mlConfig.batchSize);
+        
+        const batchResults = await Promise.all(
+          batch.map(async (transaction) => {
+            try {
+              // Use enhanced categorization service
+              const result = await enhancedCategorizationService.categorizeTransaction(
+                transaction,
+                {
+                  strategy: mlConfig.strategy,
+                  confidenceThreshold: mlConfig.confidenceThreshold,
+                  enableEnhancedAnalysis: mlConfig.enableEnhancedAnalysis,
+                  enableLearning: mlConfig.enableLearning
+                }
+              );
+
+              // Store enhanced analysis if available
+              if (result.enhancedAnalysis) {
+                newAnalyses[transaction.id] = result.enhancedAnalysis;
+              }
+
+              return { transaction, result };
+            } catch (error) {
+              console.error(`Failed to categorize transaction ${transaction.id}:`, error);
+              return { transaction, result: null };
+            }
+          })
+        );
+
+        // Update progress
+        setMLProgress({ current: i + batch.length, total: mlTransactions.length });
+        
+        // Small delay to prevent overwhelming the system
+        if (i + mlConfig.batchSize < mlTransactions.length) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+
+      // Update enhanced analyses
+      setEnhancedAnalyses(prev => ({ ...prev, ...newAnalyses }));
+
+      // Refresh categorizations
+      const updatedCategorizations = categorizationService.getAllCategorizations();
+      setCategorizations(updatedCategorizations);
+      
+    } catch (error) {
+      console.error('Enhanced ML categorization failed:', error);
+    } finally {
+      setProcessingML(false);
+      setMLProgress({ current: 0, total: 0 });
+    }
+  }, [transactions, mlConfig, getTransactionCategorization]);
+
+  // Handle manual categorization with learning
+  const handleManualCategorization = useCallback(async (transactionId: string, categoryId: string) => {
+    try {
+      const transaction = transactions.find(t => t.id === transactionId);
+      if (!transaction) return;
+
+      // Use enhanced categorization service for manual categorization with learning
+      await enhancedCategorizationService.categorizeTransactionManual(
+        {
+          id: transaction.id,
+          date: transaction.postDateTime,
+          description: transaction.description,
+          debitAmount: transaction.debitAmount || 0,
+          creditAmount: transaction.creditAmount || 0,
+          balance: transaction.balance,
+          reference: transaction.reference
+        },
+        categoryId,
+        mlConfig.enableLearning
+      );
+      
+      // Refresh categorizations
+      const updatedCategorizations = categorizationService.getAllCategorizations();
+      setCategorizations(updatedCategorizations);
+      
+      // Clear selection
+      setSelectedTransactions(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(transactionId);
+        return newSet;
+      });
+    } catch (error) {
+      console.error('Failed to categorize transaction:', error);
+    }
+  }, [transactions, mlConfig.enableLearning]);
 
   // Filter and sort transactions based on current settings
   const filteredTransactions = useMemo(() => {
@@ -143,6 +301,9 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
           const cat = getTransactionCategorization(t.id);
           return cat && cat.method === 'ml' && (cat.confidence || 0) < 0.8;
         });
+        break;
+      case 'enhanced':
+        filtered = filtered.filter(t => enhancedAnalyses[t.id]);
         break;
       case 'all':
       default:
@@ -174,6 +335,14 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
       return confidence >= categoryFilter.confidenceMin && confidence <= categoryFilter.confidenceMax;
     });
 
+    // Apply sentiment filter
+    if (categoryFilter.sentimentFilter !== 'all') {
+      filtered = filtered.filter(t => {
+        const analysis = enhancedAnalyses[t.id];
+        return analysis?.sentiment?.label === categoryFilter.sentimentFilter;
+      });
+    }
+
     // Sort transactions
     filtered.sort((a, b) => {
       let aValue: string | number;
@@ -192,6 +361,10 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
           aValue = getTransactionCategorization(a.id)?.confidence || 0;
           bValue = getTransactionCategorization(b.id)?.confidence || 0;
           break;
+        case 'sentiment':
+          aValue = enhancedAnalyses[a.id]?.sentiment?.score || 0;
+          bValue = enhancedAnalyses[b.id]?.sentiment?.score || 0;
+          break;
         case 'description':
         default:
           aValue = a.description.toLowerCase();
@@ -205,75 +378,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
     });
 
     return filtered;
-  }, [transactions, viewMode, categoryFilter, sortField, sortDirection, mlConfig.confidenceThreshold, getTransactionCategorization]);
-
-  // Handle manual categorization
-  const handleManualCategorization = useCallback(async (transactionId: string, categoryId: string) => {
-    try {
-      categorizationService.categorizeTransaction(transactionId, categoryId, 'manual');
-      
-      // Refresh categorizations
-      const updatedCategorizations = categorizationService.getAllCategorizations();
-      setCategorizations(updatedCategorizations);
-      
-      // Clear selection
-      setSelectedTransactions(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(transactionId);
-        return newSet;
-      });
-    } catch (error) {
-      console.error('Failed to categorize transaction:', error);
-    }
-  }, []);
-
-  // Handle batch ML categorization
-  const handleMLCategorization = useCallback(async (transactionIds?: string[]) => {
-    try {
-      setProcessingML(true);
-      
-      const transactionsToProcess = transactionIds 
-        ? transactions.filter(t => transactionIds.includes(t.id))
-        : filteredTransactions.filter(t => !getTransactionCategorization(t.id));
-
-      setMLProgress({ current: 0, total: transactionsToProcess.length });
-
-      // Convert StoredTransaction to Transaction format for ML service
-      const mlTransactions: Transaction[] = transactionsToProcess.map(t => ({
-        id: t.id,
-        date: t.postDateTime,
-        description: t.description,
-        debitAmount: t.debitAmount || 0,
-        creditAmount: t.creditAmount || 0,
-        balance: t.balance,
-        reference: t.reference
-      }));
-
-      const results = await mlCategorizationService.categorizeTransactionsBatch(mlTransactions);
-      
-      // Update progress and categorizations
-      let processed = 0;
-      for (const result of results) {
-        processed++;
-        setMLProgress({ current: processed, total: transactionsToProcess.length });
-        
-        if (result.result && result.result.confidence >= mlConfig.confidenceThreshold && mlConfig.autoApplyHighConfidence) {
-          // High confidence results are automatically applied
-          continue; // Already applied by ML service
-        }
-      }
-
-      // Refresh categorizations
-      const updatedCategorizations = categorizationService.getAllCategorizations();
-      setCategorizations(updatedCategorizations);
-      
-    } catch (error) {
-      console.error('ML categorization failed:', error);
-    } finally {
-      setProcessingML(false);
-      setMLProgress({ current: 0, total: 0 });
-    }
-  }, [transactions, filteredTransactions, mlConfig, getTransactionCategorization]);
+  }, [transactions, viewMode, categoryFilter, sortField, sortDirection, mlConfig.confidenceThreshold, getTransactionCategorization, enhancedAnalyses]);
 
   // Format currency
   const formatCurrency = useCallback((amount: number): string => {
@@ -299,19 +404,44 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
     return '#EF4444';
   }, []);
 
-  // Statistics with Qwen performance
+  // Get sentiment color
+  const getSentimentColor = useCallback((sentiment?: { label: string; score: number }): string => {
+    if (!sentiment) return '#6B7280';
+    switch (sentiment.label) {
+      case 'positive': return '#10B981';
+      case 'negative': return '#EF4444';
+      default: return '#6B7280';
+    }
+  }, []);
+
+  // Show enhanced analysis modal
+  const showEnhancedAnalysis = useCallback((transactionId: string) => {
+    const analysis = enhancedAnalyses[transactionId];
+    if (analysis) {
+      setSelectedAnalysis(analysis);
+      setShowAnalysisModal(true);
+    }
+  }, [enhancedAnalyses]);
+
+  // Statistics with enhanced metrics
   const stats = useMemo(() => {
     const total = transactions.length;
     const categorized = categorizations.length;
     const uncategorized = total - categorized;
     const mlCategorized = categorizations.filter(c => c.method === 'ml').length;
     const manualCategorized = categorizations.filter(c => c.method === 'manual').length;
+    const enhancedCategorized = categorizations.filter(c => c.method === 'enhanced').length;
     const averageMLConfidence = categorizations
       .filter(c => c.method === 'ml' && c.confidence !== undefined)
       .reduce((sum, c, _, arr) => sum + (c.confidence || 0) / arr.length, 0);
 
-    // Get Qwen performance stats
-    const qwenStats = mlCategorizationService.getAdvancedPerformanceStats();
+    const enhancedAnalysisCount = Object.keys(enhancedAnalyses).length;
+    const sentimentBreakdown = Object.values(enhancedAnalyses).reduce((acc, analysis) => {
+      if (analysis.sentiment) {
+        acc[analysis.sentiment.label] = (acc[analysis.sentiment.label] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
 
     return {
       total,
@@ -319,37 +449,64 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
       uncategorized,
       mlCategorized,
       manualCategorized,
+      enhancedCategorized,
       averageMLConfidence,
       categorizationRate: total > 0 ? (categorized / total) * 100 : 0,
-      qwenStats
+      enhancedAnalysisCount,
+      sentimentBreakdown,
+      serviceStatus
     };
-  }, [transactions, categorizations]);
+  }, [transactions, categorizations, enhancedAnalyses, serviceStatus]);
 
   if (loading) {
     return (
       <div className="categorization-loading">
         <div className="loading-spinner"></div>
-        <p>Loading transaction categorization data...</p>
+        <p>Loading enhanced transaction categorization system...</p>
       </div>
     );
   }
 
   return (
-    <div className="transaction-categorization">
+    <div className="transaction-categorization enhanced">
       <div className="categorization-header">
         <div className="categorization-title">
-          <h2>Transaction Categorization</h2>
-          <p>Categorize transactions manually or use AI-powered categorization with Qwen 2.5:32B</p>
-          <div className="qwen-status">
-            {qwenStatus.loading ? (
-              <span className="status-loading">🔄 Checking Qwen 2.5:32B status...</span>
-            ) : qwenStatus.modelLoaded ? (
-              <span className="status-ready">✅ Qwen 2.5:32B Ready ({stats.qwenStats.totalRequests} requests processed)</span>
-            ) : qwenStatus.available ? (
-              <span className="status-downloading">⏳ Qwen 2.5:32B downloading... Using local model for now</span>
-            ) : (
-              <span className="status-offline">🔧 Qwen 2.5:32B offline - Using local TensorFlow.js model</span>
-            )}
+          <h2>Enhanced Transaction Categorization</h2>
+          <p>AI-powered categorization with local Ollama integration, sentiment analysis, and advanced ML orchestration</p>
+          
+          <div className="service-status-grid">
+            <div className={`service-status ${serviceStatus.ollama.available ? 'active' : 'inactive'}`}>
+              <div className="status-icon">
+                {serviceStatus.ollama.loading ? '🔄' : serviceStatus.ollama.available ? '🤖' : '❌'}
+              </div>
+              <div className="status-info">
+                <div className="status-title">Ollama Integration</div>
+                <div className="status-detail">
+                  {serviceStatus.ollama.loading ? 'Checking...' : 
+                   serviceStatus.ollama.available ? `${serviceStatus.ollama.model} Ready` : 'Offline'}
+                </div>
+              </div>
+            </div>
+            
+            <div className={`service-status ${serviceStatus.mlOrchestrator.initialized ? 'active' : 'inactive'}`}>
+              <div className="status-icon">🧠</div>
+              <div className="status-info">
+                <div className="status-title">ML Orchestrator</div>
+                <div className="status-detail">
+                  Strategy: {serviceStatus.mlOrchestrator.strategy || 'Initializing'}
+                </div>
+              </div>
+            </div>
+            
+            <div className="service-status active">
+              <div className="status-icon">⚡</div>
+              <div className="status-info">
+                <div className="status-title">Enhanced Categorization</div>
+                <div className="status-detail">
+                  {stats.enhancedAnalysisCount} Enhanced Analyses
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         
@@ -374,83 +531,119 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
             <div className="stat-value">{formatConfidence(stats.averageMLConfidence)}</div>
             <div className="stat-label">Avg ML Confidence</div>
           </div>
-          {qwenStatus.modelLoaded && (
-            <>
-              <div className="stat-card qwen-stat">
-                <div className="stat-value">{stats.qwenStats.totalRequests}</div>
-                <div className="stat-label">Qwen Requests</div>
-              </div>
-              <div className="stat-card qwen-stat">
-                <div className="stat-value">{stats.qwenStats.averageLatency}ms</div>
-                <div className="stat-label">Avg Response Time</div>
-              </div>
-              <div className="stat-card qwen-stat">
-                <div className="stat-value">{formatConfidence(stats.qwenStats.modelAccuracy)}</div>
-                <div className="stat-label">Qwen Confidence</div>
-              </div>
-            </>
-          )}
+          <div className="stat-card enhanced">
+            <div className="stat-value">{stats.enhancedAnalysisCount}</div>
+            <div className="stat-label">Enhanced Analyses</div>
+          </div>
         </div>
+        
+        {stats.enhancedAnalysisCount > 0 && (
+          <div className="sentiment-breakdown">
+            <h4>Sentiment Analysis</h4>
+            <div className="sentiment-stats">
+              <div className="sentiment-stat positive">
+                <span className="sentiment-icon">😊</span>
+                <span className="sentiment-count">{stats.sentimentBreakdown.positive || 0}</span>
+                <span className="sentiment-label">Positive</span>
+              </div>
+              <div className="sentiment-stat neutral">
+                <span className="sentiment-icon">😐</span>
+                <span className="sentiment-count">{stats.sentimentBreakdown.neutral || 0}</span>
+                <span className="sentiment-label">Neutral</span>
+              </div>
+              <div className="sentiment-stat negative">
+                <span className="sentiment-icon">😟</span>
+                <span className="sentiment-count">{stats.sentimentBreakdown.negative || 0}</span>
+                <span className="sentiment-label">Negative</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="categorization-controls">
-        <div className="view-modes">
-          <button 
-            className={`view-mode-btn ${viewMode === 'uncategorized' ? 'active' : ''}`}
-            onClick={() => setViewMode('uncategorized')}
-          >
-            Uncategorized ({stats.uncategorized})
-          </button>
-          <button 
-            className={`view-mode-btn ${viewMode === 'all' ? 'active' : ''}`}
-            onClick={() => setViewMode('all')}
-          >
-            All Transactions
-          </button>
-          <button 
-            className={`view-mode-btn ${viewMode === 'ml-pending' ? 'active' : ''}`}
-            onClick={() => setViewMode('ml-pending')}
-          >
-            ML Pending Review
-          </button>
-          <button 
-            className={`view-mode-btn ${viewMode === 'low-confidence' ? 'active' : ''}`}
-            onClick={() => setViewMode('low-confidence')}
-          >
-            Low Confidence
-          </button>
+        <div className="view-filters">
+          <div className="filter-group">
+            <label>View:</label>
+            <select value={viewMode} onChange={(e) => setViewMode(e.target.value as ViewMode)}>
+              <option value="uncategorized">Uncategorized Only</option>
+              <option value="all">All Transactions</option>
+              <option value="ml-pending">ML Pending Review</option>
+              <option value="low-confidence">Low Confidence</option>
+              <option value="enhanced">Enhanced Analysis Available</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Strategy:</label>
+            <select 
+              value={mlConfig.strategy} 
+              onChange={(e) => setMLConfig(prev => ({ ...prev, strategy: e.target.value as any }))}
+            >
+              <option value="hybrid">🤖+🧠 Hybrid (Recommended)</option>
+              <option value="ollama-primary">🤖 Ollama Primary</option>
+              <option value="tensorflow-primary">🧠 TensorFlow Primary</option>
+              <option value="tensorflow-only">🧠 TensorFlow Only</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Sentiment:</label>
+            <select 
+              value={categoryFilter.sentimentFilter} 
+              onChange={(e) => setCategoryFilter(prev => ({ ...prev, sentimentFilter: e.target.value as any }))}
+            >
+              <option value="all">All Sentiments</option>
+              <option value="positive">😊 Positive</option>
+              <option value="neutral">😐 Neutral</option>
+              <option value="negative">😟 Negative</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Confidence:</label>
+            <input 
+              type="range" 
+              min="0" 
+              max="1" 
+              step="0.1" 
+              value={categoryFilter.confidenceMin}
+              onChange={(e) => setCategoryFilter(prev => ({ ...prev, confidenceMin: parseFloat(e.target.value) }))}
+            />
+            <span>{formatConfidence(categoryFilter.confidenceMin)}+</span>
+          </div>
         </div>
 
         <div className="action-buttons">
-          <button
-            className="btn btn-primary"
-            onClick={() => handleMLCategorization()}
+          <button 
+            className="btn btn-primary enhanced"
+            onClick={() => handleEnhancedCategorization()}
             disabled={processingML}
-            title={qwenStatus.modelLoaded ? 'Using Qwen 2.5:32B + Local TensorFlow.js' : 'Using Local TensorFlow.js model'}
+            title={`Enhanced AI categorization using ${mlConfig.strategy} strategy`}
           >
             {processingML ? (
-              `Processing ${mlProgress.current}/${mlProgress.total}... ${qwenStatus.modelLoaded ? '🤖' : '🧠'}`
+              `Processing ${mlProgress.current}/${mlProgress.total}...`
             ) : (
-              `Run AI Categorization ${qwenStatus.modelLoaded ? '🤖 Qwen+Local' : '🧠 Local'}`
+              `🚀 Enhanced AI Categorization`
             )}
           </button>
           <button 
             className="btn btn-secondary"
             onClick={() => setShowMLConfigModal(true)}
           >
-            ML Settings
+            ⚙️ ML Settings
           </button>
           <button 
             className="btn btn-secondary"
             onClick={() => setShowCategoryModal(true)}
           >
-            Manage Categories
+            📋 Manage Categories
           </button>
         </div>
       </div>
 
       <div className="transactions-table-container">
-        <table className="transactions-table">
+        <table className="transactions-table enhanced">
           <thead>
             <tr>
               <th>
@@ -518,6 +711,20 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
               >
                 Confidence
               </th>
+              <th 
+                className={`sortable ${sortField === 'sentiment' ? sortDirection : ''}`}
+                onClick={() => {
+                  if (sortField === 'sentiment') {
+                    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                  } else {
+                    setSortField('sentiment');
+                    setSortDirection('desc');
+                  }
+                }}
+              >
+                Sentiment
+              </th>
+              <th>Enhanced</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -526,6 +733,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
               const categorization = getTransactionCategorization(transaction.id);
               const category = categorization ? getCategoryById(categorization.categoryId) : undefined;
               const amount = transaction.debitAmount ? -transaction.debitAmount : (transaction.creditAmount || 0);
+              const analysis = enhancedAnalyses[transaction.id];
               
               return (
                 <tr key={transaction.id} className={selectedTransactions.has(transaction.id) ? 'selected' : ''}>
@@ -547,6 +755,11 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
                   <td>{new Date(transaction.postDateTime).toLocaleDateString()}</td>
                   <td className="description-cell" title={transaction.description}>
                     {transaction.description}
+                    {analysis?.patterns && analysis.patterns.length > 0 && (
+                      <div className="patterns-indicator">
+                        🔍 Patterns detected
+                      </div>
+                    )}
                   </td>
                   <td className={`amount-cell ${amount < 0 ? 'debit' : 'credit'}`}>
                     {formatCurrency(Math.abs(amount))}
@@ -576,6 +789,36 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
                     )}
                   </td>
                   <td>
+                    {analysis?.sentiment ? (
+                      <div 
+                        className="sentiment-indicator"
+                        style={{ color: getSentimentColor(analysis.sentiment) }}
+                        title={`${analysis.sentiment.label} (${formatConfidence(analysis.sentiment.confidence)})`}
+                      >
+                        {analysis.sentiment.label === 'positive' ? '😊' : 
+                         analysis.sentiment.label === 'negative' ? '😟' : '😐'}
+                        <span className="sentiment-score">
+                          {analysis.sentiment.score.toFixed(2)}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="no-sentiment">-</span>
+                    )}
+                  </td>
+                  <td>
+                    {analysis ? (
+                      <button 
+                        className="btn btn-sm btn-info"
+                        onClick={() => showEnhancedAnalysis(transaction.id)}
+                        title="View enhanced analysis details"
+                      >
+                        🔍 Details
+                      </button>
+                    ) : (
+                      <span className="no-analysis">-</span>
+                    )}
+                  </td>
+                  <td>
                     <div className="action-buttons">
                       <select 
                         value={categorization?.categoryId || ''}
@@ -601,16 +844,16 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
       </div>
 
       {selectedTransactions.size > 0 && (
-        <div className="batch-actions">
+        <div className="batch-actions enhanced">
           <div className="batch-info">
             {selectedTransactions.size} transaction(s) selected
           </div>
           <button 
             className="btn btn-primary"
-            onClick={() => handleMLCategorization(Array.from(selectedTransactions))}
+            onClick={() => handleEnhancedCategorization(Array.from(selectedTransactions))}
             disabled={processingML}
           >
-            Categorize Selected with ML
+            🚀 Enhanced Categorization Selected
           </button>
           <button 
             className="btn btn-secondary"
@@ -618,6 +861,81 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
           >
             Clear Selection
           </button>
+        </div>
+      )}
+
+      {/* Enhanced Analysis Modal */}
+      {showAnalysisModal && selectedAnalysis && (
+        <div className="modal-overlay" onClick={() => setShowAnalysisModal(false)}>
+          <div className="modal enhanced-analysis-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>🔍 Enhanced Analysis Details</h3>
+              <button className="modal-close" onClick={() => setShowAnalysisModal(false)}>×</button>
+            </div>
+            <div className="modal-content">
+              {selectedAnalysis.sentiment && (
+                <div className="analysis-section">
+                  <h4>😊 Sentiment Analysis</h4>
+                  <div className="sentiment-details">
+                    <div className="sentiment-main">
+                      <span className="sentiment-icon">
+                        {selectedAnalysis.sentiment.label === 'positive' ? '😊' : 
+                         selectedAnalysis.sentiment.label === 'negative' ? '😟' : '😐'}
+                      </span>
+                      <span className="sentiment-label">{selectedAnalysis.sentiment.label}</span>
+                      <span className="sentiment-confidence">
+                        ({formatConfidence(selectedAnalysis.sentiment.confidence)})
+                      </span>
+                    </div>
+                    <div className="sentiment-score">
+                      Score: {selectedAnalysis.sentiment.score.toFixed(3)}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {selectedAnalysis.patterns && selectedAnalysis.patterns.length > 0 && (
+                <div className="analysis-section">
+                  <h4>🔍 Detected Patterns</h4>
+                  <ul className="patterns-list">
+                    {selectedAnalysis.patterns.map((pattern, index) => (
+                      <li key={index} className="pattern-item">{pattern}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {selectedAnalysis.anomalies && selectedAnalysis.anomalies.length > 0 && (
+                <div className="analysis-section">
+                  <h4>⚠️ Anomalies Detected</h4>
+                  <ul className="anomalies-list">
+                    {selectedAnalysis.anomalies.map((anomaly, index) => (
+                      <li key={index} className="anomaly-item">{anomaly}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {selectedAnalysis.contextualInfo && (
+                <div className="analysis-section">
+                  <h4>ℹ️ Contextual Information</h4>
+                  <p className="contextual-info">{selectedAnalysis.contextualInfo}</p>
+                </div>
+              )}
+
+              {selectedAnalysis.reasoning && (
+                <div className="analysis-section">
+                  <h4>🤔 AI Reasoning</h4>
+                  <p className="reasoning-text">{selectedAnalysis.reasoning}</p>
+                </div>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={() => setShowAnalysisModal(false)}>
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

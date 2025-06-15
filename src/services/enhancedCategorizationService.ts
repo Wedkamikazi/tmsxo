@@ -593,8 +593,8 @@ const debugModeActive = isDebugMode();
 // Export singleton instance (skip in debug mode)
 let enhancedCategorizationService: EnhancedCategorizationService;
 
-if (isDebugMode) {
-  console.log('🚨 EnhancedCategorizationService: Debug mode detected - creating mock instance');
+if (debugModeActive) {
+  console.log('🔧 EnhancedCategorizationService: Debug mode detected - creating mock instance');
   enhancedCategorizationService = {
     categorizeTransaction: () => Promise.resolve({
       categoryId: 'Other',

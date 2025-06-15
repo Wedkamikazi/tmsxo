@@ -3,6 +3,7 @@ import { Transaction, MLCategorizationResult } from '../types';
 import { categorizationService } from './categorizationService';
 import { localStorageManager } from './localStorageManager';
 import { performanceManager } from './performanceManager';
+import { systemIntegrityService } from './systemIntegrityService';
 
 // ADVANCED ML CATEGORIZATION SERVICE WITH TENSORFLOW.JS
 // FULL LOCAL ML PIPELINE WITH NEURAL NETWORKS AND NLP

@@ -80,6 +80,10 @@ class LocalOllamaIntegration {
     'mistral:7b'
   ];
   
+  // Configuration option to disable Ollama completely
+  private ollamaEnabled = typeof window !== 'undefined' ? 
+    localStorage.getItem('ollamaEnabled') !== 'false' : true;
+  
   private currentModel: string | null = null;
   private isInitialized = false;
   private healthStatus: OllamaHealthStatus = {

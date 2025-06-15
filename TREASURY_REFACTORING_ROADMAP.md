@@ -42,7 +42,7 @@ Files to modify:
 
 #### **Dependencies**: None
 
-#### **Estimated Effort**: 8-12 hours
+#### **Estimated Effort (Task 1.1)**: 8-12 hours
 
 ---
 
@@ -92,7 +92,7 @@ Files to modify:
 
 #### **Dependencies**: Task 1.1
 
-#### **Estimated Effort**: 12-16 hours
+#### **Estimated Effort (Task 1.2)**: 12-16 hours
 
 ---
 
@@ -141,7 +141,7 @@ Files to modify:
 
 #### **Dependencies**: Task 1.2
 
-#### **Estimated Effort**: 16-20 hours
+#### **Estimated Effort (Task 1.3)**: 16-20 hours
 
 ---
 
@@ -210,7 +210,7 @@ Merge three categorization services into one unified service while preserving al
 
 #### **Dependencies**: Task 1.1, Task 1.2
 
-#### **Estimated Effort**: 24-32 hours
+#### **Estimated Effort (Task 1.4)**: 24-32 hours
 
 ---
 

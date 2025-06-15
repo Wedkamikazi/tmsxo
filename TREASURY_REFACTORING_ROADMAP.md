@@ -846,11 +846,11 @@ Build comprehensive payroll data import and analysis functionality.
 
 > **🔍 PRE-TASK VERIFICATION**: Search for existing investment tracking, portfolio management, or financial instrument handling. Check for files like `investment.ts`, `portfolio.ts`, `stock.ts`, or asset management utilities. Verify integration with account management.
 
-#### **Objective**
+#### **Objective (Task 4.2)**
 
 Implement investment portfolio tracking and performance analysis.
 
-#### **Technical Specifications**
+#### **Technical Specifications (Task 4.2)**
 
 **Portfolio Management Features:**
 
@@ -860,7 +860,7 @@ Implement investment portfolio tracking and performance analysis.
 - Risk assessment and analysis
 - Rebalancing recommendations
 
-#### **Implementation Details**
+#### **Implementation Details (Task 4.2)**
 
 1. **Portfolio Data Structure**
    - Investment types and categories
@@ -877,14 +877,14 @@ Implement investment portfolio tracking and performance analysis.
    - Rebalancing recommendations
    - Tax optimization
 
-#### **Files to Create**
+#### **Files to Create (Task 4.2)**
 
 - `src/services/investmentService.ts`
 - `src/components/InvestmentDashboard.tsx`
 - `src/components/PortfolioManager.tsx`
 - `src/types/investment.ts`
 
-#### **Acceptance Criteria**
+#### **Acceptance Criteria (Task 4.2)**
 
 - [ ] Portfolio creation and management
 - [ ] Investment tracking and analysis

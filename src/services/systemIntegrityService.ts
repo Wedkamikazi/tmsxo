@@ -431,9 +431,7 @@ class SystemIntegrityService {
     return `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  private async validateTransactionConsistency(payload: any): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { count, deletedCount, accountId } = payload || {};
+  private async validateTransactionConsistency(_payload: any): Promise<void> {
     // Implement transaction-specific consistency checks
   }
 

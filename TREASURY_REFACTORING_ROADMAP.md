@@ -46,56 +46,28 @@ Files to modify:
 Add comprehensive cleanup patterns to prevent memory leaks and resource exhaustion.
 
 #### **Technical Specifications**
-```typescript
-// Pattern to implement across all services and components
-interface DisposableService {
-  dispose(): Promise<void> | void;
-}
-
-interface CleanupManager {
-  register(resource: DisposableService): void;
-  cleanup(): Promise<void>;
-}
-```
-
-#### **Implementation Details**
-
-1. **Create Cleanup Manager**
-   ```typescript
-   // src/services/cleanupManager.ts
-   class CleanupManager {
-     private resources: Set<DisposableService> = new Set();
-     private timers: Set<NodeJS.Timeout> = new Set();
-     private listeners: Map<string, () => void> = new Map();
-   }
-   ```
-
-2. **Update Components with Cleanup**
-   ```typescript
-   // Pattern for React components
-   useEffect(() => {
-     const cleanup = [];
-     
-     // Register resources
-     
-     return () => {
-       cleanup.forEach(fn => fn());
-     };
-   }, []);
-   ```
-
-3. **Service Cleanup Implementation**
-   - TensorFlow.js model disposal
-   - Event listener removal
-   - Timer clearance
-   - Memory cache cleanup
-
-#### **Files to Modify**
+Files to modify:
 - `src/services/performanceManager.ts`
 - `src/services/mlCategorizationService.ts`
 - `src/services/enhancedMLOrchestrator.ts`
 - `src/components/TransactionCategorization.tsx`
 - `src/components/MLIntegrationDashboard.tsx`
+
+#### **Implementation Details**
+1. **Create Cleanup Manager Service**
+   - Register disposable resources
+   - Track timers and event listeners
+   - Automatic cleanup on component unmount
+
+2. **TensorFlow.js Model Disposal**
+   - Proper model cleanup
+   - Memory deallocation
+   - GPU resource release
+
+3. **React Component Cleanup**
+   - useEffect cleanup functions
+   - Event listener removal
+   - Timer clearance
 
 #### **Acceptance Criteria**
 - [ ] No memory leaks detected in browser dev tools
@@ -106,7 +78,6 @@ interface CleanupManager {
 - [ ] Performance monitoring shows no resource accumulation
 
 #### **Dependencies**: Task 1.1
-
 #### **Estimated Effort**: 12-16 hours
 
 ---
@@ -118,47 +89,26 @@ interface CleanupManager {
 Implement comprehensive localStorage quota management with graceful degradation.
 
 #### **Technical Specifications**
-
-#### **Implementation Details**
-
-1. **Create Storage Manager**
-   ```typescript
-   // src/services/storageQuotaManager.ts
-   interface QuotaInfo {
-     used: number;
-     available: number;
-     total: number;
-     percentage: number;
-   }
-   
-   class StorageQuotaManager {
-     async getQuotaInfo(): Promise<QuotaInfo>;
-     async cleanupOldData(): Promise<number>;
-     async compressData(): Promise<boolean>;
-     onQuotaExceeded(callback: () => void): void;
-   }
-   ```
-
-2. **Implement Storage Strategies**
-   ```typescript
-   enum StorageStrategy {
-     COMPRESS = 'compress',
-     CLEANUP_OLD = 'cleanup_old',
-     REMOVE_SNAPSHOTS = 'remove_snapshots',
-     EMERGENCY_CLEANUP = 'emergency_cleanup'
-   }
-   ```
-
-3. **Add Quota Monitoring**
-   - Real-time quota tracking
-   - Predictive cleanup triggers
-   - User notification system
-   - Emergency fallback modes
-
-#### **Files to Modify**
+Files to modify:
 - `src/services/localStorageManager.ts`
 - `src/services/unifiedDataService.ts`
 - Add new `src/services/storageQuotaManager.ts`
+
+#### **Implementation Details**
+1. **Quota Monitoring System**
+   - Real-time quota tracking
+   - Predictive cleanup triggers
+   - Storage usage analytics
+
+2. **Cleanup Strategies**
+   - Remove old snapshots
+   - Compress historical data
+   - Archive non-critical data
+
+3. **Emergency Fallback**
+   - Continue operations without snapshots
+   - User notification system
+   - Data recovery mechanisms
 
 #### **Acceptance Criteria**
 - [ ] Automatic cleanup when quota reaches 80%
@@ -170,7 +120,6 @@ Implement comprehensive localStorage quota management with graceful degradation.
 - [ ] No data loss during quota management
 
 #### **Dependencies**: Task 1.2
-
 #### **Estimated Effort**: 16-20 hours
 
 ---
@@ -183,71 +132,30 @@ Merge three categorization services into one unified service while preserving al
 
 #### **Technical Specifications**
 
-#### **Current State Analysis**
-```
-categorizationService.ts (449 lines)
-├── Rule-based categorization
-├── Manual categorization
-└── Basic category management
+**Current Services to Consolidate:**
+- `categorizationService.ts` (449 lines) - Rule-based categorization
+- `enhancedCategorizationService.ts` (645 lines) - ML-enhanced categorization  
+- `mlCategorizationService.ts` (1,206 lines) - TensorFlow.js models
 
-enhancedCategorizationService.ts (645 lines)
-├── ML-enhanced categorization
-├── Strategy patterns
-├── Performance tracking
-└── Learning systems
+**Target Architecture:**
+- Single `unifiedCategorizationService.ts`
+- Strategy pattern for different categorization methods
+- Fallback chain for reliability
 
-mlCategorizationService.ts (1,206 lines)
-├── TensorFlow.js models
-├── Advanced ML pipeline
-├── Sentiment analysis
-└── Anomaly detection
-```
+#### **Implementation Details**
+1. **Strategy Pattern Implementation**
+   - Rule-based method
+   - ML-enhanced method
+   - TensorFlow method
+   - Hybrid fallback chain
 
-#### **New Unified Architecture**
-```typescript
-// src/services/unifiedCategorizationService.ts
-interface CategorizationMethod {
-  name: string;
-  categorize(transaction: Transaction): Promise<CategorizationResult>;
-  getConfidence(): number;
-}
+2. **Performance Optimization**
+   - Lazy loading of ML models
+   - Caching of categorization results
+   - Batch processing capabilities
 
-class UnifiedCategorizationService {
-  private methods: Map<string, CategorizationMethod> = new Map();
-  private strategy: CategorizationStrategy;
-  private fallbackChain: string[];
-}
-```
-
-#### **Implementation Steps**
-
-1. **Create Base Architecture**
-   ```typescript
-   class RuleBasedCategorization implements CategorizationMethod {
-     // Migrate from categorizationService.ts
-   }
-   
-   class MLEnhancedCategorization implements CategorizationMethod {
-     // Migrate from enhancedCategorizationService.ts
-   }
-   
-   class TensorFlowCategorization implements CategorizationMethod {
-     // Migrate from mlCategorizationService.ts
-   }
-   ```
-
-2. **Strategy Pattern Implementation**
-   ```typescript
-   enum CategorizationStrategy {
-     RULE_BASED_ONLY = 'rule_based_only',
-     ML_ENHANCED = 'ml_enhanced',
-     TENSORFLOW_HEAVY = 'tensorflow_heavy',
-     HYBRID_FALLBACK = 'hybrid_fallback'
-   }
-   ```
-
-3. **Preserve All Existing APIs**
-   - Maintain backward compatibility
+3. **Backward Compatibility**
+   - Maintain existing APIs
    - Gradual migration path
    - Feature parity verification
 
@@ -272,7 +180,6 @@ class UnifiedCategorizationService {
 - [ ] Documentation updated
 
 #### **Dependencies**: Task 1.1, Task 1.2
-
 #### **Estimated Effort**: 24-32 hours
 
 ---
@@ -286,9 +193,8 @@ class UnifiedCategorizationService {
 #### **Objective**
 Reduce 19 services to 7 focused, well-defined services without losing functionality.
 
-#### **Current Service Inventory**
+#### **Current Service Inventory (19 services)**
 ```
-Current (19 services):
 ├── localStorageManager.ts (658 lines)
 ├── unifiedDataService.ts (474 lines)
 ├── systemIntegrityService.ts (1,927 lines) ⚠️ TOO LARGE
@@ -302,19 +208,17 @@ Current (19 services):
 ├── duplicateDetectionService.ts (320 lines)
 ├── creditTransactionService.ts (310 lines)
 ├── unifiedBalanceService.ts (734 lines)
-├── categorizationService.ts (449 lines) → CONSOLIDATED IN PHASE 1
-├── enhancedCategorizationService.ts (645 lines) → CONSOLIDATED IN PHASE 1
-├── mlCategorizationService.ts (1,206 lines) → CONSOLIDATED IN PHASE 1
 ├── mlNaturalLanguageService.ts (959 lines)
 ├── mlPredictiveAnalyticsService.ts (867 lines)
-└── enhancedMLOrchestrator.ts (403 lines)
+├── enhancedMLOrchestrator.ts (403 lines)
+├── [3 categorization services - consolidated in Phase 1]
 ```
 
 #### **Target Architecture (7 services)**
 ```
 New Architecture:
 ├── CoreDataService (localStorageManager + unifiedDataService)
-├── ImportProcessingService (csvProcessingService + fileStorageService + importHistoryService)
+├── ImportProcessingService (csvProcessingService + fileStorageService + importHistoryService)  
 ├── UnifiedCategorizationService (Already done in Phase 1)
 ├── TransactionAnalysisService (duplicateDetectionService + creditTransactionService + unifiedBalanceService)
 ├── MLIntelligenceService (mlNaturalLanguageService + mlPredictiveAnalyticsService + enhancedMLOrchestrator)
@@ -322,160 +226,47 @@ New Architecture:
 └── EventCoordinationService (eventBus + serviceOrchestrator)
 ```
 
-#### **Implementation Plan**
+#### **Sub-tasks**
 
 ##### **Sub-task 2.1.1: Create CoreDataService**
-```typescript
-// src/services/coreDataService.ts
-class CoreDataService {
-  // Merge localStorageManager + unifiedDataService
-  // Single point for all CRUD operations
-  // Unified transaction management
-  // Account management
-  // File management
-}
-```
+- **Files to merge**: `localStorageManager.ts` + `unifiedDataService.ts`
+- **Responsibilities**: All CRUD operations, storage management, account management
+- **Estimated Effort**: 16-20 hours
 
-**Files to merge:**
-- `src/services/localStorageManager.ts`
-- `src/services/unifiedDataService.ts`
-
-**Acceptance Criteria:**
-- [ ] All CRUD operations preserved
-- [ ] Event emissions maintained
-- [ ] Storage management improved
-- [ ] API compatibility maintained
-- [ ] Performance equal or better
-
-**Estimated Effort**: 16-20 hours
-
-##### **Sub-task 2.1.2: Create ImportProcessingService**
-```typescript
-// src/services/importProcessingService.ts
-class ImportProcessingService {
-  // CSV processing and validation
-  // File storage management
-  // Import history tracking
-  // Batch processing capabilities
-}
-```
-
-**Files to merge:**
-- `src/services/csvProcessingService.ts`
-- `src/services/fileStorageService.ts`
-- `src/services/importHistoryService.ts`
-
-**Acceptance Criteria:**
-- [ ] CSV processing functionality preserved
-- [ ] File upload/download works correctly
-- [ ] Import history tracking maintained
-- [ ] Validation rules preserved
-- [ ] Error handling improved
-
-**Estimated Effort**: 12-16 hours
+##### **Sub-task 2.1.2: Create ImportProcessingService**  
+- **Files to merge**: `csvProcessingService.ts` + `fileStorageService.ts` + `importHistoryService.ts`
+- **Responsibilities**: File processing, validation, import tracking
+- **Estimated Effort**: 12-16 hours
 
 ##### **Sub-task 2.1.3: Create TransactionAnalysisService**
-```typescript
-// src/services/transactionAnalysisService.ts
-class TransactionAnalysisService {
-  // Duplicate detection algorithms
-  // Balance reconciliation
-  // Credit transaction processing
-  // Transaction validation
-  // Financial calculations
-}
-```
-
-**Files to merge:**
-- `src/services/duplicateDetectionService.ts`
-- `src/services/creditTransactionService.ts`
-- `src/services/unifiedBalanceService.ts`
-
-**Acceptance Criteria:**
-- [ ] Duplicate detection accuracy maintained
-- [ ] Balance calculations correct
-- [ ] Credit processing preserved
-- [ ] Validation rules work correctly
-- [ ] Performance optimized
-
-**Estimated Effort**: 16-20 hours
+- **Files to merge**: `duplicateDetectionService.ts` + `creditTransactionService.ts` + `unifiedBalanceService.ts`
+- **Responsibilities**: Transaction analysis, duplicate detection, balance calculations
+- **Estimated Effort**: 16-20 hours
 
 ##### **Sub-task 2.1.4: Create MLIntelligenceService**
-```typescript
-// src/services/mlIntelligenceService.ts
-class MLIntelligenceService {
-  // Natural language processing
-  // Predictive analytics
-  // ML model orchestration
-  // Advanced AI features
-}
-```
-
-**Files to merge:**
-- `src/services/mlNaturalLanguageService.ts`
-- `src/services/mlPredictiveAnalyticsService.ts`
-- `src/services/enhancedMLOrchestrator.ts`
-
-**Acceptance Criteria:**
-- [ ] NLP functionality preserved
-- [ ] Predictive models work correctly
-- [ ] Model orchestration maintained
-- [ ] Performance optimized
-- [ ] Memory usage reduced
-
-**Estimated Effort**: 20-24 hours
+- **Files to merge**: `mlNaturalLanguageService.ts` + `mlPredictiveAnalyticsService.ts` + `enhancedMLOrchestrator.ts`
+- **Responsibilities**: Advanced ML features, NLP, predictive analytics
+- **Estimated Effort**: 20-24 hours
 
 ##### **Sub-task 2.1.5: Create SystemMonitoringService**
-```typescript
-// src/services/systemMonitoringService.ts
-class SystemMonitoringService {
-  // System health monitoring
-  // Performance tracking
-  // Cross-tab synchronization
-  // Error logging and reporting
-}
-```
-
-**Files to merge:**
-- `src/services/systemIntegrityService.ts` (reduce size significantly)
-- `src/services/performanceManager.ts`
-- `src/services/crossTabSyncService.ts`
-
-**Acceptance Criteria:**
-- [ ] Health monitoring preserved
-- [ ] Performance tracking accurate
-- [ ] Cross-tab sync working
-- [ ] Error reporting functional
-- [ ] Service significantly smaller
-
-**Estimated Effort**: 20-24 hours
+- **Files to merge**: `systemIntegrityService.ts` + `performanceManager.ts` + `crossTabSyncService.ts`
+- **Responsibilities**: System health, performance monitoring, cross-tab sync
+- **Estimated Effort**: 20-24 hours
 
 ##### **Sub-task 2.1.6: Create EventCoordinationService**
-```typescript
-// src/services/eventCoordinationService.ts
-class EventCoordinationService {
-  // Event bus management
-  // Service orchestration
-  // Dependency management
-  // Lifecycle coordination
-}
-```
+- **Files to merge**: `eventBus.ts` + `serviceOrchestrator.ts`
+- **Responsibilities**: Event management, service coordination
+- **Estimated Effort**: 12-16 hours
 
-**Files to merge:**
-- `src/services/eventBus.ts`
-- `src/services/serviceOrchestrator.ts`
-
-**Acceptance Criteria:**
-- [ ] Event bus functionality preserved
-- [ ] Service orchestration working
-- [ ] Dependencies resolved correctly
-- [ ] Initialization sequence maintained
-- [ ] Performance improved
-
-**Estimated Effort**: 12-16 hours
+#### **Acceptance Criteria**
+- [ ] All 19 services consolidated into 7 services
+- [ ] No functionality regression
+- [ ] Improved performance and maintainability
+- [ ] Clear separation of concerns
+- [ ] Reduced coupling between services
+- [ ] Complete test coverage maintained
 
 #### **Dependencies**: Phase 1 complete
-
 #### **Total Estimated Effort**: 96-120 hours (12-15 days)
 
 ---

@@ -805,7 +805,13 @@ class MLCategorizationService {
       return { success: false, improvement: 0 };
       
     } catch (error) {
-      console.error('❌ Model retraining failed:', error);
+      systemIntegrityService.logServiceError(
+        'MLCategorizationService',
+        'retrainModels',
+        error instanceof Error ? error : new Error(String(error)),
+        'high',
+        { component: 'training', operation: 'retrain', feedbackCount: userFeedback.length }
+      );
       return { success: false, improvement: 0 };
     }
   }

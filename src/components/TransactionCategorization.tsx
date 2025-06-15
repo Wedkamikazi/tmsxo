@@ -37,6 +37,14 @@ interface EnhancedAnalysis {
 }
 
 export const TransactionCategorization: React.FC<TransactionCategorizationProps> = ({ refreshTrigger }) => {
+  // Initialize cleanup hooks
+  const cleanup = useCleanup({ 
+    componentName: 'TransactionCategorization',
+    enableLogging: true 
+  });
+  const timerCleanup = useTimerCleanup('TransactionCategorization');
+  const eventCleanup = useEventListenerCleanup('TransactionCategorization');
+
   // State management
   const [transactions, setTransactions] = useState<StoredTransaction[]>([]);
   const [categories, setCategories] = useState<TransactionCategory[]>([]);

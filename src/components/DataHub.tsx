@@ -7,6 +7,7 @@ import QwenIntegrationStatus from './QwenIntegrationStatus';
 import SimpleDataCleanup from './SimpleDataCleanup';
 import { ErrorBoundary } from './ErrorBoundary';
 import SystemHealthMonitor from './SystemHealthMonitor';
+import OllamaControlWidget from './OllamaControlWidget';
 import { Transaction, BankAccount } from '../types';
 import './DataHub.css';
 

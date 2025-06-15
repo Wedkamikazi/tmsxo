@@ -37,13 +37,23 @@ export const DataHub: React.FC = () => {
   const [initializationSkipped, setInitializationSkipped] = useState(false);
 
   useEffect(() => {
+    // PROFESSIONAL STATE MANAGEMENT: Skip reinitialization if services are fresh
+    if (!shouldReinitializeServices()) {
+      console.log('⚡ PERFORMANCE BOOST: Skipping service reinitialization - using cached state');
+      setInitializationSkipped(true);
+      setServicesLoaded(true);
+      return;
+    }
+
     // Skip service operations in debug mode
     if (isDebugMode) {
       console.log('🚨 DataHub: Running in debug mode - skipping service operations');
       return;
     }
 
-    // Dynamically load services only when not in debug mode
+    console.log('🔄 Loading services (first time or cache expired)...');
+    
+    // Dynamically load services only when necessary
     const loadServices = async () => {
       try {
         const [eventBusModule, unifiedDataServiceModule] = await Promise.all([
@@ -54,6 +64,7 @@ export const DataHub: React.FC = () => {
         setEventBus(eventBusModule.eventBus);
         setUnifiedDataService(unifiedDataServiceModule.unifiedDataService);
         setServicesLoaded(true);
+        markServicesInitialized(); // Save that services are loaded
       } catch (error) {
         console.warn('Failed to load services:', error);
       }

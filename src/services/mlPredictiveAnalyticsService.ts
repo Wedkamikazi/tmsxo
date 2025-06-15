@@ -780,25 +780,6 @@ class MLPredictiveAnalyticsService {
   }
 
   // SAVE/LOAD MODELS
-  private async saveModelsToStorage(): Promise<void> {
-    try {
-      if (this.cashFlowModel) {
-        await this.cashFlowModel.save('localstorage://tms-cashflow-model');
-      }
-      if (this.spendingPatternModel) {
-        await this.spendingPatternModel.save('localstorage://tms-spending-model');
-      }
-      if (this.seasonalityModel) {
-        await this.seasonalityModel.save('localstorage://tms-seasonality-model');
-      }
-      if (this.riskAssessmentModel) {
-        await this.riskAssessmentModel.save('localstorage://tms-risk-model');
-      }
-      console.log('💾 Predictive models saved to localStorage');
-    } catch (error) {
-      console.error('❌ Failed to save predictive models:', error);
-    }
-  }
 
   private async loadModelsFromStorage(): Promise<void> {
     this.cashFlowModel = await tf.loadLayersModel('localstorage://tms-cashflow-model');

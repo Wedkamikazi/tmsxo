@@ -387,6 +387,7 @@ export const DataHub: React.FC = () => {
 
       <div className="datahub-content">
         <div className="container">
+          <OllamaControlWidget />
           <SystemHealthMonitor refreshInterval={10000} />
           
           <div className="datahub-tabs">

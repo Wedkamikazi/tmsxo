@@ -867,7 +867,7 @@ class MLCategorizationService {
   private async saveModelsToStorage(): Promise<void> {
     try {
       if (this.categorizationModel) {
-        const modelData = await this.categorizationModel.save('localstorage://tms-categorization-model');
+        await this.categorizationModel.save('localstorage://tms-categorization-model');
         console.log('💾 Categorization model saved to localStorage');
       }
       

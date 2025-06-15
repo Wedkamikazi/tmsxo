@@ -439,7 +439,13 @@ class UnifiedDataService {
       }
       return false;
     } catch (error) {
-      console.error('Error deleting snapshot:', error);
+      systemIntegrityService.logServiceError(
+        'UnifiedDataService',
+        'deleteSnapshot',
+        error instanceof Error ? error : new Error(String(error)),
+        'medium',
+        { snapshotTimestamp }
+      );
       return false;
     }
   }

@@ -139,7 +139,7 @@ export class MLEnhancedMethod implements CategorizationStrategy {
     } catch (error) {
       const processingTime = Date.now() - startTime;
       this.logError('categorize', error, 'high');
-      return this.createFallbackResult(transaction, processingTime, String(error));
+      return this.createDefaultResult(transaction, processingTime, String(error));
     }
   }
 

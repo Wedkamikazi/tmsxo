@@ -180,11 +180,11 @@ Files to modify:
 
 > **🔍 PRE-TASK VERIFICATION**: Perform exhaustive search for ALL categorization-related files throughout the codebase. Check for variations like `category.ts`, `categorize.ts`, `classification.ts`, ML categorization utilities, or nested categorization logic. Map all dependencies and imports before consolidation.
 >
-#### **Objective**
+#### **Objective (Task 1.4)**
 
 Merge three categorization services into one unified service while preserving all functionality.
 
-#### **Technical Specifications**
+#### **Technical Specifications (Task 1.4)**
 
 **Current Services to Consolidate:**
 
@@ -198,7 +198,7 @@ Merge three categorization services into one unified service while preserving al
 - Strategy pattern for different categorization methods
 - Fallback chain for reliability
 
-#### **Implementation Details**
+#### **Implementation Details (Task 1.4)**
 
 1. **Strategy Pattern Implementation**
    - Rule-based method
@@ -228,7 +228,7 @@ Merge three categorization services into one unified service while preserving al
 - `src/components/TransactionCategorization.tsx`
 - Update all imports across the codebase
 
-#### **Acceptance Criteria**
+#### **Acceptance Criteria (Task 1.4)**
 
 - [ ] All three categorization methods preserved
 - [ ] Performance equal or better than current implementation

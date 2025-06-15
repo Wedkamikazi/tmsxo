@@ -81,13 +81,6 @@ class EnhancedMLOrchestrator {
   
   // Strategy selection
   private currentStrategy: 'ollama-primary' | 'tensorflow-primary' | 'hybrid' | 'tensorflow-only' = 'hybrid';
-  private modelPerformanceHistory: Array<{
-    timestamp: string;
-    model: string;
-    responseTime: number;
-    accuracy: number;
-    success: boolean;
-  }> = [];
 
   constructor() {
     this.initializeEnhancedML();

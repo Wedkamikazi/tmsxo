@@ -640,7 +640,7 @@ class CrossTabSyncService {
 }
 
 // Check for debug mode
-const isDebugMode = DEBUG_MODE_ACTIVE;
+const isDebugMode = checkDebugMode();
 
 // Export singleton instance (skip in debug mode)
 let crossTabSyncService: CrossTabSyncService;

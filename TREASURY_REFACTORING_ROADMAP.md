@@ -987,7 +987,7 @@ Create comprehensive financial reporting with PDF export capabilities.
 
 > **🔍 PRE-TASK VERIFICATION**: Search for existing test files, test utilities, or testing configurations. Check for files like `*.test.ts`, `*.spec.ts`, `setupTests.ts`, or testing helper utilities. Verify current test coverage and patterns.
 
-#### **Objective**
+#### **Objective (Task 5.1)**
 
 Implement comprehensive testing coverage across all system components.
 
@@ -1014,7 +1014,7 @@ Implement comprehensive testing coverage across all system components.
 - Response time benchmarks
 - Stress testing
 
-#### **Files to Create**
+#### **Files to Create (Task 5.1)**
 
 - `src/tests/services/coreDataService.test.ts`
 - `src/tests/components/Transactions.test.tsx`
@@ -1023,7 +1023,7 @@ Implement comprehensive testing coverage across all system components.
 - `jest.config.js`
 - `setupTests.ts`
 
-#### **Acceptance Criteria**
+#### **Acceptance Criteria (Task 5.1)**
 
 - [ ] 80%+ code coverage achieved
 - [ ] All critical paths tested

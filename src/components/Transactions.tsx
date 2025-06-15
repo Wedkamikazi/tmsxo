@@ -176,6 +176,7 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
   // Load data on component mount
   const loadData = useCallback(async () => {
     try {
+      console.log('🔄 TRANSACTIONS: Loading transaction data...');
       // Show refreshing indicator if not initial load
       if (transactions.length > 0) {
         setRefreshing(true);
@@ -193,6 +194,13 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
       
       setTransactions(allTransactions);
       
+      // Save state for caching
+      setComponentState('Transactions', {
+        transactions: allTransactions,
+        bankAccounts: accounts,
+        activeTab
+      });
+      
       // Detect duplicates within the transaction set
       const duplicates = findDuplicatesInTransactions(allTransactions);
       setDuplicateGroups(duplicates);
@@ -206,7 +214,16 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
       setLoading(false);
       setRefreshing(false);
     }
-  }, [onTransactionUpdate, findDuplicatesInTransactions, transactions.length]);
+  }, [onTransactionUpdate, findDuplicatesInTransactions, transactions.length, activeTab]);
+
+  // Register for global refresh
+  useEffect(() => {
+    registerGlobalRefresh('Transactions', loadData);
+    
+    return () => {
+      unregisterGlobalRefresh('Transactions');
+    };
+  }, [loadData]);
 
   useEffect(() => {
     loadData();

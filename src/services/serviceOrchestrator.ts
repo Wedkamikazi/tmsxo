@@ -67,8 +67,8 @@ class ServiceOrchestrator {
 
   constructor() {
     // Skip initialization in debug mode
-    if (isDebugMode) {
-      console.log('🚨 ServiceOrchestrator: Debug mode detected - skipping service registration');
+    if (isDebugMode()) {
+      console.log('🔧 ServiceOrchestrator: Debug mode detected - skipping service registration');
       return;
     }
     

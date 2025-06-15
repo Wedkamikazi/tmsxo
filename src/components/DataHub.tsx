@@ -157,10 +157,6 @@ export const DataHub: React.FC = () => {
       </button>
     </div>
   ) : null;
-        </div>
-      </div>
-    );
-  }
 
   const tabs = [
     {

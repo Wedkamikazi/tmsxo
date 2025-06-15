@@ -223,9 +223,17 @@ class MLNaturalLanguageService {
           })
         }),
         tf.layers.globalMaxPooling1d(),
-        tf.layers.dense({ units: 128, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 96, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.dropout({ rate: 0.4 }),
-        tf.layers.dense({ units: 64, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 48, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.dropout({ rate: 0.3 }),
         tf.layers.dense({ units: 3, activation: 'softmax' }) // negative, neutral, positive
       ]

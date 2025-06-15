@@ -3,10 +3,11 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { SystemInitializer } from './components/SystemInitializer';
 import { initializeSystemSafety } from './utils/systemSafetyManager';
 import { shouldReinitializeServices } from './utils/stateManager';
+import { DataHub } from './components/DataHub'; // Direct import for instant refresh
 import './styles/globals.css';
 
-// Import DataHub conditionally to prevent service auto-initialization
-const DataHub = React.lazy(() => import('./components/DataHub').then(module => ({ default: module.DataHub })));
+// Import DataHub conditionally only for full initialization
+const LazyDataHub = React.lazy(() => import('./components/DataHub').then(module => ({ default: module.DataHub })));
 
 function App(): React.ReactElement {
   // Check if we can use instant refresh

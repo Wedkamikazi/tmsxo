@@ -541,8 +541,61 @@ class LocalStorageManager {
 
   private setStorageData<T>(key: string, data: T): void {
     try {
+      // Check quota before attempting to save
+      const quotaInfo = storageQuotaManager.getQuotaInfo();
+      if (quotaInfo && quotaInfo.isCritical) {
+        console.warn('⚠️ Storage quota critical - attempting cleanup before save');
+        // Trigger immediate cleanup for critical quota situations
+        storageQuotaManager.performManualCleanup('moderate').catch(error => {
+          console.error('Cleanup failed during storage operation:', error);
+        });
+      }
+
       localStorage.setItem(key, JSON.stringify(data));
+      
+      // Trigger quota check after successful save
+      storageQuotaManager.forceQuotaCheck().catch(error => {
+        console.warn('Quota check failed after storage operation:', error);
+      });
+      
     } catch (error) {
+      // Handle QuotaExceededError specifically
+      if (error instanceof Error && error.name === 'QuotaExceededError') {
+        console.error('🚨 Storage quota exceeded - attempting emergency cleanup');
+        
+        try {
+          // Attempt emergency cleanup and retry
+          const cleanupResult = await storageQuotaManager.performManualCleanup('aggressive');
+          if (cleanupResult.success && cleanupResult.spaceFreed > 0) {
+            console.log(`✅ Emergency cleanup freed ${cleanupResult.spaceFreed} bytes - retrying save`);
+            localStorage.setItem(key, JSON.stringify(data));
+            return;
+          }
+        } catch (cleanupError) {
+          console.error('Emergency cleanup failed:', cleanupError);
+        }
+        
+        // If cleanup didn't help, provide detailed error info
+        const quotaInfo = storageQuotaManager.getQuotaInfo();
+        const errorMessage = `Storage quota exceeded. Current usage: ${quotaInfo?.utilization.toFixed(1)}%. Emergency cleanup attempted but insufficient space freed.`;
+        
+        systemIntegrityService.logServiceError(
+          'LocalStorageManager',
+          'setStorageData',
+          new Error(errorMessage),
+          'critical',
+          { 
+            key, 
+            operation: 'save',
+            quotaInfo,
+            errorType: 'QuotaExceededError'
+          }
+        );
+        
+        throw new Error(errorMessage);
+      }
+      
+      // Handle other storage errors
       systemIntegrityService.logServiceError(
         'LocalStorageManager',
         'setStorageData',

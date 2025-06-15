@@ -367,8 +367,8 @@ const debugModeActive = isDebugMode();
 // Export singleton instance (skip in debug mode)
 let enhancedMLOrchestrator: EnhancedMLOrchestrator;
 
-if (isDebugMode) {
-  console.log('🚨 EnhancedMLOrchestrator: Debug mode detected - creating mock instance');
+if (debugModeActive) {
+  console.log('🔧 EnhancedMLOrchestrator: Debug mode detected - creating mock instance');
   enhancedMLOrchestrator = {
     initialize: () => Promise.resolve(),
     categorizeTransaction: () => Promise.resolve({ category: 'Other', confidence: 0.5, reasoning: 'Debug mode' }),

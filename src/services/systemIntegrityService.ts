@@ -2,6 +2,7 @@ import { eventBus, DataEvent } from './eventBus';
 import { localStorageManager, StorageStats } from './localStorageManager';
 import { unifiedDataService, StoredTransaction } from './unifiedDataService';
 import { performanceManager } from './performanceManager';
+import { crossTabSyncService } from './crossTabSyncService';
 import { Transaction, BankAccount, UploadedFile } from '../types';
 
 // SYSTEM INTEGRITY SERVICE - ULTIMATE INTEGRATION ENHANCEMENT

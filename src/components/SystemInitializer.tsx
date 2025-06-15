@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { isDebugMode, enableDebugMode, disableDebugMode } from '../utils/debugMode';
 import { systemSafetyManager, initializeSystemSafety } from '../utils/systemSafetyManager';
 import { storageQuotaManager } from '../services/storageQuotaManager';
+import { shouldReinitializeServices } from '../utils/stateManager';
 // import { serviceOrchestrator, SystemStatus } from '../services/serviceOrchestrator';
 
 interface SystemInitializerProps {
@@ -9,14 +10,29 @@ interface SystemInitializerProps {
 }
 
 export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }) => {
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(() => {
+    // INSTANT REFRESH: If services are cached, bypass initialization screen
+    const canUseCache = !shouldReinitializeServices();
+    if (canUseCache) {
+      console.log('🚀 INSTANT REFRESH: Bypassing initialization screen - using cached state');
+      return true;
+    }
+    return false;
+  });
+  
   const [initializationStatus, setInitializationStatus] = useState('Starting...');
   const [debugMode, setDebugMode] = useState(isDebugMode());
   const [safetyStatus, setSafetyStatus] = useState('Initializing...');
 
   useEffect(() => {
+    // If already initialized (using cache), skip initialization
+    if (isInitialized) {
+      console.log('✅ Using cached state - no initialization needed');
+      return;
+    }
+    
     initializeSystem();
-  }, []);
+  }, [isInitialized]);
 
   const initializeSystem = async () => {
     try {
@@ -78,37 +94,108 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
       
     } catch (error) {
       console.error('❌ System initialization failed:', error);
-      setInitializationStatus(`❌ Initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      setSafetyStatus('❌ Safety system error');
+      setInitializationStatus('❌ Initialization failed');
     }
-  };
-
-  const handleDebugToggle = () => {
-    const newDebugMode = !debugMode;
-    if (newDebugMode) {
-      enableDebugMode();
-    } else {
-      disableDebugMode();
-    }
-    setDebugMode(newDebugMode);
-    
-    // Reinitialize system with new mode
-    setIsInitialized(false);
-    initializeSystem();
-  };
-
-  const handleEmergencyStop = () => {
-    console.log('🚨 EMERGENCY STOP REQUESTED BY USER');
-    systemSafetyManager.emergencyStop();
-    setSafetyStatus('🚨 Emergency stop activated');
-    setInitializationStatus('🛑 System stopped for safety');
-    setIsInitialized(false);
   };
 
   const getSystemStatus = () => {
-    return systemSafetyManager.getSystemStatus();
+    if (!systemSafetyManager.isHealthy()) {
+      return {
+        isHealthy: false,
+        runningProcesses: systemSafetyManager.getRunningProcesses(),
+        memoryUsage: systemSafetyManager.getMemoryUsage(),
+        warnings: systemSafetyManager.getWarnings()
+      };
+    }
+    
+    return {
+      isHealthy: true,
+      runningProcesses: systemSafetyManager.getRunningProcesses(),
+      memoryUsage: systemSafetyManager.getMemoryUsage(),
+      warnings: []
+    };
   };
 
+  const handleDebugToggle = () => {
+    if (debugMode) {
+      disableDebugMode();
+    } else {
+      enableDebugMode();
+    }
+    setDebugMode(!debugMode);
+  };
+
+  const handleEmergencyStop = () => {
+    systemSafetyManager.emergencyStop();
+  };
+
+  // INSTANT REFRESH: If initialized immediately (using cache), render children directly
+  if (isInitialized && !shouldReinitializeServices()) {
+    const systemStatus = getSystemStatus();
+    return (
+      <>
+        {/* PERMANENT SAFETY DASHBOARD */}
+        <div className="safety-dashboard" style={{
+          position: 'fixed',
+          top: '10px',
+          right: '10px',
+          padding: '10px',
+          backgroundColor: systemStatus.isHealthy ? '#e8f5e9' : '#ffebee',
+          border: `1px solid ${systemStatus.isHealthy ? '#4CAF50' : '#f44336'}`,
+          borderRadius: '5px',
+          fontSize: '12px',
+          zIndex: 1000
+        }}>
+          <div><strong>🛡️ Safety:</strong> {systemStatus.isHealthy ? '✅' : '⚠️'}</div>
+          <div><strong>Processes:</strong> {systemStatus.runningProcesses.length}</div>
+          <div><strong>Memory:</strong> {systemStatus.memoryUsage.toFixed(1)}MB</div>
+          <button 
+            onClick={handleEmergencyStop}
+            style={{
+              backgroundColor: '#f44336',
+              color: 'white',
+              padding: '2px 8px',
+              border: 'none',
+              borderRadius: '3px',
+              cursor: 'pointer',
+              fontSize: '10px',
+              marginTop: '5px'
+            }}
+          >
+            🚨 STOP
+          </button>
+        </div>
+
+        {/* RENDER CHILDREN (MAIN APP) */}
+        {children}
+
+        {/* DEBUG CONTROLS */}
+        <div className="debug-controls" style={{
+          position: 'fixed',
+          bottom: '10px',
+          left: '10px',
+          padding: '10px',
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          border: '1px solid #ccc',
+          borderRadius: '5px',
+          fontSize: '12px',
+          zIndex: 1000
+        }}>
+          <div><strong>Debug Mode:</strong> {debugMode ? '🔧 ON' : '🚀 OFF'}</div>
+          <button onClick={handleDebugToggle} style={{
+            padding: '5px 10px',
+            marginTop: '5px',
+            fontSize: '11px',
+            cursor: 'pointer'
+          }}>
+            {debugMode ? 'Switch to Production' : 'Switch to Debug'}
+          </button>
+        </div>
+      </>
+    );
+  }
+
+  // FULL INITIALIZATION: Show loading screen only when necessary
   if (!isInitialized) {
     const systemStatus = getSystemStatus();
     
@@ -155,7 +242,7 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
           </div>
 
           {/* EMERGENCY STOP BUTTON */}
-          <div className="emergency-controls" style={{ marginTop: '20px' }}>
+          <div className="emergency-controls">
             <button 
               onClick={handleEmergencyStop}
               style={{
@@ -165,82 +252,80 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
                 border: 'none',
                 borderRadius: '5px',
                 cursor: 'pointer',
-                fontSize: '16px',
+                fontSize: '14px',
                 fontWeight: 'bold'
               }}
             >
               🚨 EMERGENCY STOP
             </button>
-            <p style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
-              Use if system becomes unresponsive or uses too much memory
-            </p>
           </div>
         </div>
       </div>
     );
   }
 
-     const systemStatus = getSystemStatus();
+  // FULLY INITIALIZED: Render children with safety dashboard
+  const systemStatus = getSystemStatus();
+  
+  return (
+    <>
+      {/* PERMANENT SAFETY DASHBOARD */}
+      <div className="safety-dashboard" style={{
+        position: 'fixed',
+        top: '10px',
+        right: '10px',
+        padding: '10px',
+        backgroundColor: systemStatus.isHealthy ? '#e8f5e9' : '#ffebee',
+        border: `1px solid ${systemStatus.isHealthy ? '#4CAF50' : '#f44336'}`,
+        borderRadius: '5px',
+        fontSize: '12px',
+        zIndex: 1000
+      }}>
+        <div><strong>🛡️ Safety:</strong> {systemStatus.isHealthy ? '✅' : '⚠️'}</div>
+        <div><strong>Processes:</strong> {systemStatus.runningProcesses.length}</div>
+        <div><strong>Memory:</strong> {systemStatus.memoryUsage.toFixed(1)}MB</div>
+        <button 
+          onClick={handleEmergencyStop}
+          style={{
+            backgroundColor: '#f44336',
+            color: 'white',
+            padding: '2px 8px',
+            border: 'none',
+            borderRadius: '3px',
+            cursor: 'pointer',
+            fontSize: '10px',
+            marginTop: '5px'
+          }}
+        >
+          🚨 STOP
+        </button>
+      </div>
 
-   return (
-     <>
-       {/* PERMANENT SAFETY DASHBOARD */}
-       <div className="safety-dashboard" style={{
-         position: 'fixed',
-         top: '10px',
-         right: '10px',
-         padding: '10px',
-         backgroundColor: systemStatus.isHealthy ? '#e8f5e9' : '#ffebee',
-         border: `1px solid ${systemStatus.isHealthy ? '#4CAF50' : '#f44336'}`,
-         borderRadius: '5px',
-         fontSize: '12px',
-         zIndex: 1000
-       }}>
-         <div><strong>🛡️ Safety:</strong> {systemStatus.isHealthy ? '✅' : '⚠️'}</div>
-         <div><strong>Processes:</strong> {systemStatus.runningProcesses.length}</div>
-         <div><strong>Memory:</strong> {systemStatus.memoryUsage.toFixed(1)}MB</div>
-         <button 
-           onClick={handleEmergencyStop}
-           style={{
-             backgroundColor: '#f44336',
-             color: 'white',
-             padding: '2px 8px',
-             border: 'none',
-             borderRadius: '3px',
-             cursor: 'pointer',
-             fontSize: '10px',
-             marginTop: '5px'
-           }}
-         >
-           🚨 STOP
-         </button>
-       </div>
+      {/* RENDER CHILDREN (MAIN APP) */}
+      {children}
 
-       {/* RENDER CHILDREN (MAIN APP) */}
-       {children}
-
-       {/* DEBUG CONTROLS */}
-       <div className="debug-controls" style={{
-         position: 'fixed',
-         bottom: '10px',
-         left: '10px',
-         padding: '10px',
-         backgroundColor: 'rgba(255, 255, 255, 0.9)',
-         border: '1px solid #ccc',
-         borderRadius: '5px',
-         fontSize: '12px',
-         zIndex: 1000
-       }}>
-         <div><strong>Debug Mode:</strong> {debugMode ? '🔧 ON' : '🚀 OFF'}</div>
-         <button onClick={handleDebugToggle} style={{
-           padding: '5px 10px',
-           marginTop: '5px',
-           fontSize: '11px',
-           cursor: 'pointer'
-         }}>
-           {debugMode ? 'Switch to Production' : 'Switch to Debug'}
-         </button>
-       </div>
-     </>
-   );
+      {/* DEBUG CONTROLS */}
+      <div className="debug-controls" style={{
+        position: 'fixed',
+        bottom: '10px',
+        left: '10px',
+        padding: '10px',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        border: '1px solid #ccc',
+        borderRadius: '5px',
+        fontSize: '12px',
+        zIndex: 1000
+      }}>
+        <div><strong>Debug Mode:</strong> {debugMode ? '🔧 ON' : '🚀 OFF'}</div>
+        <button onClick={handleDebugToggle} style={{
+          padding: '5px 10px',
+          marginTop: '5px',
+          fontSize: '11px',
+          cursor: 'pointer'
+        }}>
+          {debugMode ? 'Switch to Production' : 'Switch to Debug'}
+        </button>
+      </div>
+    </>
+  );
 }; 

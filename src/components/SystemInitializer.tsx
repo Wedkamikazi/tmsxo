@@ -33,22 +33,22 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
         console.log('✅ Treasury system registered successfully');
       }
 
-      // STEP 3: Initialize Storage Quota Manager
+      // STEP 3: Initialize Storage Quota Manager (fast)
       setInitializationStatus('📊 Initializing Storage Quota Manager...');
       console.log('📊 Starting Storage Quota Manager...');
-      // The quota manager auto-initializes on import, just check if it's ready
-      await new Promise(resolve => setTimeout(resolve, 500)); // Allow initialization time
       
-      // Make services available globally for testing
+      // Make services available globally for testing (no delays needed)
       if (typeof window !== 'undefined') {
         (window as any).storageQuotaManager = storageQuotaManager;
         
-        // Import other services for testing
-        const { unifiedDataService } = await import('../services/unifiedDataService');
-        const { eventBus } = await import('../services/eventBus');
+        // Import other services for testing (parallel imports)
+        const [unifiedDataServiceModule, eventBusModule] = await Promise.all([
+          import('../services/unifiedDataService'),
+          import('../services/eventBus')
+        ]);
         
-        (window as any).unifiedDataService = unifiedDataService;
-        (window as any).eventBus = eventBus;
+        (window as any).unifiedDataService = unifiedDataServiceModule.unifiedDataService;
+        (window as any).eventBus = eventBusModule.eventBus;
         
         console.log('✅ Storage Quota Manager ready and available globally');
         console.log('🧪 Test suite available in browser console');

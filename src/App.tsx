@@ -26,6 +26,16 @@ function App(): React.ReactElement {
         console.log('🛡️ App starting - Initializing safety system...');
         await initializeSystemSafety();
         console.log('✅ Safety system ready - App can proceed safely');
+        
+        // Run data fixes after safety system is ready
+        setTimeout(() => {
+          try {
+            dataFixerService.runAllFixes();
+          } catch (error) {
+            console.error('❌ Data fixer error during initialization:', error);
+          }
+        }, 500); // Small delay to ensure safety system is fully ready
+        
       } catch (error) {
         console.error('❌ CRITICAL: Safety system failed to initialize:', error);
       }

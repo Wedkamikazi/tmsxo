@@ -793,8 +793,8 @@ class ServiceOrchestrator {
 // Create and export singleton instance (skip in debug mode)
 let serviceOrchestrator: ServiceOrchestrator;
 
-if (isDebugMode) {
-  console.log('🚨 ServiceOrchestrator: Creating mock instance for debug mode');
+if (isDebugMode()) {
+  console.log('🔧 ServiceOrchestrator: Creating mock instance for debug mode');
   // Create a mock service orchestrator for debug mode
   serviceOrchestrator = {
     initializeSystem: () => Promise.resolve({

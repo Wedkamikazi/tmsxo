@@ -134,6 +134,10 @@ class UnifiedDataService {
     totalFiles: number;
     orphanedTransactions: number;
     orphanedFiles: number;
+    duplicateTransactions: StoredTransaction[];
+    anomalies: string[];
+    integrityScore: number;
+    recommendations: string[];
   } {
     const result = localStorageManager.validateDataIntegrity();
     const transactions = this.getAllTransactions();
@@ -147,14 +151,137 @@ class UnifiedDataService {
     const orphanedTransactions = transactions.filter(t => !accountIds.has(t.accountId)).length;
     const orphanedFiles = transactions.filter(t => t.fileId && !fileIds.has(t.fileId)).length;
     
+    // ENHANCED DUPLICATE DETECTION
+    const { duplicateDetectionService } = require('./duplicateDetectionService');
+    const duplicateReport = duplicateDetectionService.findSophisticatedDuplicates(transactions);
+    
+    // DATA ANOMALY DETECTION
+    const anomalies = this.findDataAnomalies(transactions, accounts);
+    
+    // CALCULATE INTEGRITY SCORE (0-100)
+    let integrityScore = 100;
+    integrityScore -= result.issues.length * 5; // Storage issues
+    integrityScore -= orphanedTransactions * 2; // Orphaned transactions
+    integrityScore -= orphanedFiles * 2; // Orphaned files
+    integrityScore -= duplicateReport.duplicates.length * 3; // Duplicates
+    integrityScore -= anomalies.length * 2; // Anomalies
+    integrityScore = Math.max(0, integrityScore);
+    
+    // GENERATE RECOMMENDATIONS
+    const recommendations: string[] = [];
+    if (duplicateReport.duplicates.length > 0) {
+      recommendations.push(`Remove ${duplicateReport.duplicates.length} duplicate transactions`);
+    }
+    if (orphanedTransactions > 0) {
+      recommendations.push(`Clean up ${orphanedTransactions} orphaned transactions`);
+    }
+    if (orphanedFiles > 0) {
+      recommendations.push(`Fix ${orphanedFiles} file-transaction mismatches`);
+    }
+    if (anomalies.length > 0) {
+      recommendations.push(`Review ${anomalies.length} data anomalies`);
+    }
+    if (result.stats.totalSize > 5000) {
+      recommendations.push('Consider archiving old data (storage > 5MB)');
+    }
+    
     return {
-      isValid: result.isValid,
+      isValid: result.isValid && duplicateReport.duplicates.length === 0 && anomalies.length === 0,
       issues: result.issues,
       totalTransactions: result.stats.itemCounts.transactions,
       totalFiles: result.stats.itemCounts.files,
       orphanedTransactions,
-      orphanedFiles
+      orphanedFiles,
+      duplicateTransactions: duplicateReport.duplicates,
+      anomalies,
+      integrityScore,
+      recommendations
     };
+  }
+
+  // COMPREHENSIVE DATA ANOMALY DETECTION
+  private findDataAnomalies(transactions: StoredTransaction[], accounts: BankAccount[]): string[] {
+    const anomalies: string[] = [];
+
+    // Check for transactions with impossible dates
+    const now = new Date();
+    const twoYearsAgo = new Date(now.getFullYear() - 2, now.getMonth(), now.getDate());
+    const oneYearAhead = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate());
+
+    const oldTransactions = transactions.filter(t => new Date(t.date) < twoYearsAgo);
+    const futureTransactions = transactions.filter(t => new Date(t.date) > oneYearAhead);
+
+    if (oldTransactions.length > 0) {
+      anomalies.push(`${oldTransactions.length} transactions are older than 2 years`);
+    }
+
+    if (futureTransactions.length > 0) {
+      anomalies.push(`${futureTransactions.length} transactions are dated in the future`);
+    }
+
+    // Check for extremely large transactions
+    const largeTransactions = transactions.filter(t => 
+      (t.debitAmount && t.debitAmount > 1000000) || 
+      (t.creditAmount && t.creditAmount > 1000000)
+    );
+
+    if (largeTransactions.length > 0) {
+      anomalies.push(`${largeTransactions.length} transactions have amounts over 1,000,000`);
+    }
+
+    // Check for accounts with no transactions
+    const accountsWithTransactions = new Set(transactions.map(t => t.accountId));
+    const emptyAccounts = accounts.filter(a => !accountsWithTransactions.has(a.id));
+
+    if (emptyAccounts.length > 0) {
+      anomalies.push(`${emptyAccounts.length} accounts have no transactions`);
+    }
+
+    // Check for balance calculation inconsistencies
+    const balanceInconsistencies = this.checkBalanceConsistency(transactions);
+    if (balanceInconsistencies.length > 0) {
+      anomalies.push(...balanceInconsistencies);
+    }
+
+    return anomalies;
+  }
+
+  // CHECK BALANCE CONSISTENCY
+  private checkBalanceConsistency(transactions: StoredTransaction[]): string[] {
+    const issues: string[] = [];
+    const transactionsByAccount = new Map<string, StoredTransaction[]>();
+    
+    // Group transactions by account
+    transactions.forEach(t => {
+      if (!transactionsByAccount.has(t.accountId)) {
+        transactionsByAccount.set(t.accountId, []);
+      }
+      transactionsByAccount.get(t.accountId)!.push(t);
+    });
+
+    // Check each account's balance consistency
+    for (const [accountId, accountTransactions] of transactionsByAccount) {
+      const sortedTransactions = accountTransactions.sort((a, b) => 
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+
+      let calculatedBalance = 0;
+      let inconsistentCount = 0;
+
+      for (const transaction of sortedTransactions) {
+        calculatedBalance += (transaction.creditAmount || 0) - (transaction.debitAmount || 0);
+        
+        if (Math.abs(transaction.balance - calculatedBalance) > 0.01) {
+          inconsistentCount++;
+        }
+      }
+
+      if (inconsistentCount > 0) {
+        issues.push(`Account ${accountId}: ${inconsistentCount} transactions with balance inconsistencies`);
+      }
+    }
+
+    return issues;
   }
 
   cleanupOrphanedData(): { deletedTransactions: number; deletedFiles: number } {

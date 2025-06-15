@@ -726,6 +726,13 @@ class LocalStorageManager {
     ];
   }
 
+  // PUBLIC METHOD - Update all account balances based on transactions
+  updateAllAccountBalances(): void {
+    const accounts = this.getAllAccounts();
+    const accountIds = accounts.map(a => a.id);
+    this.updateAccountBalancesFromTransactions(accountIds);
+  }
+
   // BALANCE MANAGEMENT - Update account balances based on remaining transactions
   private updateAccountBalancesFromTransactions(accountIds: string[]): void {
     const accounts = this.getAllAccounts();

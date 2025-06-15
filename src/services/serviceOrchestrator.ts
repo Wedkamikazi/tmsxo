@@ -106,8 +106,7 @@ class ServiceOrchestrator {
       name: 'memoryManagementService',
       service: memoryManagementService,
       dependencies: ['eventBus', 'performanceManager'],
-      initMethod: 'initialize',
-      healthCheckMethod: 'getHealthStatus',
+      healthCheckMethod: 'getMemoryHealthStatus',
       disposeMethod: 'dispose',
       timeout: 15000,
       critical: true,
@@ -136,13 +135,13 @@ class ServiceOrchestrator {
       retryAttempts: 2
     });
 
-    // ML Services (Tier 4)
+    // ML Services (Tier 4) - These need explicit initialization
     this.registerService({
       name: 'mlCategorizationService',
       service: mlCategorizationService,
       dependencies: ['memoryManagementService', 'unifiedDataService'],
-      initMethod: 'initialize',
-      healthCheckMethod: 'getServiceStatus',
+      initMethod: 'ensureInitialized',
+      healthCheckMethod: 'getModelStatus',
       timeout: 30000,
       critical: false,
       retryAttempts: 1
@@ -152,7 +151,7 @@ class ServiceOrchestrator {
       name: 'mlNaturalLanguageService',
       service: mlNaturalLanguageService,
       dependencies: ['memoryManagementService', 'unifiedDataService'],
-      initMethod: 'initialize',
+      initMethod: 'ensureInitialized',
       healthCheckMethod: 'getServiceStatus',
       timeout: 30000,
       critical: false,
@@ -163,7 +162,7 @@ class ServiceOrchestrator {
       name: 'mlPredictiveAnalyticsService',
       service: mlPredictiveAnalyticsService,
       dependencies: ['memoryManagementService', 'unifiedDataService'],
-      initMethod: 'initialize',
+      initMethod: 'ensureInitialized',
       healthCheckMethod: 'getServiceStatus',
       timeout: 45000,
       critical: false,

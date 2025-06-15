@@ -327,28 +327,13 @@ export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccoun
       <div className="accounts-section">
         <div className="section-header">
           <h3>Your Bank Accounts ({accounts.length})</h3>
-          <div className="section-actions">
-            <button
-              type="button"
-              onClick={refreshAccounts}
-              className="btn btn-secondary"
-              title="Refresh account data without reloading the page"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="23,4 23,10 17,10" />
-                <polyline points="1,20 1,14 7,14" />
-                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
-              </svg>
-              Refresh Data
-            </button>
-            <button
-              type="button"
-              onClick={handleAddAccount}
-              className="btn btn-primary"
-            >
-              Add New Account
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleAddAccount}
+            className="btn btn-primary"
+          >
+            Add New Account
+          </button>
         </div>
 
         {accounts.length === 0 ? (

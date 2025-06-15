@@ -1141,7 +1141,7 @@ class MLCategorizationService {
 }
 
 // Check for debug mode
-const isDebugMode = DEBUG_MODE_ACTIVE;
+const isDebugMode = checkDebugMode();
 
 // Export singleton instance (skip heavy initialization in debug mode)
 let mlCategorizationService: MLCategorizationService;

@@ -98,7 +98,7 @@ export const DataHub: React.FC = () => {
         setUnifiedDataService(unifiedDataServiceModule.unifiedDataService);
         setServicesLoaded(true);
         markServicesInitialized(); // Save that services are loaded
-        console.log('✅ Services loaded and cached for future refreshes');
+        console.log('✅ Services loaded and cached for future INSTANT refreshes (NO LOADING)');
       } catch (error) {
         console.warn('Failed to load services:', error);
         setServicesLoaded(true); // Set as loaded to prevent infinite loops

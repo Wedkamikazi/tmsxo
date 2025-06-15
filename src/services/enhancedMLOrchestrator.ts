@@ -313,7 +313,7 @@ class EnhancedMLOrchestrator {
     return await this.categorizeWithTensorFlowPrimary(transaction);
   }
 
-  private async enhanceWithTensorFlow(transaction: Transaction): Promise<{
+  private async enhanceWithTensorFlow(_transaction: Transaction): Promise<{
     semanticSimilarity: number;
     anomalyScore: number;
     patterns: string[];

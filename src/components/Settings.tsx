@@ -234,7 +234,7 @@ export const Settings: React.FC = () => {
             <div className="modal-body">
               <p>State data has been copied to clipboard. You can also view it in the browser console.</p>
               <pre className="state-export">
-                {stateManager.exportState()}
+                {JSON.stringify(stateManager.exportState(), null, 2)}
               </pre>
             </div>
             <div className="modal-footer">

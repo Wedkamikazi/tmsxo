@@ -188,9 +188,7 @@ class StorageQuotaManager {
     // Try to determine localStorage quota through testing
     try {
       const testKey = 'tms_quota_test';
-      const testData = 'x'.repeat(1024); // 1KB of data
       let quotaSize = 0;
-      let testSize = 1024;
       
       // Binary search for quota size
       let low = 0;

@@ -251,6 +251,16 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
               <div className="stat-label">Highest Balance</div>
             </div>
           </div>
+          
+          {(stats.daysWithDuplicates || 0) > 0 && (
+            <div className="stat-card warning">
+              <div className="stat-icon">⚠️</div>
+              <div className="stat-content">
+                <div className="stat-value">{stats.daysWithDuplicates}</div>
+                <div className="stat-label">Days with Duplicates</div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

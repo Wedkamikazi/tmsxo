@@ -1,5 +1,4 @@
 import { StoredTransaction } from './unifiedDataService';
-import { UploadedFile } from './fileStorageService';
 import { localStorageManager } from './localStorageManager';
 import { eventBus } from './eventBus';
 

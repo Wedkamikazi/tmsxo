@@ -334,16 +334,6 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
             </div>
           </div>
           )}
-          
-          <div className="step-actions">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="btn btn-secondary"
-            >
-              Cancel
-            </button>
-          </div>
         </div>
       )}
 

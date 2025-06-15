@@ -577,8 +577,6 @@ Provide detailed analysis in JSON format.`;
   }
 }
 
-import { isDebugMode } from '../utils/debugMode';
-
 // Check for debug mode  
 const debugModeActive = isDebugMode();
 

@@ -585,5 +585,24 @@ class EnhancedCategorizationService {
   }
 }
 
-// Export singleton instance
-export const enhancedCategorizationService = new EnhancedCategorizationService(); 
+// Check for debug mode
+const isDebugMode = typeof window !== 'undefined' && (
+  window.location.search.includes('debug') || 
+  localStorage.getItem('debugMode') === 'true'
+);
+
+// Export singleton instance (skip in debug mode)
+let enhancedCategorizationService: EnhancedCategorizationService;
+
+if (isDebugMode) {
+  console.log('🚨 EnhancedCategorizationService: Debug mode detected - creating mock instance');
+  enhancedCategorizationService = {
+    categorizeTransaction: () => Promise.resolve({ category: 'Other', confidence: 0.5, reasoning: 'Debug mode' }),
+    ensureInitialized: () => Promise.resolve(),
+    dispose: () => Promise.resolve()
+  } as any;
+} else {
+  enhancedCategorizationService = new EnhancedCategorizationService();
+}
+
+export { enhancedCategorizationService }; 

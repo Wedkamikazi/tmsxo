@@ -1097,6 +1097,12 @@ class MLCategorizationService {
     performanceManager.unregisterModel('anomaly-model');
     performanceManager.unregisterModel('pattern-model');
     
+    // Unregister models from cleanup manager
+    cleanupManager.unregisterResource('ml-categorization-model');
+    cleanupManager.unregisterResource('ml-sentiment-model');
+    cleanupManager.unregisterResource('ml-anomaly-model');
+    cleanupManager.unregisterResource('ml-pattern-model');
+    
     if (this.categorizationModel) {
       this.categorizationModel.dispose();
       this.categorizationModel = null;
@@ -1116,6 +1122,14 @@ class MLCategorizationService {
       this.patternModel.dispose();
       this.patternModel = null;
     }
+    
+    // Clear caches and data structures
+    this.vocabulary.clear();
+    this.categoryMapping.clear();
+    this.reverseCategoryMapping.clear();
+    this.trainingHistory = [];
+    
+    this.isInitialized = false;
     
     console.log('✅ ML resources cleaned up');
   }

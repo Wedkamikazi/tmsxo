@@ -1,6 +1,5 @@
 import { eventBus, DataEvent } from './eventBus';
 import { unifiedDataService } from './unifiedDataService';
-import { systemIntegrityService } from './systemIntegrityService';
 import { Transaction, BankAccount, UploadedFile } from '../types';
 
 // CROSS-TAB SYNCHRONIZATION SERVICE

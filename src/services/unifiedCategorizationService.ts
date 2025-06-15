@@ -384,7 +384,7 @@ export class UnifiedCategorizationService {
   }
 
   // UTILITY METHODS
-  private _createFallbackResult(transaction: Transaction, error: unknown): UnifiedCategorizationResult {
+  private _createFallbackResult(_transaction: Transaction, error: unknown): UnifiedCategorizationResult {
     return {
       categoryId: 'uncategorized',
       categoryName: 'Uncategorized',

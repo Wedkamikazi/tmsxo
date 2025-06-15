@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useCleanup, useTimerCleanup, useEventListenerCleanup } from '../hooks/useCleanup';
 import { Transaction, TransactionCategory, TransactionCategorization as TransactionCategorizationData } from '../types';
 import { unifiedDataService, type StoredTransaction } from '../services/unifiedDataService';
 import { categorizationService } from '../services/categorizationService';

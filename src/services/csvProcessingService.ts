@@ -288,18 +288,34 @@ class CSVProcessingService {
   // Convert CSV rows to transactions
   convertToTransactions(rows: CSVRow[]): Transaction[] {
     const baseTimestamp = Date.now();
-    return rows.map((row, index) => ({
-      id: `txn_${baseTimestamp}_${index}_${Math.random().toString(36).substr(2, 9)}`,
-      date: this.formatDate(row.postDate),
-      description: row.narrative,
-      debitAmount: Math.abs(this.parseAmount(row.debitAmount)), // Ensure debit amounts are positive for display
-      creditAmount: Math.abs(this.parseAmount(row.creditAmount)), // Ensure credit amounts are positive for display
-      balance: this.parseAmount(row.balance),
-      reference: row.customerReference,
-      postDate: row.postDate,
-      time: row.time,
-      valueDate: row.valueDate
-    }));
+    return rows.map((row, index) => {
+      // Debug logging for problematic dates
+      if (!row.postDate || !this.isValidDate(row.postDate)) {
+        console.warn(`Row ${index + 1}: Invalid postDate "${row.postDate}", using valueDate "${row.valueDate}"`);
+      }
+      
+      // Use valueDate as primary, fallback to postDate
+      const primaryDate = row.valueDate || row.postDate;
+      const formattedDate = this.formatDate(primaryDate);
+      
+      // Additional debug logging
+      if (formattedDate.includes('Invalid') || formattedDate === primaryDate) {
+        console.warn(`Row ${index + 1}: Date formatting issue - original: "${primaryDate}", formatted: "${formattedDate}"`);
+      }
+      
+      return {
+        id: `txn_${baseTimestamp}_${index}_${Math.random().toString(36).substr(2, 9)}`,
+        date: formattedDate,
+        description: row.narrative,
+        debitAmount: Math.abs(this.parseAmount(row.debitAmount)), // Ensure debit amounts are positive for display
+        creditAmount: Math.abs(this.parseAmount(row.creditAmount)), // Ensure credit amounts are positive for display
+        balance: this.parseAmount(row.balance),
+        reference: row.customerReference,
+        postDate: primaryDate, // Store the original date value
+        time: row.time,
+        valueDate: row.valueDate
+      };
+    });
   }
 
   private formatDate(dateString: string): string {

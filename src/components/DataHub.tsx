@@ -6,6 +6,7 @@ import { FileManager } from './FileManager';
 import QwenIntegrationStatus from './QwenIntegrationStatus';
 import SimpleDataCleanup from './SimpleDataCleanup';
 import { OllamaChat } from './OllamaChat';
+import { Settings } from './Settings';
 import { ErrorBoundary } from './ErrorBoundary';
 import SystemHealthMonitor from './SystemHealthMonitor';
 import OllamaControlWidget from './OllamaControlWidget';

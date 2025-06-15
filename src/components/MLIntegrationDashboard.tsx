@@ -221,17 +221,9 @@ export const MLIntegrationDashboard: React.FC = () => {
     try {
       setIsRetraining(true);
       
-      // Simulate user feedback (in real app, this would come from user corrections)
-      const _feedback = [
-        {
-          transactionId: 'sample-1',
-          correctCategory: 'cat_business_expense',
-          previousPrediction: 'cat_uncategorized'
-        }
-      ];
-
       // Note: Unified service handles learning automatically during categorization
       // For now, we'll simulate a successful retraining result
+      // (In real app, user feedback would be passed to the learning system)
       const retrainResult = { 
         success: true, 
         improvement: 0.05,

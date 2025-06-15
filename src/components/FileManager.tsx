@@ -55,7 +55,31 @@ export const FileManager: React.FC<FileManagerProps> = ({ onFileDeleted }) => {
 
   // Format date
   const formatDate = (dateString: string): string => {
+    // Handle invalid or empty date strings
+    if (!dateString || dateString.trim() === '') {
+      return new Date().toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    
     const date = new Date(dateString);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      console.warn(`Invalid date string in FileManager: "${dateString}", using current date`);
+      return new Date().toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    
     return date.toLocaleDateString('en-GB', {
       day: '2-digit',
       month: '2-digit',

@@ -541,11 +541,11 @@ Reduce bundle size from ~8MB to ~3MB through code splitting and optimization.
 
 > **🔍 PRE-TASK VERIFICATION**: Search for existing virtual scrolling implementations, pagination components, or large list optimizations. Check for files like `virtualList.ts`, `pagination.ts`, or performance optimization utilities in components.
 
-#### **Objective**
+#### **Objective (Task 3.1)**
 
 Add virtual scrolling to transaction lists to handle 10,000+ transactions smoothly.
 
-#### **Technical Specifications**
+#### **Technical Specifications (Task 3.1)**
 
 **Current Performance Issues:**
 
@@ -561,7 +561,7 @@ Add virtual scrolling to transaction lists to handle 10,000+ transactions smooth
 - Support for variable item heights
 - Optimized for large datasets
 
-#### **Implementation Details**
+#### **Implementation Details (Task 3.1)**
 
 1. **Virtual Scroll Component**
    - Calculate visible range
@@ -585,18 +585,18 @@ Add virtual scrolling to transaction lists to handle 10,000+ transactions smooth
 - < 100MB memory usage regardless of dataset size
 - Smooth scrolling at 60 FPS
 
-#### **Files to Create**
+#### **Files to Create (Task 3.1)**
 
 - `src/components/VirtualScrollList.tsx`
 - `src/components/VirtualTransactionList.tsx`
 - `src/hooks/useVirtualScroll.ts`
 
-#### **Files to Modify**
+#### **Files to Modify (Task 3.1)**
 
 - `src/components/Transactions.tsx`
 - `src/components/TransactionCategorization.tsx`
 
-#### **Acceptance Criteria**
+#### **Acceptance Criteria (Task 3.1)**
 
 - [ ] Handles 50,000+ transactions without performance issues
 - [ ] Smooth scrolling performance

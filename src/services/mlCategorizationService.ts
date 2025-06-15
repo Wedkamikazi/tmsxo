@@ -265,6 +265,12 @@ class MLCategorizationService {
       await this.initializeAdvancedML();
     }
 
+    // Track model access for memory management
+    memoryManagementService.touchModel('categorization-model');
+    memoryManagementService.touchModel('sentiment-model');
+    memoryManagementService.touchModel('anomaly-model');
+    memoryManagementService.touchModel('pattern-model');
+
     try {
       // Prepare input features
       const textFeatures = this.prepareTextFeatures(transaction.description);

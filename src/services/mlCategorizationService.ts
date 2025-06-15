@@ -1089,6 +1089,26 @@ class MLCategorizationService {
     
     console.log('✅ ML resources cleaned up');
   }
+
+  // PUBLIC METHOD FOR SERVICE ORCHESTRATOR
+  async ensureInitialized(): Promise<void> {
+    if (this.isInitialized) {
+      return; // Already initialized
+    }
+    
+    // Wait for initialization to complete if in progress
+    let attempts = 0;
+    const maxAttempts = 30; // 30 seconds max wait
+    
+    while (!this.isInitialized && attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      attempts++;
+    }
+    
+    if (!this.isInitialized) {
+      throw new Error('ML Categorization Service failed to initialize within timeout');
+    }
+  }
 }
 
 export const mlCategorizationService = new MLCategorizationService(); 

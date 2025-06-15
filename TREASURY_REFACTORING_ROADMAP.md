@@ -265,7 +265,7 @@ Merge three categorization services into one unified service while preserving al
 
 > **🔍 PRE-TASK VERIFICATION**: Create comprehensive dependency mapping of all 19 services. Check for hidden dependencies, circular references, and shared utilities. Verify no services exist beyond the documented list. Backup current state before any consolidation.
 
-#### **Objective**
+#### **Objective (Task 2.1)**
 
 Reduce 19 services to 7 focused, well-defined services without losing functionality.
 
@@ -342,7 +342,7 @@ New Architecture:
 - **Responsibilities**: Event management, service coordination
 - **Estimated Effort**: 12-16 hours
 
-#### **Acceptance Criteria**
+#### **Acceptance Criteria (Task 2.1)**
 
 - [ ] All 19 services consolidated into 7 services
 - [ ] No functionality regression

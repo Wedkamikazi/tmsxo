@@ -542,16 +542,6 @@ Provide detailed analysis in JSON format.`;
     );
   }
 
-  private logOllamaStatus(message: string, severity: 'low' | 'medium'): void {
-    systemIntegrityService.logServiceError(
-      'LocalOllamaIntegration',
-      'status',
-      new Error(message),
-      severity,
-      { component: 'ollamaStatus', timestamp: new Date().toISOString() }
-    );
-  }
-
   // PUBLIC API METHODS
   getHealthStatus(): OllamaHealthStatus {
     return { ...this.healthStatus };

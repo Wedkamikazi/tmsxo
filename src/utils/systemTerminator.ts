@@ -215,8 +215,8 @@ class SystemTerminator {
       }
       
       // Dispose Performance Manager
-      if (performanceManager && typeof performanceManager.dispose === 'function') {
-        performanceManager.dispose();
+      if (performanceManager && typeof performanceManager.destroy === 'function') {
+        performanceManager.destroy();
       }
       
       this.terminationReport.details.tensorflowModels = true;

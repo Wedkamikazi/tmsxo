@@ -3,6 +3,7 @@ import { localStorageManager } from './localStorageManager';
 import { unifiedDataService } from './unifiedDataService';
 import { performanceManager } from './performanceManager';
 import { crossTabSyncService } from './crossTabSyncService';
+import { isDebugMode } from '../utils/debugMode';
 
 // SYSTEM INTEGRITY SERVICE - ULTIMATE INTEGRATION ENHANCEMENT
 // Provides centralized error handling, data consistency validation, and system health monitoring

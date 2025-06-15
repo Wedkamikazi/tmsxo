@@ -1,7 +1,14 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BankAccount } from '../types';
 import { unifiedDataService } from '../services/unifiedDataService';
 import { unifiedBalanceService } from '../services/unifiedBalanceService';
+import { 
+  registerGlobalRefresh, 
+  unregisterGlobalRefresh, 
+  shouldComponentUseCache,
+  setComponentState,
+  getComponentState 
+} from '../utils/stateManager';
 import './BankAccountManager.css';
 
 interface BankAccountManagerProps {

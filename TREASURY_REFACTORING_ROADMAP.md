@@ -371,11 +371,11 @@ New Architecture:
 
 > **🔍 PRE-TASK VERIFICATION**: Search for existing state management patterns, context providers, or global state utilities. Check for files like `context.ts`, `state.ts`, `store.ts`, or embedded state logic. Verify current EventBus usage patterns before replacement.
 
-#### **Objective**
+#### **Objective (Task 2.2)**
 
 Replace EventBus pattern with React Context + useReducer for better state management and performance.
 
-#### **Technical Specifications**
+#### **Technical Specifications (Task 2.2)**
 
 **Current State Issues:**
 
@@ -392,7 +392,7 @@ Replace EventBus pattern with React Context + useReducer for better state manage
 - Custom hooks for clean APIs
 - Optimized re-render patterns
 
-#### **Implementation Details**
+#### **Implementation Details (Task 2.2)**
 
 1. **Create Context Architecture**
    - Application state structure
@@ -410,7 +410,7 @@ Replace EventBus pattern with React Context + useReducer for better state manage
    - Maintain compatibility during transition
    - Component-by-component migration
 
-#### **Files to Create**
+#### **Files to Create (Task 2.2)**
 
 - `src/context/AppContext.tsx`
 - `src/context/AppProvider.tsx`
@@ -420,12 +420,12 @@ Replace EventBus pattern with React Context + useReducer for better state manage
 - `src/hooks/useFiles.ts`
 - `src/hooks/useCategories.ts`
 
-#### **Files to Modify**
+#### **Files to Modify (Task 2.2)**
 
 - `src/App.tsx` (add provider)
 - All major components (gradual migration)
 
-#### **Acceptance Criteria**
+#### **Acceptance Criteria (Task 2.2)**
 
 - [ ] React Context provides all global state
 - [ ] useReducer handles state updates correctly

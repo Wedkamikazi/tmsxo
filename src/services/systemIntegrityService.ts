@@ -439,6 +439,8 @@ class SystemIntegrityService {
     // Reserved for future account-specific consistency check implementation
     // @ts-ignore: Reserved for future implementation
     const _payloadData = payload || {};
+    // Explicitly mark as unused to satisfy linter
+    void _payloadData;
     // TODO: Implement account-specific consistency checks using _payloadData.accountId and _payloadData.action
   }
 

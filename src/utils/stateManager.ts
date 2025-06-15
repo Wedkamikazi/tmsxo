@@ -167,12 +167,12 @@ class StateManager {
     return this.state.sessionData.dataRefreshTrigger;
   }
 
-  public setUserPreference(key: keyof AppState['userPreferences'], value: any): void {
+  public setUserPreference<K extends keyof AppState['userPreferences']>(key: K, value: AppState['userPreferences'][K]): void {
     this.state.userPreferences[key] = value;
     this.saveState();
   }
 
-  public getUserPreference(key: keyof AppState['userPreferences']): any {
+  public getUserPreference<K extends keyof AppState['userPreferences']>(key: K): AppState['userPreferences'][K] {
     return this.state.userPreferences[key];
   }
 

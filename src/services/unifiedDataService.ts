@@ -278,8 +278,21 @@ class UnifiedDataService {
   }
 
   deleteSnapshot(snapshotTimestamp: string): boolean {
-    // This functionality would need to be added to localStorageManager
-    return true; // Placeholder
+    // Enhanced snapshot deletion with proper integration
+    try {
+      const snapshots = JSON.parse(localStorage.getItem('tms_snapshots') || '[]');
+      const filteredSnapshots = snapshots.filter((s: any) => s.timestamp !== snapshotTimestamp);
+      
+      if (filteredSnapshots.length < snapshots.length) {
+        localStorage.setItem('tms_snapshots', JSON.stringify(filteredSnapshots));
+        eventBus.emit('DATA_CLEARED', { snapshotDeleted: snapshotTimestamp }, 'UnifiedDataService');
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error deleting snapshot:', error);
+      return false;
+    }
   }
 
   // VALIDATION METHODS

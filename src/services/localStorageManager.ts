@@ -460,6 +460,8 @@ class LocalStorageManager {
 
       return { success: true, message: 'Data imported successfully', imported };
     });
+    
+    return result.success ? result.result! : { success: false, message: result.error || 'Import failed', imported: {} };
   }
 
   clearAllData(): void {

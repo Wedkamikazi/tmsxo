@@ -119,6 +119,13 @@ class LocalOllamaIntegration {
   // INITIALIZE OLLAMA INTEGRATION
   private async initializeOllamaIntegration(): Promise<void> {
     try {
+      // Check if Ollama is disabled by user preference
+      if (!this.ollamaEnabled) {
+        console.info('ℹ️ Ollama integration disabled by user preference - TensorFlow.js only mode');
+        this.isInitialized = false;
+        return;
+      }
+      
       console.log('🦙 Checking for Local Ollama Integration (optional)...');
       
       // Check if Ollama server is running

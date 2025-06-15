@@ -408,7 +408,7 @@ class UnifiedBalanceService {
       };
       
       // Store the update timestamp separately if needed for tracking
-      const lastUpdated = new Date().toISOString();
+      // Note: lastUpdated could be used for audit logging if needed
       
       return updatedAccount;
     } catch (error) {

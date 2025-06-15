@@ -778,11 +778,11 @@ Create a comprehensive performance monitoring system with real-time metrics and 
 
 > **🔍 PRE-TASK VERIFICATION**: Search for existing payroll-related functionality, HR data processing, or employee information handling. Check for files like `payroll.ts`, `employee.ts`, `hr.ts`, or similar data structures. Verify integration points with transaction processing.
 
-#### **Objective**
+#### **Objective (Task 4.1)**
 
 Build comprehensive payroll data import and analysis functionality.
 
-#### **Technical Specifications**
+#### **Technical Specifications (Task 4.1)**
 
 **Payroll Processing Features:**
 
@@ -792,7 +792,7 @@ Build comprehensive payroll data import and analysis functionality.
 - Cost center analysis
 - Tax calculation verification
 
-#### **Implementation Details**
+#### **Implementation Details (Task 4.1)**
 
 1. **Payroll Import System**
    - Format detection and validation
@@ -809,7 +809,7 @@ Build comprehensive payroll data import and analysis functionality.
    - Identify discrepancies
    - Automated reconciliation
 
-#### **Files to Create**
+#### **Files to Create (Task 4.1)**
 
 - `src/services/payrollService.ts`
 - `src/components/PayrollImport.tsx`
@@ -817,7 +817,7 @@ Build comprehensive payroll data import and analysis functionality.
 - `src/components/PayrollReports.tsx`
 - `src/types/payroll.ts`
 
-#### **Acceptance Criteria**
+#### **Acceptance Criteria (Task 4.1)**
 
 - [ ] CSV/Excel payroll import working
 - [ ] Payroll data validation and processing

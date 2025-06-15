@@ -118,9 +118,17 @@ class MLPredictiveAnalyticsService {
           units: 32,
           dropout: 0.2
         }),
-        tf.layers.dense({ units: 64, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 64, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.dropout({ rate: 0.3 }),
-        tf.layers.dense({ units: 32, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 32, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.dense({ units: this.modelConfig.forecastHorizon * 3 }) // inflow, outflow, balance for each day
       ]
     });

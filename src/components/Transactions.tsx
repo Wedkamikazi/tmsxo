@@ -2,6 +2,13 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { unifiedDataService, type StoredTransaction } from '../services/unifiedDataService';
 import { BankAccount } from '../types';
 import { TransactionCategorization } from './TransactionCategorization';
+import { 
+  registerGlobalRefresh, 
+  unregisterGlobalRefresh, 
+  shouldComponentUseCache,
+  setComponentState,
+  getComponentState 
+} from '../utils/stateManager';
 import './Transactions.css';
 
 interface TransactionsProps {

@@ -403,6 +403,20 @@
   font-size: 0.8125rem;
 }
 
+/* Duplicate Warning Styles */
+.duplicate-warning {
+  margin-left: var(--spacing-sm);
+  font-size: 0.875rem;
+  cursor: help;
+}
+
+.duplicate-info {
+  margin-left: var(--spacing-xs);
+  color: var(--color-orange-600);
+  font-weight: bold;
+  cursor: help;
+}
+
 /* Pagination */
 .pagination {
   display: flex;

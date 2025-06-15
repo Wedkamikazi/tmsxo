@@ -281,15 +281,18 @@ class SystemIntegrityService {
     // Check performance
     const performanceHealth = await this.checkPerformanceHealth();
     
+    // Check cross-tab sync
+    const crossTabSyncHealth = await this.checkCrossTabSyncHealth();
+    
     // Calculate overall health
-    const componentHealths = [storageHealth, eventBusHealth, dataIntegrityHealth, performanceHealth];
+    const componentHealths = [storageHealth, eventBusHealth, dataIntegrityHealth, performanceHealth, crossTabSyncHealth];
     const healthyComponents = componentHealths.filter(h => h === 'healthy').length;
     
     let overall: SystemHealthStatus['overall'];
-    if (healthyComponents === 4) overall = 'excellent';
-    else if (healthyComponents === 3) overall = 'good';
-    else if (healthyComponents === 2) overall = 'warning';
-    else if (healthyComponents === 1) overall = 'critical';
+    if (healthyComponents === 5) overall = 'excellent';
+    else if (healthyComponents === 4) overall = 'good';
+    else if (healthyComponents >= 3) overall = 'warning';
+    else if (healthyComponents >= 2) overall = 'critical';
     else overall = 'failure';
 
     // Get storage stats

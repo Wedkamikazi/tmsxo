@@ -437,7 +437,7 @@ class SystemIntegrityService {
 
   private async validateAccountConsistency(payload: any): Promise<void> {
     // Reserved for future account-specific consistency check implementation
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // @ts-ignore: payloadData reserved for future implementation
     const payloadData = payload || {};
     // TODO: Implement account-specific consistency checks using payloadData.accountId and payloadData.action
   }

@@ -189,7 +189,7 @@ class MLCategorizationService {
     });
 
     // Register with memory management
-    memoryManagementService.registerModel(
+    performanceManager.registerModel(
       'categorization-model',
       'Advanced Categorization Model',
       this.categorizationModel,

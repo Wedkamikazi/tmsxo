@@ -252,20 +252,17 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
       const transaction = transactions.find(t => t.id === transactionId);
       if (!transaction) return;
 
-      // Use enhanced categorization service for manual categorization with learning
-      await enhancedCategorizationService.categorizeTransactionManual(
-        {
-          id: transaction.id,
-          date: transaction.postDateTime,
-          description: transaction.description,
-          debitAmount: transaction.debitAmount || 0,
-          creditAmount: transaction.creditAmount || 0,
-          balance: transaction.balance,
-          reference: transaction.reference
-        },
-        categoryId,
-        mlConfig.enableLearning
-      );
+             // Use manual categorization through traditional service
+       categorizationService.categorizeTransaction(transactionId, categoryId, 'manual');
+       
+       // Optional: improve from feedback for learning if available
+       if (mlConfig.enableLearning) {
+         try {
+           await enhancedCategorizationService.improveFromFeedback(transactionId, categoryId);
+         } catch (error) {
+           console.log('Learning feedback not available yet:', error);
+         }
+       }
       
       // Refresh categorizations
       const updatedCategorizations = categorizationService.getAllCategorizations();

@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import { Transaction, TransactionCategory, MLCategorizationResult } from '../types';
+import { Transaction, MLCategorizationResult } from '../types';
 import { categorizationService } from './categorizationService';
 import { localStorageManager } from './localStorageManager';
 import { memoryManagementService } from './memoryManagementService';

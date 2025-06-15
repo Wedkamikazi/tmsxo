@@ -283,7 +283,7 @@ class EnhancedCategorizationService {
     this.performance.methodBreakdown.manual++;
     
     // This would typically prompt user input or return existing manual categorization
-    const existingCategorization = categorizationService.getTransactionCategorization(transaction.id);
+    const existingCategorization = categorizationService.getCategorizationByTransactionId(transaction.id);
     
     if (existingCategorization) {
       const category = this.categoryMappings.get(existingCategorization.categoryId);

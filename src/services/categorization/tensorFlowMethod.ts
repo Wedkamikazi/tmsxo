@@ -356,7 +356,10 @@ export class TensorFlowMethod implements CategorizationStrategy {
       vocabularySize: this.vocabulary.size,
       categoriesCount: this.categoryMapping.size,
       lastCheck: new Date().toISOString(),
-      modelStats: this.modelStats,
+      modelStats: {
+        ...this.modelStats,
+        trainingDataSize: this.trainingHistory.length
+      },
       tfVersion: tf.version.tfjs,
       modelsLoaded: {
         categorization: this.categorizationModel !== null,
@@ -366,6 +369,10 @@ export class TensorFlowMethod implements CategorizationStrategy {
       },
       memoryInfo: tf.memory()
     };
+  }
+
+  getModelConfig(): TensorFlowModelConfig {
+    return { ...this.modelConfig };
   }
 
   async ensureInitialized(): Promise<void> {

@@ -116,11 +116,11 @@ class MemoryManagementService {
     
     const stats: MemoryStats = {
       totalBytes: tfMemory.numBytes,
-      totalBytesInGPU: tfMemory.numBytesInGPU || 0,
+      totalBytesInGPU: 0, // Not available in current TensorFlow.js version
       totalTensors: tfMemory.numTensors,
       peakBytes: Math.max(...this.memoryHistory.map(h => h.totalBytes), tfMemory.numBytes),
-      unreliableBytes: tfMemory.unreliableBytes || 0,
-      reasons: tfMemory.reasons || [],
+      unreliableBytes: 0, // Not available in current TensorFlow.js version
+      reasons: [], // Not available in current TensorFlow.js version
       timestamp: new Date().toISOString()
     };
 

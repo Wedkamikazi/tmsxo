@@ -200,6 +200,23 @@ export const DataHub: React.FC = () => {
       >
         Exit Debug Mode
       </button>
+      <button 
+        onClick={() => {
+          stateManager.emergencyReset();
+        }}
+        style={{
+          background: 'rgba(255,255,255,0.2)',
+          color: 'white',
+          border: '1px solid rgba(255,255,255,0.3)',
+          padding: '4px 12px',
+          borderRadius: '4px',
+          fontSize: '12px',
+          cursor: 'pointer',
+          marginLeft: '8px'
+        }}
+      >
+        🗑️ Reset State
+      </button>
     </div>
   ) : null;
 

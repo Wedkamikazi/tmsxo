@@ -1141,11 +1141,7 @@ class MLCategorizationService {
 }
 
 // Check for debug mode
-const isDebugMode = typeof window !== 'undefined' && (
-  window.location.search.includes('debug') || 
-  localStorage.getItem('debugMode') === 'true' ||
-  (window as any).__TREASURY_DEBUG_MODE === true
-);
+const isDebugMode = DEBUG_MODE_ACTIVE;
 
 // Export singleton instance (skip heavy initialization in debug mode)
 let mlCategorizationService: MLCategorizationService;

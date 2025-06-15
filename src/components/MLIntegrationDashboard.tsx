@@ -65,7 +65,11 @@ export const MLIntegrationDashboard: React.FC = () => {
         predictiveStatus,
         nlpStatus
       ] = await Promise.all([
-        mlCategorizationService.getModelStatus(),
+        // Get status from TensorFlow method directly
+        (() => {
+          const tfMethod = new TensorFlowMethod();
+          return tfMethod.getModelStatus();
+        })(),
         mlPredictiveAnalyticsService.getServiceStatus(),
         mlNaturalLanguageService.getServiceStatus()
       ]);

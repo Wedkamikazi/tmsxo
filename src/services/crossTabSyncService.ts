@@ -1,4 +1,4 @@
-import { isDebugMode } from '../utils/debugMode';
+import { isDebugMode as checkDebugMode } from '../utils/debugMode';
 import { eventBus, DataEvent } from './eventBus';
 import { unifiedDataService } from './unifiedDataService';
 

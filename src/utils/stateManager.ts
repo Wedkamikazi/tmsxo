@@ -148,12 +148,12 @@ class StateManager {
     return shouldReinit;
   }
 
-  public updateSessionData(key: keyof AppState['sessionData'], value: any): void {
+  public updateSessionData<K extends keyof AppState['sessionData']>(key: K, value: AppState['sessionData'][K]): void {
     this.state.sessionData[key] = value;
     this.saveState();
   }
 
-  public getSessionData(key: keyof AppState['sessionData']): any {
+  public getSessionData<K extends keyof AppState['sessionData']>(key: K): AppState['sessionData'][K] {
     return this.state.sessionData[key];
   }
 

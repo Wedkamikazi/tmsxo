@@ -10,7 +10,6 @@ import { localOllamaIntegration } from '../services/localOllamaIntegration';
 import { enhancedMLOrchestrator } from '../services/enhancedMLOrchestrator';
 import { performanceManager } from '../services/performanceManager';
 import { serviceOrchestrator } from '../services/serviceOrchestrator';
-import { eventBus } from '../services/eventBus';
 
 export interface TerminationReport {
   timestamp: string;

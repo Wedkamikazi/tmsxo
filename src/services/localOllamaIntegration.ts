@@ -649,9 +649,14 @@ Provide detailed analysis in JSON format.`;
       isRunning: false,
       isReachable: false,
       availableModels: [],
-      responseTime: 0,
-      lastChecked: new Date(),
-      error: null
+      preferredModel: null,
+      lastCheck: new Date().toISOString(),
+      performance: {
+        averageResponseTime: 0,
+        successfulRequests: 0,
+        failedRequests: 0,
+        totalRequests: 0
+      }
     };
     
     console.log('✅ Ollama integration cleanup completed');

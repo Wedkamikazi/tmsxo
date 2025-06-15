@@ -319,6 +319,12 @@ class CSVProcessingService {
   }
 
   private formatDate(dateString: string): string {
+    // Return current date if input is empty or invalid
+    if (!dateString || dateString.trim() === '') {
+      console.warn(`Empty date string provided to formatDate, using current date`);
+      return new Date().toISOString().split('T')[0];
+    }
+    
     // Handle slash-separated dates
     if (dateString.includes('/')) {
       const parts = dateString.split('/');
@@ -329,8 +335,8 @@ class CSVProcessingService {
         
         // Log for debugging
         if (isNaN(part1) || isNaN(part2) || isNaN(year)) {
-          console.warn(`Invalid date parts in formatDate: "${dateString}" -> [${part1}, ${part2}, ${year}]`);
-          return dateString; // Return original if parsing fails
+          console.warn(`Invalid date parts in formatDate: "${dateString}" -> [${part1}, ${part2}, ${year}], using current date`);
+          return new Date().toISOString().split('T')[0];
         }
         
         let month: number, day: number;
@@ -358,8 +364,17 @@ class CSVProcessingService {
           // Convert to YYYY-MM-DD format
           const monthStr = month.toString().padStart(2, '0');
           const dayStr = day.toString().padStart(2, '0');
-          return `${year}-${monthStr}-${dayStr}`;
+          const formattedDate = `${year}-${monthStr}-${dayStr}`;
+          
+          // Verify the formatted date is valid
+          const testDate = new Date(formattedDate);
+          if (!isNaN(testDate.getTime())) {
+            return formattedDate;
+          }
         }
+        
+        console.warn(`Invalid date parts after validation: day=${day}, month=${month}, year=${year}, using current date`);
+        return new Date().toISOString().split('T')[0];
       }
     }
     
@@ -372,13 +387,29 @@ class CSVProcessingService {
       if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900) {
         const monthStr = month.toString().padStart(2, '0');
         const dayStr = day.toString().padStart(2, '0');
-        return `${year}-${monthStr}-${dayStr}`;
+        const formattedDate = `${year}-${monthStr}-${dayStr}`;
+        
+        // Verify the formatted date is valid
+        const testDate = new Date(formattedDate);
+        if (!isNaN(testDate.getTime())) {
+          return formattedDate;
+        }
       }
     }
     
-    // Fallback to original logic
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+    // Fallback to original logic with validation
+    try {
+      const date = new Date(dateString);
+      if (!isNaN(date.getTime())) {
+        return date.toISOString().split('T')[0];
+      }
+    } catch (error) {
+      console.warn(`Failed to parse date "${dateString}":`, error);
+    }
+    
+    // Final fallback - use current date
+    console.warn(`All date parsing failed for "${dateString}", using current date`);
+    return new Date().toISOString().split('T')[0];
   }
 
   // Helper method to create a sortable datetime from Post date and Time

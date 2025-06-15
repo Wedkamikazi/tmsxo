@@ -124,6 +124,16 @@
   transform: translateY(-1px);
 }
 
+.stat-card.warning {
+  border-color: var(--color-orange-300);
+  background: #fef3cd;
+}
+
+.stat-card.warning:hover {
+  border-color: var(--color-orange-400);
+  background: #fed7aa;
+}
+
 .stat-icon {
   width: 48px;
   height: 48px;

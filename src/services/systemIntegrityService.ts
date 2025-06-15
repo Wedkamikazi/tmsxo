@@ -444,7 +444,7 @@ class SystemIntegrityService {
 
   private async validateFileConsistency(payload: any): Promise<void> {
     // Reserved for future file-specific consistency check implementation
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // @ts-ignore: payloadData reserved for future implementation
     const payloadData = payload || {};
     // TODO: Implement file-specific consistency checks using payloadData.fileId
   }

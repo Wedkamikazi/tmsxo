@@ -148,7 +148,13 @@ class LocalStorageManager {
       return deletedCount;
     });
     
-    return result.success ? result.result! : 0;
+    if (result.success && result.result) {
+      // Automatically update account balance for this account (will be set to 0 since no transactions remain)
+      this.updateAccountBalancesFromTransactions([accountId]);
+      return result.result;
+    }
+    
+    return 0;
   }
 
   // ACCOUNT OPERATIONS

@@ -18,7 +18,10 @@ import {
   shouldReinitializeServices, 
   markServicesInitialized,
   incrementDataRefresh,
-  getDataRefreshTrigger
+  getDataRefreshTrigger,
+  triggerGlobalRefresh,
+  registerGlobalRefresh,
+  unregisterGlobalRefresh
 } from '../utils/stateManager';
 import { Transaction, BankAccount } from '../types';
 import './DataHub.css';

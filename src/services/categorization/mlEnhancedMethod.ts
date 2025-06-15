@@ -341,30 +341,34 @@ export class MLEnhancedMethod implements CategorizationStrategy {
   }
 
   private async categorizeWithManual(transaction: Transaction): Promise<UnifiedCategorizationResult> {
-    // Check if manual categorization exists
-    const { categorizationService } = await import('../categorizationService');
-    const existingCategorization = categorizationService.getCategorizationByTransactionId(transaction.id);
-    
-    if (existingCategorization) {
-      const category = this.categoryMappings.get(existingCategorization.categoryId);
+    // Check if manual categorization exists - use localStorage directly to avoid circular dependency
+    try {
+      const categorizations = JSON.parse(localStorage.getItem('transaction-categorizations') || '[]');
+      const existingCategorization = categorizations.find((cat: any) => cat.transactionId === transaction.id);
       
-      this.performance.methodBreakdown.manual++;
-      
-      return {
-        categoryId: existingCategorization.categoryId,
-        categoryName: category?.name || existingCategorization.categoryId,
-        confidence: 1.0, // Manual categorization is always high confidence
-        method: 'manual',
-        reasoning: existingCategorization.reasoning || 'Manual categorization',
-        suggestions: [],
-        alternatives: [],
-        processingTime: 0,
-        metadata: {
-          anomalyDetected: false,
-          fallbackReason: 'low_ml_confidence',
-          strategyUsed: 'manual-fallback'
-        }
-      };
+      if (existingCategorization) {
+        const category = this.categoryMappings.get(existingCategorization.categoryId);
+        
+        this.performance.methodBreakdown.manual++;
+        
+        return {
+          categoryId: existingCategorization.categoryId,
+          categoryName: category?.name || existingCategorization.categoryId,
+          confidence: 1.0, // Manual categorization is always high confidence
+          method: 'manual',
+          reasoning: existingCategorization.reasoning || 'Manual categorization',
+          suggestions: [],
+          alternatives: [],
+          processingTime: 0,
+          metadata: {
+            anomalyDetected: false,
+            fallbackReason: 'low_ml_confidence',
+            strategyUsed: 'manual-fallback'
+          }
+        };
+      }
+    } catch (error) {
+      console.warn('Failed to load manual categorizations:', error);
     }
     
     throw new Error('No manual categorization available');

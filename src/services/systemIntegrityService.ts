@@ -1728,9 +1728,9 @@ class SystemIntegrityService {
     ]);
 
     return {
-      categorization: categorization.status === 'fulfilled' ? categorization.value : { status: 'failed', details: { error: 'Import failed' } },
-      predictiveAnalytics: predictiveAnalytics.status === 'fulfilled' ? predictiveAnalytics.value : { status: 'failed', details: { error: 'Import failed' } },
-      naturalLanguage: naturalLanguage.status === 'fulfilled' ? naturalLanguage.value : { status: 'failed', details: { error: 'Import failed' } }
+      categorization: categorization.status === 'fulfilled' ? categorization.value : { status: 'failed' as const, details: { error: 'Import failed' } },
+      predictiveAnalytics: predictiveAnalytics.status === 'fulfilled' ? predictiveAnalytics.value : { status: 'failed' as const, details: { error: 'Import failed' } },
+      naturalLanguage: naturalLanguage.status === 'fulfilled' ? naturalLanguage.value : { status: 'failed' as const, details: { error: 'Import failed' } }
     };
   }
 

@@ -457,7 +457,10 @@ export const DataHub: React.FC = () => {
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    saveActiveTab(tab.id); // Persist tab selection
+                  }}
                   className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
                 >
                   <div className="tab-icon">{tab.icon}</div>

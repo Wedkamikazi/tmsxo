@@ -41,6 +41,7 @@ node terminate-all.js
 ### System Resources (Enhanced Cleanup System)
 
 #### **🧹 Centralized Cleanup Manager** (`src/services/cleanupManager.ts`)
+
 - **TensorFlow.js Models** - All registered ML models properly disposed
 - **React Component Resources** - Component-scoped cleanup with priority management
 - **Timers & Intervals** - All registered timers and intervals cleared
@@ -51,6 +52,7 @@ node terminate-all.js
 - **Resource Statistics** - Cleanup operation metrics and reporting
 
 #### **⚛️ React Cleanup Hooks** (`src/hooks/useCleanup.ts`)
+
 - **Component Lifecycle Management** - Automatic cleanup on component unmount
 - **TensorFlow Model Cleanup** - Specialized hooks for ML model disposal
 - **Timer Management** - Simplified timer and interval cleanup
@@ -58,6 +60,7 @@ node terminate-all.js
 - **Resource Registration** - Component-scoped resource tracking
 
 #### **🧠 Enhanced ML Services**
+
 - **ML Categorization Service** - All TensorFlow models and caches cleared
 - **Enhanced ML Orchestrator** - Model registry and vocabulary mappings cleared
 - **Performance Manager** - Model memory tracking and cleanup
@@ -65,6 +68,7 @@ node terminate-all.js
 - **Natural Language Service** - NLP models and embeddings cleared
 
 #### **🛡️ System Safety Manager** (`src/utils/systemSafetyManager.ts`)
+
 - **Process Registry** - All registered processes tracked and terminated
 - **Memory Monitoring** - Real-time memory usage tracking stopped
 - **Health Monitoring** - System health checks terminated
@@ -72,6 +76,7 @@ node terminate-all.js
 - **Duplicate Prevention** - Process duplication checks disabled
 
 #### **🎯 Service Orchestrator**
+
 - **Service Lifecycle** - All managed services gracefully shutdown
 - **Event Bus** - All event subscriptions cleared
 - **Cross-Tab Sync** - Inter-tab communication terminated
@@ -252,12 +257,14 @@ The cleanup system will automatically reinitialize:
 ## 📝 Files Created/Updated
 
 ### Core Termination System
+
 - `terminate-all.ps1` - PowerShell termination script
 - `terminate-all.js` - Node.js termination script  
 - `verify-termination.ps1` - Verification script
 - `src/utils/systemTerminator.ts` - Programmatic termination utility
 
 ### Enhanced Cleanup System (New in Task 1.2)
+
 - `src/services/cleanupManager.ts` - **Centralized cleanup management**
 - `src/hooks/useCleanup.ts` - **React cleanup hooks**
 - `src/utils/systemSafetyManager.ts` - Enhanced with cleanup integration

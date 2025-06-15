@@ -519,32 +519,45 @@ export const DataHub: React.FC = () => {
       {debugBanner}
       <div className="datahub-header">
         <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <h1 className="datahub-title">DataHub</h1>
-              <p className="datahub-description">
-                Central hub for importing, processing, and managing all your financial data
-              </p>
-            </div>
-            {initializationSkipped && (
-              <div style={{
-                background: '#d4edda',
-                color: '#155724',
-                padding: '8px 12px',
-                borderRadius: '6px',
-                fontSize: '12px',
-                fontWeight: 500,
-                border: '1px solid #c3e6cb',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                🚀 Instant Refresh: No reinitialization needed
-                <span style={{ fontSize: '10px', opacity: 0.8 }}>
-                  (Tab: {activeTab})
-                </span>
+          <div className="header-content">
+            <div className="header-left">
+              <div className="app-logo">
+                <div className="logo-icon">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+                    <path d="M3 5c0-1.66 4-3 9-3s9 1.34 9 3v14c0 1.66-4 3-9 3s-9-1.34-9-3V5z" />
+                    <path d="M3 12v7c0 1.66 4 3 9 3s9-1.34 9-3v-7" />
+                  </svg>
+                </div>
+                <div className="app-title-section">
+                  <h1 className="app-title">Treasury Management System</h1>
+                  <p className="app-subtitle">Financial Data Management Hub</p>
+                </div>
               </div>
-            )}
+            </div>
+            <div className="header-right">
+              {initializationSkipped && (
+                <div className="system-status instant-load">
+                  <div className="status-indicator"></div>
+                  <span>Instant Load</span>
+                </div>
+              )}
+              <div className="header-actions">
+                <button className="header-btn" title="Settings">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" />
+                  </svg>
+                </button>
+                <button className="header-btn" title="Help">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                    <point cx="12" cy="17" />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -242,15 +242,26 @@ Merge three categorization services into one unified service while preserving al
 
 #### **Estimated Effort (Task 1.4)**: 24-32 hours
 
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each small job step and verify there are no linter errors
+> 2. **Review Request**: Ask for review before continuing to next step  
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Functionality Testing**: Thoroughly test all categorization methods before marking complete
+> 5. **Import Verification**: Verify all import statements updated across entire codebase
+
 ---
 
 ## 🏗️ **PHASE 2: ARCHITECTURE CLEANUP**
 
 *Timeline: 4-5 weeks | Priority: HIGH*
 
+> **⚠️ WORKFLOW REMINDER**: This phase involves major architectural changes. Proceed with extreme caution, creating backup branches for each service consolidation. Verify all service dependencies and interactions before making changes.
+
 ### ✅ Task 2.1: Service Layer Rationalization
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
+
+> **🔍 PRE-TASK VERIFICATION**: Create comprehensive dependency mapping of all 19 services. Check for hidden dependencies, circular references, and shared utilities. Verify no services exist beyond the documented list. Backup current state before any consolidation.
 
 #### **Objective**
 
@@ -342,11 +353,20 @@ New Architecture:
 
 #### **Total Estimated Effort**: 96-120 hours (12-15 days)
 
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each sub-task and verify there are no linter errors
+> 2. **Review Request**: Ask for review after each service consolidation before continuing
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Integration Testing**: Thoroughly test each consolidated service before moving to next
+> 5. **Dependency Verification**: Verify all service dependencies properly updated across codebase
+
 ---
 
 ### ✅ Task 2.2: Implement State Management
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
+
+> **🔍 PRE-TASK VERIFICATION**: Search for existing state management patterns, context providers, or global state utilities. Check for files like `context.ts`, `state.ts`, `store.ts`, or embedded state logic. Verify current EventBus usage patterns before replacement.
 
 #### **Objective**
 
@@ -416,11 +436,20 @@ Replace EventBus pattern with React Context + useReducer for better state manage
 
 #### **Estimated Effort (Task 2.2)**: 32-40 hours
 
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each hook/context creation and verify there are no linter errors
+> 2. **Review Request**: Ask for review before continuing to next component migration
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Performance Testing**: Verify reduced re-renders using React DevTools before marking complete
+> 5. **Migration Verification**: Ensure all EventBus usages properly replaced
+
 ---
 
 ### ✅ Task 2.3: Bundle Optimization
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
+
+> **🔍 PRE-TASK VERIFICATION**: Analyze current bundle structure and dependencies. Check for existing webpack configurations, lazy loading implementations, or code splitting patterns. Verify current bundle sizes and loading patterns.
 
 #### **Objective**
 
@@ -486,15 +515,26 @@ Reduce bundle size from ~8MB to ~3MB through code splitting and optimization.
 
 #### **Estimated Effort (Task 2.3)**: 24-32 hours
 
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each lazy loading implementation and verify there are no linter errors
+> 2. **Review Request**: Ask for review before continuing to next component optimization
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Bundle Analysis**: Run bundle analyzer and verify size reductions before marking complete
+> 5. **Performance Testing**: Test loading speeds on slow connections
+
 ---
 
 ## 🚀 **PHASE 3: PERFORMANCE OPTIMIZATION**
 
 *Timeline: 3-4 weeks | Priority: MEDIUM*
 
+> **⚠️ WORKFLOW REMINDER**: Performance optimization requires careful measurement before and after changes. Establish baseline metrics before implementing optimizations.
+
 ### ✅ Task 3.1: Implement Virtual Scrolling
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
+
+> **🔍 PRE-TASK VERIFICATION**: Search for existing virtual scrolling implementations, pagination components, or large list optimizations. Check for files like `virtualList.ts`, `pagination.ts`, or performance optimization utilities in components.
 
 #### **Objective**
 
@@ -563,6 +603,13 @@ Add virtual scrolling to transaction lists to handle 10,000+ transactions smooth
 #### **Dependencies**: Task 2.2
 
 #### **Estimated Effort (Task 3.1)**: 20-28 hours
+
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each component implementation and verify there are no linter errors
+> 2. **Review Request**: Ask for review before continuing to next list optimization
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Performance Testing**: Test with 50,000+ transactions and measure frame rates before marking complete
+> 5. **Accessibility Testing**: Verify screen readers and keyboard navigation still work properly
 
 ---
 

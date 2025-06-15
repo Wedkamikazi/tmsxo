@@ -5,7 +5,7 @@ import { unifiedDataService } from './unifiedDataService';
 import { performanceManager } from './performanceManager';
 import { systemIntegrityService } from './systemIntegrityService';
 import { crossTabSyncService } from './crossTabSyncService';
-import { mlCategorizationService } from './mlCategorizationService';
+import { unifiedCategorizationService } from './unifiedCategorizationService';
 import { mlNaturalLanguageService } from './mlNaturalLanguageService';
 import { mlPredictiveAnalyticsService } from './mlPredictiveAnalyticsService';
 import { localOllamaIntegration } from './localOllamaIntegration';

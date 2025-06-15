@@ -85,8 +85,7 @@ export interface Transaction {
 // ML Configuration Types
 export interface MLCategorizationConfig {
   modelName: string;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  localModelEndpoint?: string; // Reserved for future local model server implementation
+  ollamaEndpoint: string; // Local Ollama server endpoint (e.g., http://localhost:11434)
   confidenceThreshold: number;
   maxRetries: number;
   timeout: number;

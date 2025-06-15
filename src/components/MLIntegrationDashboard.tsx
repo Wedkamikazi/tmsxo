@@ -154,7 +154,7 @@ export const MLIntegrationDashboard: React.FC = () => {
     
     // Test categorization performance
     const categorizationPromises = testTransactions.map(t => 
-      mlCategorizationService.categorizeTransaction(t)
+      unifiedCategorizationService.categorizeTransaction(t)
     );
     
     const results = await Promise.all(categorizationPromises);

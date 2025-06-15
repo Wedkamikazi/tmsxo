@@ -286,6 +286,19 @@ export const DataHub: React.FC = () => {
       description: 'View and manage all imported transactions'
     },
     {
+      id: 'bankBalance' as const,
+      label: 'Bank Balance',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="2" y="6" width="20" height="12" rx="2" />
+          <circle cx="12" cy="12" r="2" />
+          <path d="M6 12h.01M18 12h.01" />
+          <path d="M2 10h20" />
+        </svg>
+      ),
+      description: 'Daily closing balances extracted from transaction data'
+    },
+    {
       id: 'fileManager' as const,
       label: 'File Management',
       icon: (

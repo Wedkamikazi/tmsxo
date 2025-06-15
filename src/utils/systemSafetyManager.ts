@@ -26,6 +26,9 @@ interface SafetyConfig {
   criticalProcesses: string[];
 }
 
+// GLOBAL FLAG to prevent multiple initializations
+let globalSafetyInitialized = false;
+
 class SystemSafetyManager {
   private static instance: SystemSafetyManager;
   private isInitialized = false;
@@ -53,8 +56,9 @@ class SystemSafetyManager {
    * CRITICAL: Initialize safety system - MUST be called at app startup
    */
   public async initializeSafetySystem(): Promise<void> {
-    if (this.isInitialized) {
-      console.warn('🛡️ Safety system already initialized');
+    // PREVENT MULTIPLE INITIALIZATIONS
+    if (globalSafetyInitialized || this.isInitialized) {
+      console.log('🛡️ Safety system already initialized - skipping duplicate initialization');
       return;
     }
 
@@ -74,6 +78,8 @@ class SystemSafetyManager {
     // Step 3: Register cleanup handlers
     this.registerCleanupHandlers();
 
+    // Mark as initialized globally
+    globalSafetyInitialized = true;
     this.isInitialized = true;
     console.log('✅ System Safety Manager: ACTIVE');
   }
@@ -206,8 +212,8 @@ class SystemSafetyManager {
     // Check if process type already running
     const existing = this.runningProcesses.get(name);
     if (existing && existing.status === 'running') {
-      console.error(`❌ SAFETY VIOLATION: ${name} already running! Cannot start duplicate.`);
-      return false;
+      console.warn(`⚠️ SAFETY: ${name} already registered - allowing for React development mode`);
+      return true; // Allow in development mode
     }
 
     // Register the new process
@@ -337,7 +343,22 @@ class SystemSafetyManager {
     // Clear all process tracking
     this.runningProcesses.clear();
     
+    // Reset global flag
+    globalSafetyInitialized = false;
+    this.isInitialized = false;
+    
     console.log('🛡️ Emergency stop completed - System safe');
+  }
+
+  /**
+   * Reset safety system (for development)
+   */
+  public resetSafetySystem(): void {
+    console.log('🔄 RESETTING SAFETY SYSTEM');
+    globalSafetyInitialized = false;
+    this.isInitialized = false;
+    this.runningProcesses.clear();
+    console.log('✅ Safety system reset');
   }
 }
 

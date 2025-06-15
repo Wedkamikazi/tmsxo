@@ -30,8 +30,21 @@ interface BalanceAdjustmentFormData {
 }
 
 export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccountsUpdated }) => {
-  const [accounts, setAccounts] = useState<BankAccount[]>(unifiedDataService.getAllAccounts());
-  const [isAddingAccount, setIsAddingAccount] = useState(false);
+  // Initialize with cached state if available
+  const cachedState = getComponentState<{
+    accounts: BankAccount[];
+    isAddingAccount: boolean;
+  }>('BankAccountManager');
+  
+  const [accounts, setAccounts] = useState<BankAccount[]>(() => {
+    if (cachedState?.accounts && shouldComponentUseCache('BankAccountManager')) {
+      console.log('🚀 BANK ACCOUNTS: Using cached account data');
+      return cachedState.accounts;
+    }
+    return unifiedDataService.getAllAccounts();
+  });
+  
+  const [isAddingAccount, setIsAddingAccount] = useState(cachedState?.isAddingAccount || false);
   const [editingAccount, setEditingAccount] = useState<BankAccount | null>(null);
   const [adjustingBalanceAccount, setAdjustingBalanceAccount] = useState<BankAccount | null>(null);
   const [formData, setFormData] = useState<AccountFormData>({

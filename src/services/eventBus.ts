@@ -3,7 +3,7 @@ type EventCallback = (data?: any) => void;
 type ErrorCallback = (error: Error, event: DataEvent) => void;
 
 export interface DataEvent {
-  type: 'TRANSACTIONS_UPDATED' | 'FILE_UPLOADED' | 'FILE_DELETED' | 'ACCOUNT_UPDATED' | 'DATA_CLEARED' | 'ACCOUNTS_UPDATED' | 'FILES_UPDATED' | 'CATEGORIES_UPDATED' | 'MEMORY_EMERGENCY' | 'MEMORY_CRITICAL';
+  type: 'TRANSACTIONS_UPDATED' | 'FILE_UPLOADED' | 'FILE_DELETED' | 'ACCOUNT_UPDATED' | 'DATA_CLEARED' | 'ACCOUNTS_UPDATED' | 'FILES_UPDATED' | 'CATEGORIES_UPDATED' | 'MEMORY_EMERGENCY' | 'MEMORY_CRITICAL' | 'MEMORY_WARNING';
   payload?: any;
   timestamp: number;
   source: string;

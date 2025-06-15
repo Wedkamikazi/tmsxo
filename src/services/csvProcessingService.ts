@@ -303,23 +303,54 @@ class CSVProcessingService {
   }
 
   private formatDate(dateString: string): string {
-    // Handle DD/MM/YYYY format from bank statements (Saudi bank format)
+    // Handle slash-separated dates
     if (dateString.includes('/')) {
       const parts = dateString.split('/');
       if (parts.length === 3) {
-        const day = parts[0].padStart(2, '0');
-        const month = parts[1].padStart(2, '0');
-        const year = parts[2];
+        const part1 = parseInt(parts[0]);
+        const part2 = parseInt(parts[1]);
+        const year = parseInt(parts[2]);
+        
+        let month: number, day: number;
+        
+        // Determine if it's MM/DD/YYYY or DD/MM/YYYY format
+        // If first part > 12, it must be DD/MM/YYYY
+        // If second part > 12, it must be MM/DD/YYYY
+        // Otherwise, prefer MM/DD/YYYY (US format) since user mentioned MMDDYYY
+        if (part1 > 12) {
+          // DD/MM/YYYY format
+          day = part1;
+          month = part2;
+        } else if (part2 > 12) {
+          // MM/DD/YYYY format
+          month = part1;
+          day = part2;
+        } else {
+          // Ambiguous - assume MM/DD/YYYY (US format) since user mentioned MMDDYYY
+          month = part1;
+          day = part2;
+        }
         
         // Validate the date parts
-        const dayNum = parseInt(day);
-        const monthNum = parseInt(month);
-        const yearNum = parseInt(year);
-        
-        if (dayNum >= 1 && dayNum <= 31 && monthNum >= 1 && monthNum <= 12 && yearNum >= 1900) {
-          // Convert DD/MM/YYYY to YYYY-MM-DD format
-          return `${year}-${month}-${day}`;
+        if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 1900) {
+          // Convert to YYYY-MM-DD format
+          const monthStr = month.toString().padStart(2, '0');
+          const dayStr = day.toString().padStart(2, '0');
+          return `${year}-${monthStr}-${dayStr}`;
         }
+      }
+    }
+    
+    // Handle MMDDYYYY format (no separators)
+    if (dateString.length === 8 && /^\d{8}$/.test(dateString)) {
+      const month = parseInt(dateString.substring(0, 2));
+      const day = parseInt(dateString.substring(2, 4));
+      const year = parseInt(dateString.substring(4, 8));
+      
+      if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900) {
+        const monthStr = month.toString().padStart(2, '0');
+        const dayStr = day.toString().padStart(2, '0');
+        return `${year}-${monthStr}-${dayStr}`;
       }
     }
     

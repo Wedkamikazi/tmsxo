@@ -134,7 +134,9 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
             fileSize: file.size,
             checksum: `${file.name}_${file.size}_${Date.now()}`
           });
-          uploadedFileIds.push(uploadedFile.id);
+          if (uploadedFile) {
+            uploadedFileIds.push(uploadedFile.id);
+          }
         } catch (error) {
           console.error('Error tracking uploaded file:', error);
           uploadedFileIds.push(''); // Fallback for failed file tracking

@@ -322,7 +322,13 @@ class UnifiedDataService {
               }
             }
           } catch (error) {
-            console.error(`Error migrating ${key}:`, error);
+            systemIntegrityService.logServiceError(
+              'UnifiedDataService', 
+              'migrateLegacyTransactions', 
+              error instanceof Error ? error : new Error(String(error)),
+              'medium',
+              { key, migratedCount: migratedTransactions }
+            );
           }
         }
       }

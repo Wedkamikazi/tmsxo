@@ -203,5 +203,6 @@ export class MLEnhancedMethod implements CategorizationStrategy {
     this.categoryMappings.clear();
     this.learningHistory = [];
     this.isInitialized = false;
+    console.log(`ML-Enhanced method disposed with ${this.learningHistory.length} learning data points`);
   }
 } 

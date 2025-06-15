@@ -1,3 +1,4 @@
+import { DEBUG_MODE_ACTIVE } from '../utils/debugMode';
 import * as tf from '@tensorflow/tfjs';
 import { Transaction, MLCategorizationResult } from '../types';
 import { categorizationService } from './categorizationService';

@@ -465,6 +465,28 @@ class LocalStorageManager {
     };
   }
 
+  /**
+   * Get comprehensive storage statistics including quota information
+   */
+  getEnhancedStorageStats(): StorageStats & { quotaInfo?: any; cleanupHistory?: any } {
+    const basicStats = this.getStorageStats();
+    const quotaInfo = storageQuotaManager.getQuotaInfo();
+    const cleanupHistory = storageQuotaManager.getCleanupHistory().slice(-5); // Last 5 cleanups
+
+    return {
+      ...basicStats,
+      quotaInfo: quotaInfo ? {
+        utilization: quotaInfo.utilization,
+        isNearLimit: quotaInfo.isNearLimit,
+        isCritical: quotaInfo.isCritical,
+        totalQuota: Math.round(quotaInfo.total / 1024), // KB
+        usedSpace: Math.round(quotaInfo.used / 1024), // KB
+        availableSpace: Math.round(quotaInfo.available / 1024) // KB
+      } : null,
+      cleanupHistory
+    };
+  }
+
   exportData(): string {
     const data = {
       version: this.STORAGE_VERSION,

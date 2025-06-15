@@ -362,6 +362,111 @@ class UnifiedBalanceService {
     return adjustment;
   }
 
+  // Create adjustment from validation result
+  createAdjustmentFromValidation(
+    accountId: string,
+    validation: BalanceValidationResult,
+    reason: string
+  ): BalanceAdjustment | null {
+    try {
+      if (!validation.expectedBalance || validation.variance === undefined) {
+        return null;
+      }
+
+      return this.createBalanceAdjustment(
+        accountId,
+        validation.issues[0]?.affectedDate || new Date().toISOString().split('T')[0],
+        validation.expectedBalance,
+        reason,
+        validation.actualBalance
+      );
+    } catch (error) {
+      systemIntegrityService.logServiceError(
+        'UnifiedBalanceService',
+        'createAdjustmentFromValidation',
+        error instanceof Error ? error : new Error(String(error)),
+        'medium',
+        { accountId, reason }
+      );
+      return null;
+    }
+  }
+
+  // Update account balance with tracking
+  updateAccountBalance(account: BankAccount, newBalance: number, effectiveDate: string, reason: string): BankAccount {
+    try {
+      const previousBalance = account.currentBalance || 0;
+      
+      // Create adjustment record
+      this.createBalanceAdjustment(account.id, effectiveDate, newBalance, reason, previousBalance);
+      
+      // Return updated account
+      return {
+        ...account,
+        currentBalance: newBalance,
+        lastUpdated: new Date().toISOString()
+      };
+    } catch (error) {
+      systemIntegrityService.logServiceError(
+        'UnifiedBalanceService',
+        'updateAccountBalance',
+        error instanceof Error ? error : new Error(String(error)),
+        'high',
+        { accountId: account.id, newBalance, effectiveDate }
+      );
+      return account; // Return unchanged on error
+    }
+  }
+
+  // Get balance reconciliation summary
+  getBalanceReconciliation(accountId: string): {
+    currentBalance: number;
+    lastImportBalance?: number;
+    lastImportDate?: string;
+    adjustments: BalanceAdjustment[];
+    totalAdjustments: number;
+    balanceHistory: DateBasedBalance[];
+  } {
+    try {
+      const adjustments = this.getBalanceAdjustments(accountId);
+      const balanceHistory = this.getBalanceHistory(accountId);
+      const lastImport = importHistoryService.getLastImportInfo(accountId);
+      
+      // Get current balance from most recent balance or account data
+      let currentBalance = 0;
+      if (balanceHistory.length > 0) {
+        currentBalance = balanceHistory[balanceHistory.length - 1].balance;
+      } else {
+        const account = unifiedDataService.getAllAccounts().find(a => a.id === accountId);
+        currentBalance = account?.currentBalance || 0;
+      }
+
+      return {
+        currentBalance,
+        lastImportBalance: lastImport?.lastClosingBalance,
+        lastImportDate: lastImport?.lastImportDate,
+        adjustments,
+        totalAdjustments: adjustments.reduce((sum, adj) => sum + adj.adjustmentAmount, 0),
+        balanceHistory
+      };
+    } catch (error) {
+      systemIntegrityService.logServiceError(
+        'UnifiedBalanceService',
+        'getBalanceReconciliation',
+        error instanceof Error ? error : new Error(String(error)),
+        'medium',
+        { accountId }
+      );
+      
+      return {
+        currentBalance: 0,
+        adjustments: [],
+        totalAdjustments: 0,
+        balanceHistory: []
+      };
+    }
+  }
+
   // Validate import against existing balance data
   validateImportBalance(
     accountId: string, 

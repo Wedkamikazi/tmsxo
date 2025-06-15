@@ -470,7 +470,27 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
   };
 
   const formatDate = (dateString: string): string => {
+    // Handle invalid or empty date strings
+    if (!dateString || dateString.trim() === '') {
+      return new Date().toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    }
+    
     const date = new Date(dateString);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      console.warn(`Invalid date string in UI: "${dateString}", using current date`);
+      return new Date().toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    }
+    
     return date.toLocaleDateString('en-GB', {
       day: '2-digit',
       month: '2-digit',

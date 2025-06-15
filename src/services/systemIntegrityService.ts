@@ -766,6 +766,7 @@ class SystemIntegrityService {
     errorsBySeverity: Record<string, number>;
     recentErrors: typeof this.errorLog;
     errorRate: number;
+    topErrorServices: Array<{ service: string; count: number }>;
   } {
     const errorsByService: Record<string, number> = {};
     const errorsBySeverity: Record<string, number> = {};
@@ -775,12 +776,19 @@ class SystemIntegrityService {
       errorsBySeverity[error.severity] = (errorsBySeverity[error.severity] || 0) + 1;
     });
 
+    // Generate top error services
+    const topErrorServices = Object.entries(errorsByService)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([service, count]) => ({ service, count }));
+
     return {
       totalErrors: this.errorLog.length,
       errorsByService,
       errorsBySeverity,
       recentErrors: this.errorLog.slice(-20), // Last 20 errors
-      errorRate: this.calculateErrorRate()
+      errorRate: this.calculateErrorRate(),
+      topErrorServices
     };
   }
 

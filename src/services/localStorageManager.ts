@@ -649,6 +649,9 @@ class LocalStorageManager {
     
     // Save updated accounts
     this.setStorageData(this.STORAGE_KEYS.accounts, accounts);
+    
+    // Emit a general accounts updated event for UI refresh
+    eventBus.emit('ACCOUNTS_UPDATED', { updatedAccountIds: accountIds }, 'LocalStorageManager');
   }
 }
 

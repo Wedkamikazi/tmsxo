@@ -188,6 +188,14 @@ class MLCategorizationService {
       metrics: ['accuracy', 'precision', 'recall']
     });
 
+    // Register with memory management
+    memoryManagementService.registerModel(
+      'categorization-model',
+      'Advanced Categorization Model',
+      this.categorizationModel,
+      'high'
+    );
+
     // SENTIMENT ANALYSIS MODEL
     this.sentimentModel = tf.sequential({
       layers: [

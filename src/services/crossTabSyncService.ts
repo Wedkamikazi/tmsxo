@@ -277,7 +277,7 @@ class CrossTabSyncService {
   }
 
   // SYNC DATA CLEARANCE ACROSS TABS
-  private syncDataClearance(payload: any, sourceTabId: string): void {
+  private syncDataClearance(payload: any, _sourceTabId: string): void {
     // Handle global data operations like cleanup, backup restore, etc.
     const { operation } = payload.data || {};
     

@@ -3,7 +3,6 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { SystemInitializer } from './components/SystemInitializer';
 import { initializeSystemSafety } from './utils/systemSafetyManager';
 import { shouldReinitializeServices } from './utils/stateManager';
-import { dataFixerService } from './services/dataFixer';
 import { DataHub } from './components/DataHub'; // Direct import for instant refresh
 import './styles/globals.css';
 
@@ -26,16 +25,6 @@ function App(): React.ReactElement {
         console.log('🛡️ App starting - Initializing safety system...');
         await initializeSystemSafety();
         console.log('✅ Safety system ready - App can proceed safely');
-        
-        // Run data fixes after safety system is ready
-        setTimeout(() => {
-          try {
-            dataFixerService.runAllFixes();
-          } catch (error) {
-            console.error('❌ Data fixer error during initialization:', error);
-          }
-        }, 500); // Small delay to ensure safety system is fully ready
-        
       } catch (error) {
         console.error('❌ CRITICAL: Safety system failed to initialize:', error);
       }
@@ -44,23 +33,9 @@ function App(): React.ReactElement {
     initSafety();
   }, [canUseInstantRefresh]);
 
-  // Run data fixes for instant refresh mode
-  React.useEffect(() => {
-    if (canUseInstantRefresh) {
-      setTimeout(() => {
-        try {
-          dataFixerService.runAllFixes();
-        } catch (error) {
-          console.error('❌ Data fixer error in instant refresh mode:', error);
-        }
-      }, 100); // Small delay to avoid blocking initial render
-    }
-  }, [canUseInstantRefresh]);
-
   // INSTANT REFRESH: If we can use cached state, skip SystemInitializer entirely
   if (canUseInstantRefresh) {
     console.log('🚀 INSTANT REFRESH: No loading, no delays - direct render like normal web apps');
-    
     return (
       <ErrorBoundary componentName="App">
         <div className="App">

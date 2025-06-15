@@ -5,7 +5,6 @@ import { csvProcessingService } from '../services/csvProcessingService';
 import { unifiedDataService, type StoredTransaction } from '../services/unifiedDataService';
 import { BalanceValidationResult } from '../services/unifiedBalanceService';
 import { BalanceValidationDialog } from './BalanceValidationDialog';
-import { createPostDateTime } from '../utils/dateUtils';
 import './BankStatementImport.css';
 
 interface BankStatementImportProps {
@@ -152,7 +151,7 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
       accountId: selectedBankAccount.id,
       importDate: new Date().toISOString(),
       fileId: uploadedFileIds[Math.floor(index / importSummaries[0].totalTransactions)] || undefined,
-      postDateTime: createPostDateTime(tx.date, tx.time)
+      postDateTime: `${tx.date}T${tx.time || '00:00'}:00`
     }));
     unifiedDataService.addTransactions(storedTransactions);
 

@@ -772,17 +772,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
                       }}
                     />
                   </td>
-                  <td>{(() => {
-                    if (!transaction.postDateTime || transaction.postDateTime.trim() === '') {
-                      return new Date().toLocaleDateString();
-                    }
-                    const date = new Date(transaction.postDateTime);
-                    if (isNaN(date.getTime())) {
-                      console.warn(`Invalid date in TransactionCategorization: "${transaction.postDateTime}"`);
-                      return new Date().toLocaleDateString();
-                    }
-                    return date.toLocaleDateString();
-                  })()}</td>
+                  <td>{new Date(transaction.postDateTime).toLocaleDateString()}</td>
                   <td className="description-cell" title={transaction.description}>
                     {transaction.description}
                     {analysis?.patterns && analysis.patterns.length > 0 && (

@@ -4,7 +4,6 @@ import {
 } from '../types';
 import { unifiedDataService } from './unifiedDataService';
 import { fileStorageService } from './fileStorageService';
-import { createPostDateTime } from '../utils/dateUtils';
 
 // Stub services for missing dependencies - minimal implementation for production build
 const stubReconciliationService = {
@@ -121,7 +120,7 @@ class CreditTransactionService {
         forecastEntry,
         matchConfidence: undefined,
         reconciliationStatus,
-        postDateTime: createPostDateTime(transaction.date, transaction.time)
+        postDateTime: `${transaction.date}T${transaction.time || '00:00'}:00`
       };
     }).sort((a, b) => new Date(b.postDateTime).getTime() - new Date(a.postDateTime).getTime());
   }

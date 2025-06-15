@@ -419,59 +419,20 @@ class CSVProcessingService {
     // Handle time format (HH:MM)
     let timeString = '00:00';
     if (time && time.trim()) {
-      let rawTime = time.trim();
-      
-      // Handle different time formats
-      if (rawTime.includes(':')) {
-        // Already has colon, just need to pad if necessary
-        const timeParts = rawTime.split(':');
-        if (timeParts.length >= 2) {
-          const hours = timeParts[0].padStart(2, '0');
-          const minutes = timeParts[1].padStart(2, '0');
-          timeString = `${hours}:${minutes}`;
-        }
-      } else if (rawTime.length === 4) {
-        // HHMM format - convert to HH:MM
-        const hours = rawTime.substring(0, 2);
-        const minutes = rawTime.substring(2, 4);
-        timeString = `${hours}:${minutes}`;
-      } else if (rawTime.length === 3) {
-        // H:MM or HMM format
-        if (rawTime.includes(':')) {
-          // H:MM format
-          const timeParts = rawTime.split(':');
-          const hours = timeParts[0].padStart(2, '0');
-          const minutes = timeParts[1].padStart(2, '0');
-          timeString = `${hours}:${minutes}`;
-        } else {
-          // HMM format
-          const hours = rawTime.substring(0, 1).padStart(2, '0');
-          const minutes = rawTime.substring(1, 3);
-          timeString = `${hours}:${minutes}`;
-        }
-      } else if (rawTime.length === 2) {
-        // HH format (just hours)
-        timeString = `${rawTime}:00`;
-      } else if (rawTime.length === 1) {
-        // H format (single hour)
-        timeString = `0${rawTime}:00`;
-      } else {
-        // Try to parse as H:MM format (most common for your data)
-        const timeParts = rawTime.split(':');
-        if (timeParts.length >= 2) {
-          const hours = timeParts[0].padStart(2, '0');
-          const minutes = timeParts[1].padStart(2, '0');
-          timeString = `${hours}:${minutes}`;
-        }
+      timeString = time.trim();
+      // Ensure time is in HH:MM format
+      if (timeString.length === 4 && !timeString.includes(':')) {
+        // Convert HHMM to HH:MM
+        timeString = timeString.substring(0, 2) + ':' + timeString.substring(2);
       }
     }
     
-    // Combine date and time
+    // Combine date and time - add debug logging for invalid dates
     const dateTimeString = `${formattedDate}T${timeString}:00`;
     const result = new Date(dateTimeString);
     
     if (isNaN(result.getTime())) {
-      console.warn(`Invalid datetime created: "${dateTimeString}" from postDate: "${postDate}", time: "${time}" (processed as: "${timeString}")`);
+      console.warn(`Invalid datetime created: "${dateTimeString}" from postDate: "${postDate}", time: "${time}"`);
       // Return current date as fallback
       return new Date();
     }

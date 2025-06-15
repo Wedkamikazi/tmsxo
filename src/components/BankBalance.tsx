@@ -200,28 +200,7 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
 
   // Format date
   const formatDate = (dateString: string): string => {
-    // Handle invalid or empty date strings
-    if (!dateString || dateString.trim() === '') {
-      return new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    }
-    
-    const date = new Date(dateString);
-    
-    // Check if date is valid
-    if (isNaN(date.getTime())) {
-      console.warn(`Invalid date string in BankBalance: "${dateString}", using current date`);
-      return new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    }
-    
-    return date.toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'

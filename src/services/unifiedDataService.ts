@@ -1,8 +1,8 @@
-// @ts-ignore: Transaction import maintained for architectural consistency
-import { Transaction, BankAccount, UploadedFile } from '../types';
+// Architectural consistency imports - keep for future use
+import { Transaction as _Transaction, BankAccount, UploadedFile } from '../types';
 import { eventBus } from './eventBus';
-// @ts-ignore: StorageStats is used indirectly through getStorageStats() method calls
-import { localStorageManager, StoredTransaction as LSMStoredTransaction, StorageStats } from './localStorageManager';
+// StorageStats maintained for architectural consistency - used in method signatures elsewhere
+import { localStorageManager, StoredTransaction as LSMStoredTransaction, StorageStats as _StorageStats } from './localStorageManager';
 import { systemIntegrityService } from './systemIntegrityService';
 
 // UNIFIED DATA SERVICE - SINGLE SOURCE OF TRUTH

@@ -105,15 +105,21 @@ class CreditTransactionService {
       
       let reconciliationStatus: 'matched' | 'unmatched' | 'disputed' | 'manual' = 'unmatched';
       
+      // Get account name from unified data service
+      const account = unifiedDataService.getAccountById(transaction.accountId);
+      const accountName = account?.name || 'Unknown Account';
+      
       return {
         ...transaction,
-        // Add missing required property
+        // Add missing required properties
         amount: transaction.creditAmount,
+        accountName,
         reconciliation,
         arEntry,
         forecastEntry,
         matchConfidence: undefined,
-        reconciliationStatus
+        reconciliationStatus,
+        postDateTime: `${transaction.postDate || transaction.date}T${transaction.time || '00:00'}:00`
       };
     }).sort((a, b) => new Date(b.postDateTime).getTime() - new Date(a.postDateTime).getTime());
   }

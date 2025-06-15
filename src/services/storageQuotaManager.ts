@@ -79,9 +79,6 @@ class StorageQuotaManager {
       // Start continuous monitoring
       this.startMonitoring();
       
-      // Register emergency cleanup with performance manager
-      performanceManager.registerCleanupCallback(() => this.performEmergencyCleanup());
-      
       console.log('✅ Storage Quota Manager initialized');
     } catch (error) {
       systemIntegrityService.logServiceError(

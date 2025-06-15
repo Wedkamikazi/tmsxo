@@ -539,13 +539,13 @@ class LocalStorageManager {
     }
   }
 
-  private async setStorageData<T>(key: string, data: T): Promise<void> {
+  private setStorageData<T>(key: string, data: T): void {
     try {
       // Check quota before attempting to save
       const quotaInfo = storageQuotaManager.getQuotaInfo();
       if (quotaInfo && quotaInfo.isCritical) {
         console.warn('⚠️ Storage quota critical - attempting cleanup before save');
-        // Trigger immediate cleanup for critical quota situations
+        // Trigger immediate cleanup for critical quota situations (fire and forget)
         storageQuotaManager.performManualCleanup('moderate').catch(error => {
           console.error('Cleanup failed during storage operation:', error);
         });
@@ -553,7 +553,7 @@ class LocalStorageManager {
 
       localStorage.setItem(key, JSON.stringify(data));
       
-      // Trigger quota check after successful save
+      // Trigger quota check after successful save (fire and forget)
       storageQuotaManager.forceQuotaCheck().catch(error => {
         console.warn('Quota check failed after storage operation:', error);
       });
@@ -561,23 +561,27 @@ class LocalStorageManager {
     } catch (error) {
       // Handle QuotaExceededError specifically
       if (error instanceof Error && error.name === 'QuotaExceededError') {
-        console.error('🚨 Storage quota exceeded - attempting emergency cleanup');
+        console.error('🚨 Storage quota exceeded - performing emergency cleanup synchronously');
         
-        try {
-          // Attempt emergency cleanup and retry
-          const cleanupResult = await storageQuotaManager.performManualCleanup('aggressive');
-          if (cleanupResult.success && cleanupResult.spaceFreed > 0) {
-            console.log(`✅ Emergency cleanup freed ${cleanupResult.spaceFreed} bytes - retrying save`);
-            localStorage.setItem(key, JSON.stringify(data));
-            return;
-          }
-        } catch (cleanupError) {
-          console.error('Emergency cleanup failed:', cleanupError);
-        }
-        
-        // If cleanup didn't help, provide detailed error info
+        // Get current quota info for error reporting
         const quotaInfo = storageQuotaManager.getQuotaInfo();
-        const errorMessage = `Storage quota exceeded. Current usage: ${quotaInfo?.utilization.toFixed(1)}%. Emergency cleanup attempted but insufficient space freed.`;
+        const errorMessage = `Storage quota exceeded. Current usage: ${quotaInfo?.utilization.toFixed(1) || 'unknown'}%. Emergency cleanup will be triggered asynchronously.`;
+        
+        // Trigger async cleanup but don't wait for it
+        storageQuotaManager.performManualCleanup('aggressive').then(result => {
+          if (result.success && result.spaceFreed > 0) {
+            console.log(`✅ Emergency cleanup completed - freed ${result.spaceFreed} bytes`);
+            // Optionally retry the operation that failed
+            try {
+              localStorage.setItem(key, JSON.stringify(data));
+              console.log('✅ Retry after cleanup successful');
+            } catch (retryError) {
+              console.error('❌ Retry after cleanup failed:', retryError);
+            }
+          }
+        }).catch(cleanupError => {
+          console.error('Emergency cleanup failed:', cleanupError);
+        });
         
         systemIntegrityService.logServiceError(
           'LocalStorageManager',

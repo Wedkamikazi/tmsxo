@@ -86,7 +86,7 @@ export const DataHub: React.FC = () => {
     };
 
     loadServices();
-  }, [activeTab]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     // Skip service operations if in debug mode or services not loaded

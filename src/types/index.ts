@@ -171,4 +171,22 @@ export interface UploadedFile {
   transactionCount: number;
   fileSize: number;
   checksum?: string;
-} 
+}
+
+// Credit Transaction Types
+export interface CreditTransactionView {
+  id: string;
+  date: string;
+  description: string;
+  creditAmount: number;
+  balance: number;
+  accountId: string;
+  accountName: string;
+  reference?: string;
+  postDate?: string;
+  time?: string;
+  categorization?: TransactionCategorization;
+}
+
+// Collection Types
+export type CollectionType = 'transactions' | 'accounts' | 'files' | 'categories' | 'categorizations'; 

@@ -770,7 +770,7 @@ class SystemIntegrityService {
     const errorsByService: Record<string, number> = {};
     const errorsBySeverity: Record<string, number> = {};
 
-    this.errorLog.forEach(error => {
+    this.errorLog.forEach((error) => {
       errorsByService[error.component] = (errorsByService[error.component] || 0) + 1;
       errorsBySeverity[error.severity] = (errorsBySeverity[error.severity] || 0) + 1;
     });

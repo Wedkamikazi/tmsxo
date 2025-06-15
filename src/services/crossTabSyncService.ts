@@ -48,7 +48,7 @@ class CrossTabSyncService {
   private readonly TAB_TIMEOUT = 15000; // 15 seconds
 
   private currentTabId: string;
-  private isInitialized = false;
+
   private heartbeatInterval: NodeJS.Timeout | null = null;
   private storageListener: ((event: StorageEvent) => void) | null = null;
   private sequenceNumber = 0;

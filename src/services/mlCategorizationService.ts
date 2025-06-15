@@ -2,6 +2,7 @@ import * as tf from '@tensorflow/tfjs';
 import { Transaction, TransactionCategory, MLCategorizationResult } from '../types';
 import { categorizationService } from './categorizationService';
 import { localStorageManager } from './localStorageManager';
+import { memoryManagementService } from './memoryManagementService';
 
 // ADVANCED ML CATEGORIZATION SERVICE WITH TENSORFLOW.JS
 // FULL LOCAL ML PIPELINE WITH NEURAL NETWORKS AND NLP

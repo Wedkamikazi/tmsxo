@@ -115,14 +115,27 @@ class LocalStorageManager {
   deleteTransactionsByFile(fileId: string): number {
     const result = this.executeTransaction(() => {
       const all = this.getAllTransactions();
+      const deletedTransactions = all.filter(t => t.fileId === fileId);
       const remaining = all.filter(t => t.fileId !== fileId);
       const deletedCount = all.length - remaining.length;
       
       this.setStorageData(this.STORAGE_KEYS.transactions, remaining);
-      return deletedCount;
+      
+      // Return both count and affected account IDs
+      const affectedAccountIds = [...new Set(deletedTransactions.map(t => t.accountId))];
+      return { deletedCount, affectedAccountIds };
     });
     
-    return result.success ? result.result! : 0;
+    if (result.success && result.result) {
+      // Automatically update account balances for affected accounts
+      const { deletedCount, affectedAccountIds } = result.result;
+      if (affectedAccountIds.length > 0) {
+        this.updateAccountBalancesFromTransactions(affectedAccountIds);
+      }
+      return deletedCount;
+    }
+    
+    return 0;
   }
 
   deleteTransactionsByAccount(accountId: string): number {

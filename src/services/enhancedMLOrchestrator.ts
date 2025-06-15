@@ -239,6 +239,12 @@ class EnhancedMLOrchestrator {
     };
   }
 
+  async ensureInitialized(): Promise<void> {
+    if (!this.isInitialized) {
+      await this.initializeEnhancedML();
+    }
+  }
+
   dispose(): void {
     this.categorizationModel?.dispose();
     this.sentimentModel?.dispose();

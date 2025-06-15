@@ -61,7 +61,13 @@ class MLCategorizationService {
       this.isInitialized = true;
       console.log('✅ Advanced ML Pipeline Initialized');
     } catch (error) {
-      console.error('❌ ML Initialization Failed:', error);
+      systemIntegrityService.logServiceError(
+        'MLCategorizationService',
+        'initializeAdvancedML',
+        error instanceof Error ? error : new Error(String(error)),
+        'critical',
+        { component: 'initialization', stage: 'complete' }
+      );
       this.isInitialized = false;
     }
   }

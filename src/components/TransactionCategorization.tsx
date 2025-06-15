@@ -193,7 +193,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
       for (let i = 0; i < mlTransactions.length; i += mlConfig.batchSize) {
         const batch = mlTransactions.slice(i, i + mlConfig.batchSize);
         
-        const batchResults = await Promise.all(
+        await Promise.all(
           batch.map(async (transaction) => {
             try {
                              // Use enhanced categorization service

@@ -12,7 +12,6 @@ import {
   FeatureConfig
 } from './tensorFlowTypes';
 import { localStorageManager } from '../localStorageManager';
-import { performanceManager } from '../performanceManager';
 import { cleanupManager } from '../cleanupManager';
 import { systemIntegrityService } from '../systemIntegrityService';
 import { isDebugMode as checkDebugMode } from '../../utils/debugMode';

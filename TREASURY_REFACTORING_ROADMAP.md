@@ -617,21 +617,20 @@ Add virtual scrolling to transaction lists to handle 10,000+ transactions smooth
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
 
-#### **Objective**
+> **🔍 PRE-TASK VERIFICATION**: Search for existing migration systems, database versioning utilities, or schema management files. Check for files like `migration.ts`, `schema.ts`, `version.ts`, or database upgrade/downgrade logic. Verify current data schema before implementing migrations.
 
+#### **Objective**
 Implement a robust data migration system for schema changes and data updates.
 
 #### **Technical Specifications**
 
 **Migration System Features:**
-
 - Version-controlled migrations
 - Automatic schema detection
 - Safe rollback capabilities
 - Data validation pre/post migration
 
 #### **Implementation Details**
-
 1. **Version Management**
    - Track applied migrations
    - Schema version control
@@ -648,7 +647,6 @@ Implement a robust data migration system for schema changes and data updates.
    - Manual migration tools
 
 #### **Files to Create**
-
 - `src/services/migrationService.ts`
 - `src/migrations/index.ts`
 - `src/migrations/001_add_file_tracking.ts`
@@ -656,12 +654,10 @@ Implement a robust data migration system for schema changes and data updates.
 - `src/components/MigrationStatus.tsx`
 
 #### **Files to Modify**
-
 - `src/services/coreDataService.ts`
 - `src/components/SystemInitializer.tsx`
 
 #### **Acceptance Criteria**
-
 - [ ] Automatic migration detection and execution
 - [ ] Safe rollback capabilities
 - [ ] Data validation before and after migrations
@@ -674,20 +670,27 @@ Implement a robust data migration system for schema changes and data updates.
 
 #### **Estimated Effort (Task 3.2)**: 24-32 hours
 
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each migration implementation and verify there are no linter errors
+> 2. **Review Request**: Ask for review before creating additional migration files
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Migration Testing**: Test both up and down migrations with sample data before marking complete
+> 5. **Data Backup**: Verify rollback capabilities preserve data integrity
+
 ---
 
 ### ✅ Task 3.3: Performance Monitoring Dashboard
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
 
-#### **Objective**
+> **🔍 PRE-TASK VERIFICATION**: Search for existing performance monitoring tools, metrics collectors, or dashboard components. Check for files like `monitor.ts`, `metrics.ts`, `dashboard.ts`, or performance tracking utilities. Verify current performance measurement patterns.
 
+#### **Objective**
 Create a comprehensive performance monitoring system with real-time metrics and alerts.
 
 #### **Technical Specifications**
 
 **Metrics to Track:**
-
 - Component render time
 - Transaction processing time
 - Memory usage (heap, TensorFlow)
@@ -695,7 +698,6 @@ Create a comprehensive performance monitoring system with real-time metrics and 
 - Business metrics (transactions/sec, accuracy)
 
 #### **Implementation Details**
-
 1. **Core Monitoring Service**
    - Metric collection points
    - Performance measurement utilities
@@ -712,7 +714,6 @@ Create a comprehensive performance monitoring system with real-time metrics and 
    - Optimization recommendations
 
 #### **Files to Create**
-
 - `src/services/performanceMonitor.ts`
 - `src/components/PerformanceDashboard.tsx`
 - `src/components/MetricCard.tsx`
@@ -720,12 +721,10 @@ Create a comprehensive performance monitoring system with real-time metrics and 
 - `src/hooks/usePerformanceMetrics.ts`
 
 #### **Files to Modify**
-
 - All major components (add measurement points)
 - `src/components/DataHub.tsx` (add dashboard tab)
 
 #### **Acceptance Criteria**
-
 - [ ] Real-time performance metrics collection
 - [ ] Visual dashboard with charts and alerts
 - [ ] Historical performance data
@@ -738,24 +737,33 @@ Create a comprehensive performance monitoring system with real-time metrics and 
 
 #### **Estimated Effort (Task 3.3)**: 28-36 hours
 
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each dashboard component and verify there are no linter errors
+> 2. **Review Request**: Ask for review before adding performance measurement points to components
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Performance Impact**: Verify monitoring system doesn't degrade application performance
+> 5. **Alert Testing**: Test alert triggers with various threshold conditions
+
 ---
 
 ## 🎨 **PHASE 4: FEATURE COMPLETION**
 
 *Timeline: 4-5 weeks | Priority: MEDIUM-LOW*
 
+> **⚠️ WORKFLOW REMINDER**: Feature development should follow established patterns from previous phases. Ensure all new features integrate seamlessly with consolidated services and state management.
+
 ### ✅ Task 4.1: Implement Payroll Data Module
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
 
-#### **Objective**
+> **🔍 PRE-TASK VERIFICATION**: Search for existing payroll-related functionality, HR data processing, or employee information handling. Check for files like `payroll.ts`, `employee.ts`, `hr.ts`, or similar data structures. Verify integration points with transaction processing.
 
+#### **Objective**
 Build comprehensive payroll data import and analysis functionality.
 
 #### **Technical Specifications**
 
 **Payroll Processing Features:**
-
 - CSV/Excel import support
 - Multiple payroll system formats
 - Bank transaction reconciliation
@@ -763,7 +771,6 @@ Build comprehensive payroll data import and analysis functionality.
 - Tax calculation verification
 
 #### **Implementation Details**
-
 1. **Payroll Import System**
    - Format detection and validation
    - Employee data management
@@ -780,7 +787,6 @@ Build comprehensive payroll data import and analysis functionality.
    - Automated reconciliation
 
 #### **Files to Create**
-
 - `src/services/payrollService.ts`
 - `src/components/PayrollImport.tsx`
 - `src/components/PayrollDashboard.tsx`
@@ -788,7 +794,6 @@ Build comprehensive payroll data import and analysis functionality.
 - `src/types/payroll.ts`
 
 #### **Acceptance Criteria**
-
 - [ ] CSV/Excel payroll import working
 - [ ] Payroll data validation and processing
 - [ ] Bank transaction reconciliation
@@ -800,20 +805,27 @@ Build comprehensive payroll data import and analysis functionality.
 
 #### **Estimated Effort (Task 4.1)**: 40-50 hours
 
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each payroll component and verify there are no linter errors
+> 2. **Review Request**: Ask for review before implementing reconciliation logic
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Integration Testing**: Test payroll data integration with existing transaction system
+> 5. **Data Validation**: Verify payroll calculations and reconciliation accuracy
+
 ---
 
 ### ✅ Task 4.2: Investment Portfolio Module
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
 
-#### **Objective**
+> **🔍 PRE-TASK VERIFICATION**: Search for existing investment tracking, portfolio management, or financial instrument handling. Check for files like `investment.ts`, `portfolio.ts`, `stock.ts`, or asset management utilities. Verify integration with account management.
 
+#### **Objective**
 Implement investment portfolio tracking and performance analysis.
 
 #### **Technical Specifications**
 
 **Portfolio Management Features:**
-
 - Portfolio creation and management
 - Investment allocation tracking
 - Performance metrics calculation
@@ -821,7 +833,6 @@ Implement investment portfolio tracking and performance analysis.
 - Rebalancing recommendations
 
 #### **Implementation Details**
-
 1. **Portfolio Data Structure**
    - Investment types and categories
    - Position tracking
@@ -838,14 +849,12 @@ Implement investment portfolio tracking and performance analysis.
    - Tax optimization
 
 #### **Files to Create**
-
 - `src/services/investmentService.ts`
 - `src/components/InvestmentDashboard.tsx`
 - `src/components/PortfolioManager.tsx`
 - `src/types/investment.ts`
 
 #### **Acceptance Criteria**
-
 - [ ] Portfolio creation and management
 - [ ] Investment tracking and analysis
 - [ ] Performance metrics calculation
@@ -856,20 +865,27 @@ Implement investment portfolio tracking and performance analysis.
 
 #### **Estimated Effort (Task 4.2)**: 35-45 hours
 
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each investment component and verify there are no linter errors
+> 2. **Review Request**: Ask for review before implementing performance calculations
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Calculation Testing**: Verify investment return and risk calculations accuracy
+> 5. **Portfolio Integration**: Test portfolio data integration with account management
+
 ---
 
 ### ✅ Task 4.3: Financial Reports Generator
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
 
-#### **Objective**
+> **🔍 PRE-TASK VERIFICATION**: Search for existing reporting functionality, PDF generation utilities, or chart/graph components. Check for files like `report.ts`, `export.ts`, `pdf.ts`, or data visualization libraries. Verify data aggregation patterns.
 
+#### **Objective**
 Create comprehensive financial reporting with PDF export capabilities.
 
 #### **Technical Specifications**
 
 **Report Types:**
-
 - Cash Flow Statements
 - Profit & Loss Reports
 - Balance Sheet Analysis
@@ -878,7 +894,6 @@ Create comprehensive financial reporting with PDF export capabilities.
 - Trend Analysis
 
 #### **Implementation Details**
-
 1. **Report Generation Engine**
    - Template-based reporting
    - Dynamic data aggregation
@@ -896,7 +911,6 @@ Create comprehensive financial reporting with PDF export capabilities.
    - Real-time data updates
 
 #### **Files to Create**
-
 - `src/services/reportGenerator.ts`
 - `src/components/ReportDashboard.tsx`
 - `src/components/ReportBuilder.tsx`
@@ -904,7 +918,6 @@ Create comprehensive financial reporting with PDF export capabilities.
 - `src/utils/pdfGenerator.ts`
 
 #### **Acceptance Criteria**
-
 - [ ] Multiple report types supported
 - [ ] Interactive report building
 - [ ] PDF/Excel export working
@@ -915,45 +928,51 @@ Create comprehensive financial reporting with PDF export capabilities.
 
 #### **Estimated Effort (Task 4.3)**: 45-55 hours
 
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each report component and verify there are no linter errors
+> 2. **Review Request**: Ask for review before implementing PDF export functionality
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Export Testing**: Test all export formats with various report types
+> 5. **Performance Testing**: Verify report generation performance with large datasets
+
 ---
 
 ## 🧪 **PHASE 5: TESTING & DOCUMENTATION**
 
 *Timeline: 2-3 weeks | Priority: HIGH*
 
+> **⚠️ WORKFLOW REMINDER**: Testing and documentation are critical for project success. Ensure comprehensive coverage and clear documentation for future maintainers.
+
 ### ✅ Task 5.1: Comprehensive Test Suite
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
 
-#### **Objective**
+> **🔍 PRE-TASK VERIFICATION**: Search for existing test files, test utilities, or testing configurations. Check for files like `*.test.ts`, `*.spec.ts`, `setupTests.ts`, or testing helper utilities. Verify current test coverage and patterns.
 
+#### **Objective**
 Implement comprehensive testing coverage across all system components.
 
 #### **Testing Strategy**
 
 **Unit Tests (Target: 80% coverage):**
-
 - Service layer functionality
 - Component behavior
 - Utility functions
 - State management
 
 **Integration Tests:**
-
 - End-to-end workflows
 - Service interactions
 - Data flow validation
 - User journeys
 
 **Performance Tests:**
-
 - Large dataset handling
 - Memory usage validation
 - Response time benchmarks
 - Stress testing
 
 #### **Files to Create**
-
 - `src/tests/services/coreDataService.test.ts`
 - `src/tests/components/Transactions.test.tsx`
 - `src/tests/integration/importWorkflow.test.ts`
@@ -962,7 +981,6 @@ Implement comprehensive testing coverage across all system components.
 - `setupTests.ts`
 
 #### **Acceptance Criteria**
-
 - [ ] 80%+ code coverage achieved
 - [ ] All critical paths tested
 - [ ] Performance tests validate requirements
@@ -973,41 +991,45 @@ Implement comprehensive testing coverage across all system components.
 
 #### **Estimated Effort (Task 5.1)**: 40-50 hours
 
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each test suite and verify there are no linter errors
+> 2. **Review Request**: Ask for review before implementing performance tests
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Coverage Verification**: Run coverage reports and ensure 80%+ target achieved
+> 5. **CI Integration**: Verify all tests run properly in continuous integration
+
 ---
 
 ### ✅ Task 5.2: Documentation System
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
 
-#### **Objective**
+> **🔍 PRE-TASK VERIFICATION**: Search for existing documentation files, README files, or documentation generators. Check for files like `*.md`, `docs/`, `README.md`, or API documentation tools. Verify current documentation structure and patterns.
 
+#### **Objective**
 Create comprehensive documentation for users, developers, and administrators.
 
 #### **Documentation Structure**
 
 **User Documentation:**
-
 - Getting started guide
 - Feature tutorials
 - Troubleshooting guides
 - FAQ section
 
 **Developer Documentation:**
-
 - Architecture overview
 - API reference
 - Contributing guidelines
 - Deployment procedures
 
 **Technical Documentation:**
-
 - Installation instructions
 - Configuration options
 - Performance tuning
 - Security considerations
 
 #### **Files to Create**
-
 - Complete documentation structure
 - User guides with screenshots
 - Developer guides with examples
@@ -1015,7 +1037,6 @@ Create comprehensive documentation for users, developers, and administrators.
 - Installation procedures
 
 #### **Acceptance Criteria**
-
 - [ ] Complete user guide with screenshots
 - [ ] Developer documentation with examples
 - [ ] API documentation auto-generated
@@ -1025,6 +1046,13 @@ Create comprehensive documentation for users, developers, and administrators.
 #### **Dependencies**: All previous phases
 
 #### **Estimated Effort (Task 5.2)**: 30-40 hours
+
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each documentation section and verify there are no markdown errors
+> 2. **Review Request**: Ask for review before finalizing documentation structure
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Documentation Testing**: Verify all code examples work and screenshots are current
+> 5. **User Testing**: Have someone follow installation guides to verify completeness
 
 ---
 

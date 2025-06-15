@@ -84,6 +84,7 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
   // Load data
   const loadData = useCallback(async () => {
     try {
+      console.log('🔄 BANK BALANCE: Loading balance data...');
       setLoading(true);
       setError(null);
       
@@ -99,12 +100,28 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
       const balanceStats = bankBalanceService.getBalanceStats(filtered);
       setStats(balanceStats);
       
+      // Save state for caching
+      setComponentState('BankBalance', {
+        filteredBalances: filtered,
+        bankAccounts: accounts,
+        stats: balanceStats
+      });
+      
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load bank balances');
     } finally {
       setLoading(false);
     }
   }, [filters, sortField, sortDirection]);
+
+  // Register for global refresh
+  useEffect(() => {
+    registerGlobalRefresh('BankBalance', loadData);
+    
+    return () => {
+      unregisterGlobalRefresh('BankBalance');
+    };
+  }, [loadData]);
 
   useEffect(() => {
     loadData();

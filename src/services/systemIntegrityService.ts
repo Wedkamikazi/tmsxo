@@ -448,6 +448,8 @@ class SystemIntegrityService {
     // Reserved for future file-specific consistency check implementation
     // @ts-ignore: Reserved for future implementation
     const _payloadData = payload || {};
+    // Explicitly mark as unused to satisfy linter
+    void _payloadData;
     // TODO: Implement file-specific consistency checks using _payloadData.fileId
   }
 

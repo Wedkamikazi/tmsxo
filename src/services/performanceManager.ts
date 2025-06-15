@@ -561,7 +561,13 @@ class PerformanceManager {
         }
       });
     } catch (error) {
-      console.warn('Storage cleanup failed:', error);
+      systemIntegrityService.logServiceError(
+        'PerformanceManager',
+        'cleanupOldStorageEntries',
+        error instanceof Error ? error : new Error(String(error)),
+        'low',
+        { operation: 'localStorage cleanup' }
+      );
     }
   }
 

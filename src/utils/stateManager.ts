@@ -139,10 +139,15 @@ class StateManager {
     const shouldReinit = !this.state.servicesInitialized || timeSinceInit > (5 * 60 * 1000);
     
     if (!shouldReinit) {
-      console.log('⚡ Skipping service reinitialization - still fresh:', {
+      console.log('🚀 REFRESH OPTIMIZATION: Services still cached - no reinitialization needed');
+      console.log('📊 Cache details:', {
+        activeTab: this.state.activeTab,
         lastInit: Math.round(timeSinceInit / 1000) + 's ago',
-        servicesInitialized: this.state.servicesInitialized
+        servicesInitialized: this.state.servicesInitialized,
+        cacheValid: 'YES'
       });
+    } else {
+      console.log('⏰ Cache expired or first run - will reinitialize services');
     }
     
     return shouldReinit;

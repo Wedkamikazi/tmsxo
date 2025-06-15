@@ -340,6 +340,82 @@ class UnifiedDataService {
     eventBus.emit('DATA_CLEARED', { cleared: true }, 'UnifiedDataService');
   }
 
+  // STORAGE QUOTA MANAGEMENT METHODS
+
+  /**
+   * Get current storage quota information
+   */
+  getStorageQuotaInfo() {
+    return storageQuotaManager.getQuotaInfo();
+  }
+
+  /**
+   * Get active quota alerts
+   */
+  getQuotaAlerts() {
+    return storageQuotaManager.getActiveAlerts();
+  }
+
+  /**
+   * Acknowledge a quota alert
+   */
+  acknowledgeQuotaAlert(timestamp: string): boolean {
+    return storageQuotaManager.acknowledgeAlert(timestamp);
+  }
+
+  /**
+   * Perform manual storage cleanup
+   */
+  async performStorageCleanup(aggressiveness: 'gentle' | 'moderate' | 'aggressive' = 'moderate'): Promise<{ success: boolean; spaceFreed: number }> {
+    const result = await storageQuotaManager.performManualCleanup(aggressiveness);
+    
+    if (result.success && result.spaceFreed > 0) {
+      eventBus.emit('STORAGE_CLEANED', { 
+        spaceFreed: result.spaceFreed, 
+        aggressiveness 
+      }, 'UnifiedDataService');
+    }
+    
+    return result;
+  }
+
+  /**
+   * Force immediate quota check
+   */
+  async checkStorageQuota(): Promise<void> {
+    await storageQuotaManager.forceQuotaCheck();
+  }
+
+  /**
+   * Get cleanup history
+   */
+  getCleanupHistory() {
+    return storageQuotaManager.getCleanupHistory();
+  }
+
+  /**
+   * Get available cleanup strategies
+   */
+  async getAvailableCleanupStrategies() {
+    return await storageQuotaManager.getAvailableStrategies();
+  }
+
+  /**
+   * Execute specific cleanup strategy
+   */
+  async executeCleanupStrategy(strategyName: string): Promise<{ success: boolean; spaceFreed: number; details: string }> {
+    const result = await storageQuotaManager.executeStrategy(strategyName);
+    
+    if (result.success && result.spaceFreed > 0) {
+      eventBus.emit('STORAGE_CLEANED', { 
+        strategy: strategyName,
+        spaceFreed: result.spaceFreed 
+      }, 'UnifiedDataService');
+    }
+    
+    return result;
+  }
+
   // SNAPSHOT AND BACKUP OPERATIONS
   // @ts-ignore: operationId reserved for future snapshot tracking enhancement
   createSnapshot(operationType: 'import' | 'delete' | 'update' | 'cleanup', operationId: string): string {

@@ -483,8 +483,7 @@ class UnifiedBalanceService {
     const recommendations: BalanceRecommendation[] = [];
 
     try {
-      // Get existing balance data
-      const balanceHistory = this.getBalanceHistory(accountId);
+      // Get existing balance data  
       const lastImport = importHistoryService.getLastImportInfo(accountId);
 
       // Check for backward import scenario

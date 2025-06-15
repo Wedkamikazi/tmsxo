@@ -36,14 +36,36 @@ const ITEMS_PER_PAGE_OPTIONS = [10, 25, 50, 100];
 const DEFAULT_ITEMS_PER_PAGE = 50;
 
 export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate, refreshTrigger }) => {
+  // Initialize with cached state if available
+  const cachedState = getComponentState<{
+    transactions: StoredTransaction[];
+    bankAccounts: BankAccount[];
+    activeTab: TransactionTab;
+  }>('Transactions');
+  
   // Tab state
-  const [activeTab, setActiveTab] = useState<TransactionTab>('all');
+  const [activeTab, setActiveTab] = useState<TransactionTab>(cachedState?.activeTab || 'all');
   
   // State management
-  const [transactions, setTransactions] = useState<StoredTransaction[]>([]);
-  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
+  const [transactions, setTransactions] = useState<StoredTransaction[]>(() => {
+    if (cachedState?.transactions && shouldComponentUseCache('Transactions')) {
+      console.log('🚀 TRANSACTIONS: Using cached transaction data');
+      return cachedState.transactions;
+    }
+    return [];
+  });
+  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>(() => {
+    if (cachedState?.bankAccounts && shouldComponentUseCache('Transactions')) {
+      console.log('🚀 TRANSACTIONS: Using cached bank account data');
+      return cachedState.bankAccounts;
+    }
+    return [];
+  });
   const [duplicateGroups, setDuplicateGroups] = useState<StoredTransaction[][]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    // If we have cached data, skip loading
+    return !(cachedState?.transactions && shouldComponentUseCache('Transactions'));
+  });
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   

@@ -375,15 +375,19 @@ class EnhancedCategorizationService {
       if (this.strategy.enableLearning) {
         this.performance.learningDataPoints++;
         
-        // Store learning data for future model training
-        localStorageManager.setItem(`categorization-feedback-${transactionId}`, {
-          transactionId,
-          description: transaction.description,
-          amount: transaction.debitAmount || transaction.creditAmount,
-          originalPrediction: originalLearning.originalPrediction,
-          correctCategory: correctCategoryId,
-          timestamp: new Date().toISOString()
-        });
+        // Store learning data for future model training (using direct localStorage since this is custom data)
+        try {
+          localStorage.setItem(`categorization-feedback-${transactionId}`, JSON.stringify({
+            transactionId,
+            description: transaction.description,
+            amount: transaction.debitAmount || transaction.creditAmount,
+            originalPrediction: originalLearning.originalPrediction,
+            correctCategory: correctCategoryId,
+            timestamp: new Date().toISOString()
+          }));
+        } catch (error) {
+          console.warn('Failed to store categorization feedback:', error);
+        }
       }
     }
     

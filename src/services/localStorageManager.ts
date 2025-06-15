@@ -279,7 +279,6 @@ class LocalStorageManager {
     const transactions = this.getAllTransactions();
     const accounts = this.getAllAccounts();
     const files = this.getAllFiles();
-    const categories = this.getAllCategories();
     const categorizations = this.getAllCategorizations();
 
     // Check for orphaned transactions

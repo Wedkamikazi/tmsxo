@@ -88,20 +88,48 @@ app.post('/api/ollama/stop', (req, res) => {
 // Check Ollama status
 app.get('/api/ollama/status', async (req, res) => {
   try {
-    const fetch = (await import('node-fetch')).default;
-    const response = await fetch('http://localhost:11434/api/tags');
+    // Use built-in fetch in newer Node.js or fallback to simple HTTP check
+    const http = require('http');
     
-    if (response.ok) {
-      const data = await response.json();
+    const checkOllama = () => {
+      return new Promise((resolve) => {
+        const req = http.get('http://localhost:11434/api/tags', (response) => {
+          let data = '';
+          response.on('data', chunk => data += chunk);
+          response.on('end', () => {
+            try {
+              const parsed = JSON.parse(data);
+              resolve({ success: true, data: parsed });
+            } catch (e) {
+              resolve({ success: false, error: 'Invalid JSON' });
+            }
+          });
+        });
+        
+        req.on('error', () => {
+          resolve({ success: false, error: 'Connection failed' });
+        });
+        
+        req.setTimeout(2000, () => {
+          req.destroy();
+          resolve({ success: false, error: 'Timeout' });
+        });
+      });
+    };
+    
+    const result = await checkOllama();
+    
+    if (result.success) {
       res.json({ 
         isRunning: true, 
-        models: data.models || [],
+        models: result.data.models || [],
         processRunning: ollamaProcess !== null
       });
     } else {
       res.json({ 
         isRunning: false,
-        processRunning: ollamaProcess !== null
+        processRunning: ollamaProcess !== null,
+        error: result.error
       });
     }
   } catch (error) {

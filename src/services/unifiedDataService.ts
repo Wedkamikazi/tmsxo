@@ -137,6 +137,12 @@ class UnifiedDataService {
     return success;
   }
 
+  // BALANCE MANAGEMENT
+  updateAllAccountBalances(): void {
+    localStorageManager.updateAllAccountBalances();
+    eventBus.emit('BALANCES_UPDATED', { action: 'all_accounts_updated' }, 'UnifiedDataService');
+  }
+
   // DATA INTEGRITY AND MAINTENANCE - DELEGATED TO SYSTEMINTEGRITYSERVICE
   validateDataIntegrity(): {
     isValid: boolean;

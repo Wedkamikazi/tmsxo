@@ -758,7 +758,7 @@ class PerformanceManager {
 }
 
 // Check for debug mode
-const isDebugMode = DEBUG_MODE_ACTIVE;
+const isDebugMode = checkDebugMode();
 
 // Export singleton instance (skip TensorFlow initialization in debug mode)
 let performanceManager: PerformanceManager;

@@ -84,7 +84,7 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
     }
     
     // Apply filters
-    const filtered = bankBalanceService.filterBalances(balances, filters);
+    const filtered = unifiedBalanceService.filterBalances(balances, filters);
     
     // Apply sorting
     const sorted = [...filtered].sort((a, b) => {

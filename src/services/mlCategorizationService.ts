@@ -265,7 +265,40 @@ class MLCategorizationService {
       metrics: ['accuracy']
     });
 
-    console.log('✅ Advanced TensorFlow.js Models Created');
+    // Register all models with cleanup manager
+    if (this.categorizationModel) {
+      cleanupManager.registerTensorFlowModel(
+        'ml-categorization-model',
+        this.categorizationModel,
+        'MLCategorizationService'
+      );
+    }
+    
+    if (this.sentimentModel) {
+      cleanupManager.registerTensorFlowModel(
+        'ml-sentiment-model',
+        this.sentimentModel,
+        'MLCategorizationService'
+      );
+    }
+    
+    if (this.anomalyModel) {
+      cleanupManager.registerTensorFlowModel(
+        'ml-anomaly-model',
+        this.anomalyModel,
+        'MLCategorizationService'
+      );
+    }
+    
+    if (this.patternModel) {
+      cleanupManager.registerTensorFlowModel(
+        'ml-pattern-model',
+        this.patternModel,
+        'MLCategorizationService'
+      );
+    }
+
+    console.log('✅ Advanced TensorFlow.js Models Created and registered for cleanup');
   }
 
   // ADVANCED TRANSACTION CATEGORIZATION WITH MULTIPLE ML MODELS

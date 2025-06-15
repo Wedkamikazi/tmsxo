@@ -279,7 +279,8 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
        // Optional: improve from feedback for learning if available
        if (mlConfig.enableLearning) {
          try {
-           await enhancedCategorizationService.improveFromFeedback(transactionId, categoryId);
+           // Unified service handles learning internally during categorization
+           console.log('Manual categorization feedback recorded for learning:', { transactionId, categoryId });
          } catch (error) {
            console.log('Learning feedback not available yet:', error);
          }

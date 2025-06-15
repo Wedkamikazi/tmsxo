@@ -617,7 +617,13 @@ class PerformanceManager {
       const params = model.countParams();
       return params * 4; // Assuming 32-bit floats
     } catch (error) {
-      console.warn('Could not estimate model memory:', error);
+      systemIntegrityService.logServiceError(
+        'PerformanceManager',
+        'estimateModelMemory',
+        error instanceof Error ? error : new Error(String(error)),
+        'low',
+        { operation: 'TensorFlow model memory estimation' }
+      );
       return 0;
     }
   }

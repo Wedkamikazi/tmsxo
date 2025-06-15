@@ -479,9 +479,9 @@ class EnhancedCategorizationService {
 
   private loadPerformanceHistory(): void {
     try {
-      const saved = localStorageManager.getItem('enhanced-categorization-performance');
+      const saved = localStorage.getItem('enhanced-categorization-performance');
       if (saved) {
-        this.performance = { ...this.performance, ...saved };
+        this.performance = { ...this.performance, ...JSON.parse(saved) };
       }
     } catch (error) {
       // Ignore storage errors
@@ -490,7 +490,7 @@ class EnhancedCategorizationService {
 
   private savePerformanceHistory(): void {
     try {
-      localStorageManager.setItem('enhanced-categorization-performance', this.performance);
+      localStorage.setItem('enhanced-categorization-performance', JSON.stringify(this.performance));
     } catch (error) {
       // Ignore storage errors
     }
@@ -498,9 +498,9 @@ class EnhancedCategorizationService {
 
   private loadLearningHistory(): void {
     try {
-      const saved = localStorageManager.getItem('categorization-learning-history');
+      const saved = localStorage.getItem('categorization-learning-history');
       if (saved) {
-        this.learningHistory = saved;
+        this.learningHistory = JSON.parse(saved);
       }
     } catch (error) {
       // Ignore storage errors
@@ -509,7 +509,7 @@ class EnhancedCategorizationService {
 
   private saveLearningHistory(): void {
     try {
-      localStorageManager.setItem('categorization-learning-history', this.learningHistory);
+      localStorage.setItem('categorization-learning-history', JSON.stringify(this.learningHistory));
     } catch (error) {
       // Ignore storage errors
     }

@@ -72,8 +72,60 @@ export class MLEnhancedMethod implements CategorizationStrategy {
     this.performance.totalCategorizations++;
 
     try {
-      // This will be implemented in the next micro-job
-      throw new Error('Core categorization logic not yet implemented');
+      // Call ML orchestrator for enhanced categorization
+      const mlResult = await enhancedMLOrchestrator.categorizeTransaction(transaction);
+      const category = this.categoryMappings.get(mlResult.categoryId);
+      
+      // Update performance metrics
+      this.performance.methodBreakdown.mlEnhanced++;
+      if (mlResult.modelUsed === 'ollama') {
+        this.performance.ollamaUsageRate = 
+          (this.performance.ollamaUsageRate * (this.performance.totalCategorizations - 1) + 1) / 
+          this.performance.totalCategorizations;
+      }
+
+      const processingTime = Date.now() - startTime;
+
+      // Convert to unified result format
+      const result: UnifiedCategorizationResult = {
+        categoryId: mlResult.categoryId,
+        categoryName: category?.name || mlResult.categoryId,
+        confidence: mlResult.confidence,
+        method: 'ml-enhanced',
+        reasoning: mlResult.reasoning,
+        suggestions: mlResult.enhancedAnalysis?.businessInsights || [],
+        alternatives: mlResult.alternativeCategories.map(alt => ({
+          categoryId: alt.categoryId,
+          categoryName: this.categoryMappings.get(alt.categoryId)?.name || alt.categoryId,
+          confidence: alt.confidence
+        })),
+        processingTime,
+        metadata: {
+          modelUsed: mlResult.modelUsed,
+          anomalyDetected: mlResult.metadata?.isAnomaly || false,
+          sentiment: mlResult.metadata?.sentiment,
+          entities: mlResult.enhancedAnalysis?.businessInsights,
+          patterns: mlResult.enhancedAnalysis?.patternRecognition,
+          strategyUsed: 'ml-enhanced'
+        }
+      };
+
+      // Update performance metrics and store learning data
+      this.updatePerformanceMetrics(result);
+      
+      if (this.strategy.enableLearning) {
+        this.storeLearningData(transaction, result);
+      }
+
+      // Emit categorization event
+      eventBus.emit('CATEGORIES_UPDATED', {
+        transactionId: transaction.id,
+        categoryId: result.categoryId,
+        method: result.method,
+        confidence: result.confidence
+      }, 'MLEnhancedMethod');
+
+      return result;
       
     } catch (error) {
       const processingTime = Date.now() - startTime;

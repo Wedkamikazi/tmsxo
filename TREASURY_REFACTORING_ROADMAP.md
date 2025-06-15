@@ -384,7 +384,7 @@ Replace EventBus pattern with React Context + useReducer for better state manage
 
 #### **Dependencies**: Task 2.1
 
-#### **Estimated Effort**: 32-40 hours
+#### **Estimated Effort (Task 2.2)**: 32-40 hours
 
 ---
 
@@ -454,7 +454,7 @@ Reduce bundle size from ~8MB to ~3MB through code splitting and optimization.
 
 #### **Dependencies**: Task 2.1, Task 2.2
 
-#### **Estimated Effort**: 24-32 hours
+#### **Estimated Effort (Task 2.3)**: 24-32 hours
 
 ---
 
@@ -532,7 +532,7 @@ Add virtual scrolling to transaction lists to handle 10,000+ transactions smooth
 
 #### **Dependencies**: Task 2.2
 
-#### **Estimated Effort**: 20-28 hours
+#### **Estimated Effort (Task 3.1)**: 20-28 hours
 
 ---
 
@@ -595,7 +595,7 @@ Implement a robust data migration system for schema changes and data updates.
 
 #### **Dependencies**: Task 2.1
 
-#### **Estimated Effort**: 24-32 hours
+#### **Estimated Effort (Task 3.2)**: 24-32 hours
 
 ---
 

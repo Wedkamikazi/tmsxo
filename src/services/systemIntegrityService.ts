@@ -1588,9 +1588,9 @@ class SystemIntegrityService {
               percentage: performanceReport.memoryStats.percentage
             },
             tensorflow: {
-              numBytes: performanceReport.metrics.tensorflowMemory?.numBytes || performanceReport.metrics.tensorflowMemory?.totalBytes || 0,
-              numTensors: performanceReport.metrics.tensorflowMemory?.numTensors || performanceReport.metrics.tensorflowMemory?.totalTensors || 0,
-              peakBytes: performanceReport.metrics.tensorflowMemory?.peakBytes || 0
+              numBytes: performanceReport.metrics.tensorflowMemory?.numBytes ?? (performanceReport.metrics.tensorflowMemory as any)?.totalBytes ?? 0,
+              numTensors: performanceReport.metrics.tensorflowMemory?.numTensors ?? (performanceReport.metrics.tensorflowMemory as any)?.totalTensors ?? 0,
+              peakBytes: performanceReport.metrics.tensorflowMemory?.peakBytes ?? 0
             },
             modelRegistry: {
               total: memoryHealth.modelStats.total,

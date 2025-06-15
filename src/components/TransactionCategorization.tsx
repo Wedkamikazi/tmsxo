@@ -155,7 +155,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
     checkServiceStatus();
     
     // Refresh status every 30 seconds using cleanup hook
-    const statusInterval = timerCleanup.createInterval('status-check', checkServiceStatus, 30000);
+    timerCleanup.createInterval('status-check', checkServiceStatus, 30000);
     
     // Manual cleanup on unmount (automatically handled by hook)
     return () => {

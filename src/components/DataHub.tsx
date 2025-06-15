@@ -241,6 +241,18 @@ export const DataHub: React.FC = () => {
       description: 'Clean up legacy data and fix orphaned transactions'
     },
     {
+      id: 'ollamaChat' as const,
+      label: 'AI Chat',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          <path d="M8 9h8" />
+          <path d="M8 13h6" />
+        </svg>
+      ),
+      description: 'Chat with AI assistant powered by Ollama for financial insights'
+    },
+    {
       id: 'payroll' as const,
       label: 'Payroll Data',
       icon: (

@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 // import { serviceOrchestrator, SystemStatus } from '../services/serviceOrchestrator';
 
+// Set debug mode flag immediately before any service imports
+if (typeof window !== 'undefined') {
+  localStorage.setItem('debugMode', 'true');
+  (window as any).__TREASURY_DEBUG_MODE = true;
+  console.log('🚨 Debug Mode Flag Set Early');
+}
+
 interface SystemInitializerProps {
   children: React.ReactNode;
 }
@@ -25,6 +32,7 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
     
     // Set debug mode flag for other components
     localStorage.setItem('debugMode', 'true');
+    (window as any).__TREASURY_DEBUG_MODE = true;
     
     // Simulate brief loading then go to emergency mode
     const loadingTimeout = setTimeout(() => {

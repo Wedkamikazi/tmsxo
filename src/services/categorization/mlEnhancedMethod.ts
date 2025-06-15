@@ -212,28 +212,7 @@ export class MLEnhancedMethod implements CategorizationStrategy {
     });
   }
 
-  // UTILITY METHODS
-  private createFallbackResult(
-    _transaction: Transaction,
-    processingTime: number,
-    error?: string
-  ): UnifiedCategorizationResult {
-    return {
-      categoryId: 'cat_expense', // Default fallback category
-      categoryName: 'Expense',
-      confidence: 0.1,
-      method: 'fallback',
-      reasoning: error || 'ML-Enhanced method failed - using default category',
-      suggestions: ['Check ML service status', 'Consider using rule-based method'],
-      alternatives: [],
-      processingTime,
-      metadata: {
-        anomalyDetected: false,
-        fallbackReason: error || 'ml_enhanced_failure',
-        strategyUsed: 'ml-enhanced-fallback'
-      }
-    };
-  }
+  // UTILITY METHODS (using createDefaultResult instead)
 
   private logError(operation: string, error: unknown, severity: 'low' | 'medium' | 'high' | 'critical'): void {
     systemIntegrityService.logServiceError(

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTensorFlowCleanup, useTimerCleanup } from '../hooks/useCleanup';
-import { mlCategorizationService } from '../services/mlCategorizationService';
+import { unifiedCategorizationService } from '../services/unifiedCategorizationService';
+import { TensorFlowMethod } from '../services/categorization/tensorFlowMethod';
 import { mlPredictiveAnalyticsService, PredictiveInsight } from '../services/mlPredictiveAnalyticsService';
 import { mlNaturalLanguageService, NLPAnalysisResult } from '../services/mlNaturalLanguageService';
 import { unifiedDataService } from '../services/unifiedDataService';

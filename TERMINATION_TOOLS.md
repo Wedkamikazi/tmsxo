@@ -5,16 +5,19 @@ This document describes the emergency termination tools available for completely
 ## 🚨 Emergency Termination Scripts
 
 ### Windows PowerShell (Recommended)
+
 ```powershell
 .\terminate-all.ps1
 ```
 
 ### Cross-Platform Node.js
+
 ```bash
 node terminate-all.js
 ```
 
 ### Verification Script
+
 ```powershell
 .\verify-termination.ps1
 ```
@@ -61,6 +64,7 @@ node terminate-all.js
 3. Wait for completion message
 
 ### From Within the Application
+
 ```typescript
 import { terminateAllSystems } from './src/utils/systemTerminator';
 

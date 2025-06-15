@@ -45,8 +45,31 @@ const QwenIntegrationStatus: React.FC = () => {
 
   const handleTestCategorization = async () => {
     try {
-      const result = await mlCategorizationService.testCategorization();
-      setTestResult(result);
+      // Create test transaction for categorization
+      const testTransaction = {
+        id: 'test-transaction',
+        date: new Date().toISOString(),
+        description: 'Test payment to grocery store',
+        debitAmount: 45.67,
+        creditAmount: 0,
+        balance: 1000,
+        reference: 'TEST'
+      };
+
+      const startTime = performance.now();
+      const result = await unifiedCategorizationService.categorizeTransaction(testTransaction);
+      const endTime = performance.now();
+
+      setTestResult({
+        success: true,
+        result: {
+          categoryId: result.categoryId,
+          confidence: result.confidence,
+          reasoning: result.reasoning,
+          method: result.method
+        },
+        latency: Math.round(endTime - startTime)
+      });
     } catch (error) {
       setTestResult({
         success: false,

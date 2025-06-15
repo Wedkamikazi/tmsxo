@@ -115,7 +115,7 @@ class LocalOllamaIntegration {
   // INITIALIZE OLLAMA INTEGRATION
   private async initializeOllamaIntegration(): Promise<void> {
     try {
-      console.log('🦙 Initializing Local Ollama Integration...');
+      console.log('🦙 Checking for Local Ollama Integration (optional)...');
       
       // Check if Ollama server is running
       await this.checkOllamaHealth();
@@ -133,13 +133,13 @@ class LocalOllamaIntegration {
         this.isInitialized = true;
         console.log(`✅ Ollama Integration Ready - Using model: ${this.currentModel}`);
       } else {
-        console.warn('⚠️ Ollama server not reachable - Operating in TensorFlow.js only mode');
-        this.logOllamaStatus('Ollama server not reachable', 'medium');
+        console.info('ℹ️ Ollama not available - System will use TensorFlow.js only (this is normal)');
+        this.isInitialized = false;
       }
       
     } catch (error) {
-      this.logOllamaError('initializeOllamaIntegration', error, 'high');
-      console.warn('⚠️ Ollama initialization failed - Fallback to TensorFlow.js only');
+      this.logOllamaError('initializeOllamaIntegration', error, 'low'); // Reduced severity
+      console.info('ℹ️ Ollama initialization skipped - TensorFlow.js fallback active');
       this.isInitialized = false;
     }
   }

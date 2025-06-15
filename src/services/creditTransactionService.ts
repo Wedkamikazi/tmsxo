@@ -106,7 +106,8 @@ class CreditTransactionService {
       let reconciliationStatus: 'matched' | 'unmatched' | 'disputed' | 'manual' = 'unmatched';
       
       // Get account name from unified data service
-      const account = unifiedDataService.getAccountById(transaction.accountId);
+      const accounts = unifiedDataService.getAllAccounts();
+      const account = accounts.find(acc => acc.id === transaction.accountId);
       const accountName = account?.name || 'Unknown Account';
       
       return {

@@ -539,7 +539,7 @@ class LocalStorageManager {
     }
   }
 
-  private setStorageData<T>(key: string, data: T): void {
+  private async setStorageData<T>(key: string, data: T): Promise<void> {
     try {
       // Check quota before attempting to save
       const quotaInfo = storageQuotaManager.getQuotaInfo();

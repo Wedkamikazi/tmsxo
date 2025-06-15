@@ -437,7 +437,7 @@ class LocalStorageManager {
   }
 
   importData(jsonData: string): { success: boolean; message: string; imported: any } {
-    return this.executeTransaction(() => {
+    const result = this.executeTransaction(() => {
       const data = JSON.parse(jsonData);
       
       if (data.version !== this.STORAGE_VERSION) {

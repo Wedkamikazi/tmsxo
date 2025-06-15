@@ -3,6 +3,7 @@ import { BankAccount, UploadedFile } from '../types';
 import { eventBus } from './eventBus';
 import { localStorageManager, StoredTransaction as LSMStoredTransaction } from './localStorageManager';
 import { systemIntegrityService } from './systemIntegrityService';
+import { storageQuotaManager } from './storageQuotaManager';
 
 
 

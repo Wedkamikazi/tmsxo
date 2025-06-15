@@ -100,15 +100,26 @@ const OllamaControlWidget: React.FC = () => {
     setStatus(prev => ({ ...prev, isLoading: true }));
     
     try {
-      // Use safety manager to stop Ollama
-      await systemSafetyManager.stopProcess('ollama');
+      // Use process controller to stop Ollama
+      const result = await stopOllamaProcess();
       
-      setStatus({
-        isRunning: false,
-        isLoading: false
-      });
-      
-      console.log('🛑 Ollama stopped safely');
+      if (result.success) {
+        // Use safety manager to unregister the process
+        await systemSafetyManager.stopProcess('ollama');
+        
+        setStatus({
+          isRunning: false,
+          isLoading: false
+        });
+        
+        console.log('✅ Ollama stopped safely:', result.message);
+      } else {
+        setStatus(prev => ({ 
+          ...prev, 
+          isLoading: false, 
+          error: result.message 
+        }));
+      }
     } catch (error) {
       setStatus(prev => ({ 
         ...prev, 

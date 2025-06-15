@@ -1779,8 +1779,8 @@ class SystemIntegrityService {
     return patterns;
   }
 
-  private groupErrorsByTimeWindow(errors: typeof this.errorLog, windowMs: number): typeof this.errorLog[] {
-    const windows: typeof this.errorLog[][] = [];
+  private groupErrorsByTimeWindow(errors: typeof this.errorLog, windowMs: number): Array<typeof this.errorLog> {
+    const windows: Array<typeof this.errorLog> = [];
     const sortedErrors = [...errors].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     
     if (sortedErrors.length === 0) return windows;
@@ -1803,7 +1803,7 @@ class SystemIntegrityService {
     });
     
     if (currentWindow.length > 0) {
-      windows.push(currentWindow);
+      windows.push([...currentWindow]);
     }
     
     return windows;

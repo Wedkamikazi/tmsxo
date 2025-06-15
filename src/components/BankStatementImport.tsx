@@ -152,7 +152,7 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
       accountId: selectedBankAccount.id,
       importDate: new Date().toISOString(),
       fileId: uploadedFileIds[Math.floor(index / importSummaries[0].totalTransactions)] || undefined,
-      postDateTime: `${tx.date}T${tx.time || '00:00'}:00`
+      postDateTime: createPostDateTime(tx.date, tx.time)
     }));
     unifiedDataService.addTransactions(storedTransactions);
 

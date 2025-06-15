@@ -316,7 +316,7 @@ class CSVProcessingService {
         // Determine if it's MM/DD/YYYY or DD/MM/YYYY format
         // If first part > 12, it must be DD/MM/YYYY
         // If second part > 12, it must be MM/DD/YYYY
-        // Otherwise, prefer MM/DD/YYYY (US format) since user mentioned MMDDYYY
+        // Otherwise, prefer DD/MM/YYYY (European format) based on user's CSV data
         if (part1 > 12) {
           // DD/MM/YYYY format
           day = part1;
@@ -326,9 +326,9 @@ class CSVProcessingService {
           month = part1;
           day = part2;
         } else {
-          // Ambiguous - assume MM/DD/YYYY (US format) since user mentioned MMDDYYY
-          month = part1;
-          day = part2;
+          // Ambiguous - assume DD/MM/YYYY (European format) based on user's bank CSV
+          day = part1;
+          month = part2;
         }
         
         // Validate the date parts

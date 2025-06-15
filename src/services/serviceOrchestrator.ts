@@ -53,6 +53,13 @@ class ServiceOrchestrator {
   private healthCheckInterval: NodeJS.Timeout | null = null;
   private isShuttingDown = false;
   private systemStartTime = 0;
+  
+  // ML Services handled separately for background initialization
+  private mlServices = {
+    mlCategorizationService,
+    mlNaturalLanguageService,
+    mlPredictiveAnalyticsService
+  };
 
   constructor() {
     this.registerServices();

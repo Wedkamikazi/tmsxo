@@ -271,7 +271,7 @@ Reduce 19 services to 7 focused, well-defined services without losing functional
 
 #### **Current Service Inventory (19 services)**
 
-```
+```text
 ├── localStorageManager.ts (658 lines)
 ├── unifiedDataService.ts (474 lines)
 ├── systemIntegrityService.ts (1,927 lines) ⚠️ TOO LARGE
@@ -293,10 +293,10 @@ Reduce 19 services to 7 focused, well-defined services without losing functional
 
 #### **Target Architecture (7 services)**
 
-```
+```text
 New Architecture:
 ├── CoreDataService (localStorageManager + unifiedDataService)
-├── ImportProcessingService (csvProcessingService + fileStorageService + importHistoryService)  
+├── ImportProcessingService (csvProcessingService + fileStorageService + importHistoryService)
 ├── UnifiedCategorizationService (Already done in Phase 1)
 ├── TransactionAnalysisService (duplicateDetectionService + creditTransactionService + unifiedBalanceService)
 ├── MLIntelligenceService (mlNaturalLanguageService + mlPredictiveAnalyticsService + enhancedMLOrchestrator)

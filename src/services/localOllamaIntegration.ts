@@ -240,14 +240,7 @@ class LocalOllamaIntegration {
   }
 
   // ANALYZE TRANSACTION WITH OLLAMA
-  async analyzeTransaction(description: string, amount: number, date: string): Promise<{
-    category: string;
-    confidence: number;
-    reasoning: string;
-    sentiment: 'positive' | 'neutral' | 'negative';
-    entities: string[];
-    suggestions: string[];
-  }> {
+  async analyzeTransaction(description: string, amount: number, date: string): Promise<OllamaTransactionAnalysis> {
     const systemPrompt = `You are an expert financial transaction analyzer. Analyze transactions and provide categorization with high accuracy. 
 
 Available categories: Office Supplies, Marketing, Travel, Utilities, Software, Professional Services, Banking Fees, Client Payments, Refunds, Transfers, Rent, Insurance, Tax Payments, Equipment, Maintenance, Consulting, Training, Subscriptions, Other.

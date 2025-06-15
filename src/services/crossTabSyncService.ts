@@ -563,7 +563,8 @@ class CrossTabSyncService {
     };
 
     window.addEventListener('beforeunload', cleanup);
-    window.addEventListener('unload', cleanup);
+    // Use 'pagehide' instead of deprecated 'unload' event
+    window.addEventListener('pagehide', cleanup);
   }
 
   // UTILITY METHODS

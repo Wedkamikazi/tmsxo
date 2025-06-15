@@ -9,6 +9,19 @@ app.use(express.json());
 
 let ollamaProcess = null;
 
+// Root route to prevent 404 when accessing localhost:3001
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Treasury Process Controller Server',
+    status: 'running',
+    endpoints: {
+      status: 'GET /api/ollama/status',
+      start: 'POST /api/ollama/start',
+      stop: 'POST /api/ollama/stop'
+    }
+  });
+});
+
 // Start Ollama
 app.post('/api/ollama/start', (req, res) => {
   if (ollamaProcess) {

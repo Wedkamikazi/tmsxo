@@ -153,6 +153,9 @@ export const DataHub: React.FC = () => {
         unsubscribeAccountsUpdated();
       };
     }
+    
+    // Return undefined when no cleanup is needed
+    return undefined;
   }, [servicesLoaded, unifiedDataService, eventBus, initializationSkipped]);
 
   const handleImportComplete = (transactions: Transaction[], bankAccount: BankAccount) => {

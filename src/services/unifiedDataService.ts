@@ -3,6 +3,7 @@ import { Transaction, BankAccount, UploadedFile } from '../types';
 import { eventBus } from './eventBus';
 // @ts-ignore: StorageStats is used indirectly through getStorageStats() method calls
 import { localStorageManager, StoredTransaction as LSMStoredTransaction, StorageStats } from './localStorageManager';
+import { systemIntegrityService } from './systemIntegrityService';
 
 // UNIFIED DATA SERVICE - SINGLE SOURCE OF TRUTH
 // Coordinates all data operations across the application using localStorageManager

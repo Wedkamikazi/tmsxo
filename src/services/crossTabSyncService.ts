@@ -1,6 +1,5 @@
 import { eventBus, DataEvent } from './eventBus';
 import { unifiedDataService } from './unifiedDataService';
-import { Transaction, BankAccount, UploadedFile } from '../types';
 
 // CROSS-TAB SYNCHRONIZATION SERVICE
 // Ensures real-time data consistency across multiple browser tabs

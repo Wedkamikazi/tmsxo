@@ -410,6 +410,12 @@ export const DataHub: React.FC = () => {
             <OllamaChat />
           </ErrorBoundary>
         );
+      case 'settings':
+        return (
+          <ErrorBoundary componentName="Settings">
+            <Settings />
+          </ErrorBoundary>
+        );
       case 'payroll':
         return (
           <div className="coming-soon-container">

@@ -592,7 +592,59 @@ if (isDebugMode) {
     ensureInitialized: () => Promise.resolve(),
     analyzeTransaction: () => Promise.resolve({ category: 'Other', confidence: 0.5, reasoning: 'Debug mode' }),
     generateInsights: () => Promise.resolve([]),
-    dispose: () => Promise.resolve()
+    dispose: () => Promise.resolve(),
+    getHealthStatus: () => ({
+      isRunning: false,
+      isReachable: false,
+      availableModels: [],
+      preferredModel: null,
+      lastCheck: new Date().toISOString(),
+      errorMessage: 'Debug mode - mock service',
+      performance: {
+        averageResponseTime: 0,
+        successfulRequests: 0,
+        failedRequests: 0,
+        totalRequests: 0
+      }
+    }),
+    getCurrentModel: () => null,
+    isAvailable: () => false,
+    switchModel: () => Promise.resolve(false),
+    refreshHealth: () => Promise.resolve({
+      isRunning: false,
+      isReachable: false,
+      availableModels: [],
+      preferredModel: null,
+      lastCheck: new Date().toISOString(),
+      errorMessage: 'Debug mode - mock service',
+      performance: {
+        averageResponseTime: 0,
+        successfulRequests: 0,
+        failedRequests: 0,
+        totalRequests: 0
+      }
+    }),
+    generateText: () => Promise.resolve({
+      model: 'mock',
+      created_at: new Date().toISOString(),
+      response: 'Mock response',
+      done: true
+    }),
+    checkOllamaHealth: () => Promise.resolve({
+      isRunning: false,
+      isReachable: false,
+      availableModels: [],
+      preferredModel: null,
+      lastCheck: new Date().toISOString(),
+      errorMessage: 'Debug mode - mock service',
+      performance: {
+        averageResponseTime: 0,
+        successfulRequests: 0,
+        failedRequests: 0,
+        totalRequests: 0
+      }
+    }),
+    batchAnalyzeTransactions: () => Promise.resolve([])
   } as any;
 } else {
   localOllamaIntegration = new LocalOllamaIntegration();

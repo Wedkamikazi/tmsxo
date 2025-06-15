@@ -101,14 +101,122 @@ class StateManager {
 
   private saveState(): void {
     try {
+      // Clean up old component states before saving
+      this.cleanupOldComponentStates();
+      
       const stateToSave = {
         version: STATE_VERSION,
         timestamp: Date.now(),
         state: this.state
       };
-      localStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(stateToSave));
+      
+      const stateString = JSON.stringify(stateToSave);
+      
+      // Check if state is too large (over 1MB)
+      if (stateString.length > 1024 * 1024) {
+        console.warn('🚨 STATE MANAGER: State too large, performing emergency cleanup...');
+        this.performEmergencyStateCleanup();
+        
+        // Try again with cleaned state
+        const cleanedStateToSave = {
+          version: STATE_VERSION,
+          timestamp: Date.now(),
+          state: this.state
+        };
+        localStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(cleanedStateToSave));
+      } else {
+        localStorage.setItem(STATE_STORAGE_KEY, stateString);
+      }
     } catch (error) {
-      console.warn('Failed to save state to localStorage:', error);
+      if (error instanceof Error && error.name === 'QuotaExceededError') {
+        console.error('🚨 STATE MANAGER: Storage quota exceeded, performing emergency cleanup...');
+        this.handleQuotaExceeded();
+      } else {
+        console.warn('Failed to save state to localStorage:', error);
+      }
+    }
+  }
+
+  private cleanupOldComponentStates(): void {
+    const now = Date.now();
+    const componentStates = this.state.componentStates;
+    let cleanedCount = 0;
+    
+    // Remove component states older than cache duration
+    Object.keys(componentStates).forEach(componentName => {
+      const componentState = componentStates[componentName];
+      if (componentState && componentState.timestamp && (now - componentState.timestamp > CACHE_DURATION)) {
+        delete componentStates[componentName];
+        cleanedCount++;
+      }
+    });
+    
+    if (cleanedCount > 0) {
+      console.log(`🧹 STATE MANAGER: Cleaned up ${cleanedCount} expired component states`);
+    }
+  }
+
+  private performEmergencyStateCleanup(): void {
+    console.log('🚨 STATE MANAGER: Performing emergency state cleanup...');
+    
+    // Clear all component states
+    this.state.componentStates = {};
+    
+    // Clear session data except essential items
+    this.state.sessionData = {
+      dataRefreshTrigger: this.state.sessionData.dataRefreshTrigger,
+      chatHistory: [],
+      selectedAccount: this.state.sessionData.selectedAccount,
+      lastFileUpload: null
+    };
+    
+    console.log('✅ STATE MANAGER: Emergency cleanup completed');
+  }
+
+  private handleQuotaExceeded(): void {
+    try {
+      // First, try emergency cleanup
+      this.performEmergencyStateCleanup();
+      
+      // Try to save minimal state
+      const minimalState = {
+        version: STATE_VERSION,
+        timestamp: Date.now(),
+        state: {
+          activeTab: this.state.activeTab,
+          servicesInitialized: this.state.servicesInitialized,
+          lastInitializationTime: this.state.lastInitializationTime,
+          componentStates: {}, // Empty
+          globalRefreshTimestamp: this.state.globalRefreshTimestamp,
+          userPreferences: this.state.userPreferences,
+          sessionData: {
+            dataRefreshTrigger: this.state.sessionData.dataRefreshTrigger,
+            chatHistory: [],
+            selectedAccount: this.state.sessionData.selectedAccount,
+            lastFileUpload: null
+          }
+        }
+      };
+      
+      localStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(minimalState));
+      console.log('✅ STATE MANAGER: Saved minimal state after quota exceeded');
+      
+      // Trigger storage quota manager cleanup
+      if (typeof window !== 'undefined' && (window as any).storageQuotaManager) {
+        (window as any).storageQuotaManager.performManualCleanup('aggressive').catch((error: any) => {
+          console.error('Failed to trigger storage cleanup:', error);
+        });
+      }
+      
+    } catch (retryError) {
+      console.error('🚨 STATE MANAGER: Failed to save even minimal state:', retryError);
+      // Last resort: clear the state storage key entirely
+      try {
+        localStorage.removeItem(STATE_STORAGE_KEY);
+        console.log('🗑️ STATE MANAGER: Cleared state storage as last resort');
+      } catch (clearError) {
+        console.error('🚨 STATE MANAGER: Cannot even clear storage:', clearError);
+      }
     }
   }
 

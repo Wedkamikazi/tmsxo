@@ -703,7 +703,7 @@ class LocalStorageManager {
       const accountIndex = accounts.findIndex(a => a.id === accountId);
       if (accountIndex === -1) return;
       
-      // Get all transactions for this account, sorted by date/time (most recent first)
+      // Get all transactions for this account, sorted by postDateTime (most recent first)
       const accountTransactions = allTransactions
         .filter(t => t.accountId === accountId)
         .sort((a, b) => {
@@ -716,14 +716,16 @@ class LocalStorageManager {
         });
       
       if (accountTransactions.length > 0) {
-        // Use the balance from the most recent transaction
+        // Use the balance from the most recent transaction (by postDateTime)
         const mostRecentTransaction = accountTransactions[0];
         accounts[accountIndex].currentBalance = mostRecentTransaction.balance;
-        console.log(`🔄 Updated account ${accounts[accountIndex].name} balance to ${mostRecentTransaction.balance} based on most recent transaction`);
+        console.log(`🔄 Updated account ${accounts[accountIndex].name} balance to ${mostRecentTransaction.balance} based on most recent transaction (${mostRecentTransaction.postDateTime})`);
         eventBus.emit('ACCOUNT_UPDATED', { accountId, action: 'balance_updated', balance: mostRecentTransaction.balance });
       } else {
-        // No transactions left for this account - reset to 0 or keep existing balance
-        console.log(`⚠️ No transactions remaining for account ${accounts[accountIndex].name}, keeping current balance`);
+        // No transactions left for this account - RESET TO ZERO
+        accounts[accountIndex].currentBalance = 0;
+        console.log(`🔄 No transactions remaining for account ${accounts[accountIndex].name}, resetting balance to 0`);
+        eventBus.emit('ACCOUNT_UPDATED', { accountId, action: 'balance_reset', balance: 0 });
       }
     });
     

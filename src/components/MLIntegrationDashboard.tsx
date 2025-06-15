@@ -124,7 +124,7 @@ export const MLIntegrationDashboard: React.FC = () => {
     loadSystemData();
     
     // Set up periodic data refresh using cleanup hook
-    const refreshInterval = timerCleanup.createInterval('data-refresh', loadSystemData, 60000); // Every minute
+    timerCleanup.createInterval('data-refresh', loadSystemData, 60000); // Every minute
     
     return () => {
       timerCleanup.clearInterval('data-refresh');

@@ -2,6 +2,7 @@ import { Transaction, BankAccount, UploadedFile, TransactionCategory, Transactio
 import { performanceManager } from './performanceManager';
 import { systemIntegrityService } from './systemIntegrityService';
 import { eventBus } from './eventBus';
+import { storageQuotaManager } from './storageQuotaManager';
 
 export interface StorageSnapshot {
   timestamp: string;

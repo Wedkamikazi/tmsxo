@@ -152,7 +152,7 @@ class MLPredictiveAnalyticsService {
     this.spendingPatternModel.compile({
       optimizer: tf.train.adamax(0.002),
       loss: 'binaryCrossentropy',
-      metrics: ['accuracy', 'precision', 'recall']
+      metrics: ['accuracy'] // Removed unsupported precision/recall metrics for TensorFlow.js compatibility
     });
 
     // SEASONALITY DETECTION MODEL

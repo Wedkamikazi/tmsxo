@@ -185,7 +185,19 @@ const OllamaControlWidget: React.FC = () => {
         {status.error && (
           <div className="ollama-error">
             <span className="error-icon">⚠</span>
-            {status.error}
+            <div className="error-content">
+              <div className="error-message">{status.error}</div>
+              <button 
+                className="refresh-button"
+                onClick={() => {
+                  setStatus(prev => ({ ...prev, error: undefined }));
+                  // Trigger status check
+                  checkStatus();
+                }}
+              >
+                🔄 Refresh Status
+              </button>
+            </div>
           </div>
         )}
       </div>

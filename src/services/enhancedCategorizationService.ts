@@ -535,7 +535,7 @@ class EnhancedCategorizationService {
     
     // Save strategy
     try {
-      localStorageManager.setItem('categorization-strategy', this.strategy);
+      localStorage.setItem('categorization-strategy', JSON.stringify(this.strategy));
     } catch (error) {
       // Ignore storage errors
     }

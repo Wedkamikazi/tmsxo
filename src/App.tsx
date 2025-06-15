@@ -3,7 +3,6 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { SystemInitializer } from './components/SystemInitializer';
 import { initializeSystemSafety } from './utils/systemSafetyManager';
 import './styles/globals.css';
-import './App.css';
 
 // Import DataHub conditionally to prevent service auto-initialization
 const DataHub = React.lazy(() => import('./components/DataHub').then(module => ({ default: module.DataHub })));

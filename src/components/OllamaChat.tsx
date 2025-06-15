@@ -110,9 +110,21 @@ export const OllamaChat: React.FC = () => {
         const foundTransactions = searchTransactions(searchTerm);
         
         if (foundTransactions.length > 0) {
-          const transactionList = foundTransactions.slice(0, 5).map(t => 
-            `• ${new Date(t.postDateTime).toLocaleDateString()}: ${t.description} - ${t.debitAmount ? `-$${t.debitAmount.toFixed(2)}` : `+$${(t.creditAmount || 0).toFixed(2)}`} (Ref: ${t.reference || 'N/A'})`
-          ).join('\n');
+          const transactionList = foundTransactions.slice(0, 5).map(t => {
+            let dateStr;
+            if (!t.postDateTime || t.postDateTime.trim() === '') {
+              dateStr = new Date().toLocaleDateString();
+            } else {
+              const date = new Date(t.postDateTime);
+              if (isNaN(date.getTime())) {
+                console.warn(`Invalid date in OllamaChat: "${t.postDateTime}"`);
+                dateStr = new Date().toLocaleDateString();
+              } else {
+                dateStr = date.toLocaleDateString();
+              }
+            }
+            return `• ${dateStr}: ${t.description} - ${t.debitAmount ? `-$${t.debitAmount.toFixed(2)}` : `+$${(t.creditAmount || 0).toFixed(2)}`} (Ref: ${t.reference || 'N/A'})`;
+          }).join('\n');
           
           return `I found ${foundTransactions.length} transaction(s) matching "${searchTerm}":\n\n${transactionList}${foundTransactions.length > 5 ? '\n\n...and ' + (foundTransactions.length - 5) + ' more.' : ''}`;
         } else {

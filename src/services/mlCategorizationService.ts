@@ -185,7 +185,7 @@ class MLCategorizationService {
     this.categorizationModel.compile({
       optimizer: tf.train.adam(0.001),
       loss: 'categoricalCrossentropy',
-      metrics: ['accuracy', 'precision', 'recall']
+      metrics: ['accuracy'] // Removed unsupported precision/recall metrics for TensorFlow.js compatibility
     });
 
     // Register with memory management

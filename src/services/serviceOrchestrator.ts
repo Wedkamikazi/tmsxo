@@ -135,36 +135,8 @@ class ServiceOrchestrator {
       retryAttempts: 2
     });
 
-    // ML Services (Background initialization) - Initialize after main app loads
-    this.registerService({
-      name: 'mlCategorizationService',
-      service: mlCategorizationService,
-      dependencies: ['memoryManagementService', 'unifiedDataService'],
-      healthCheckMethod: 'getModelStatus',
-      timeout: 5000, // Shorter timeout - just for basic service setup
-      critical: false,
-      retryAttempts: 1
-    });
-
-    this.registerService({
-      name: 'mlNaturalLanguageService',
-      service: mlNaturalLanguageService,
-      dependencies: ['memoryManagementService', 'unifiedDataService'],
-      healthCheckMethod: 'getServiceStatus',
-      timeout: 5000, // Shorter timeout - just for basic service setup
-      critical: false,
-      retryAttempts: 1
-    });
-
-    this.registerService({
-      name: 'mlPredictiveAnalyticsService',
-      service: mlPredictiveAnalyticsService,
-      dependencies: ['memoryManagementService', 'unifiedDataService'],
-      healthCheckMethod: 'getServiceStatus',
-      timeout: 5000, // Shorter timeout - just for basic service setup
-      critical: false,
-      retryAttempts: 1
-    });
+    // ML Services are initialized in background only - not part of main startup flow
+    // They are stored for background initialization but excluded from main dependency graph
 
     console.log(`✅ Registered ${this.services.size} services`);
   }

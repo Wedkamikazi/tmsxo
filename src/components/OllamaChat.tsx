@@ -141,6 +141,13 @@ export const OllamaChat: React.FC = () => {
                 : 'Ollama Offline - Start using control widget above'
               }
             </span>
+            <button 
+              onClick={checkOllamaStatus}
+              className="refresh-status-btn"
+              title="Refresh Ollama status"
+            >
+              🔄
+            </button>
           </div>
         </div>
         <button 

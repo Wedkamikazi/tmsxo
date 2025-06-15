@@ -39,10 +39,22 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
       // The quota manager auto-initializes on import, just check if it's ready
       await new Promise(resolve => setTimeout(resolve, 500)); // Allow initialization time
       
-      // Make quota manager available globally for testing
+      // Make services available globally for testing
       if (typeof window !== 'undefined') {
         (window as any).storageQuotaManager = storageQuotaManager;
+        
+        // Import other services for testing
+        const { unifiedDataService } = await import('../services/unifiedDataService');
+        const { eventBus } = await import('../services/eventBus');
+        
+        (window as any).unifiedDataService = unifiedDataService;
+        (window as any).eventBus = eventBus;
+        
+        // Import test script
+        const testScript = await import('../test-quota-management.js');
+        
         console.log('✅ Storage Quota Manager ready and available globally');
+        console.log('🧪 Test suite available - run testQuotaManagement() in console');
       }
 
       // STEP 4: Continue with normal initialization

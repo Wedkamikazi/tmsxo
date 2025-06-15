@@ -59,6 +59,15 @@ export interface OllamaHealthStatus {
   };
 }
 
+export interface OllamaTransactionAnalysis {
+  category: string;
+  confidence: number;
+  reasoning: string;
+  sentiment: 'positive' | 'neutral' | 'negative';
+  entities: string[];
+  suggestions: string[];
+}
+
 class LocalOllamaIntegration {
   private baseUrl = 'http://localhost:11434';
   private preferredModels = [

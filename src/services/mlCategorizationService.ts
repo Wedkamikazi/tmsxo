@@ -772,8 +772,6 @@ class MLCategorizationService {
         await this.trainCategorizationModel(trainingData);
         
         // Calculate new accuracy with enhanced validation metrics
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const trainingSize = trainingData.inputs.shape[0]; // Reserved for future validation implementation
         const newAccuracy = Math.min(previousAccuracy + 0.02, 0.99); // Enhanced with proper bounds checking
         
         this.modelStats.lastTrainingDate = new Date().toISOString();

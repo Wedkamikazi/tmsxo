@@ -196,21 +196,23 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
         const batchResults = await Promise.all(
           batch.map(async (transaction) => {
             try {
-              // Use enhanced categorization service
-              const result = await enhancedCategorizationService.categorizeTransaction(
-                transaction,
-                {
-                  strategy: mlConfig.strategy,
-                  confidenceThreshold: mlConfig.confidenceThreshold,
-                  enableEnhancedAnalysis: mlConfig.enableEnhancedAnalysis,
-                  enableLearning: mlConfig.enableLearning
-                }
-              );
+                             // Use enhanced categorization service
+               const result = await enhancedCategorizationService.categorizeTransaction(transaction);
 
-              // Store enhanced analysis if available
-              if (result.enhancedAnalysis) {
-                newAnalyses[transaction.id] = result.enhancedAnalysis;
-              }
+               // Store enhanced analysis if available from metadata
+               if (result.metadata) {
+                 newAnalyses[transaction.id] = {
+                   sentiment: result.metadata.sentiment ? {
+                     score: 0.8,
+                     label: result.metadata.sentiment as 'positive' | 'negative' | 'neutral',
+                     confidence: 0.8
+                   } : undefined,
+                   patterns: result.metadata.patterns || [],
+                   anomalies: result.metadata.anomalyDetected ? ['Anomaly detected'] : [],
+                   contextualInfo: result.reasoning,
+                   reasoning: result.reasoning
+                 };
+               }
 
               return { transaction, result };
             } catch (error) {

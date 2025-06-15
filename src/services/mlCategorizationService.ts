@@ -1101,7 +1101,7 @@ class MLCategorizationService {
     const maxAttempts = 30; // 30 seconds max wait
     
     while (!this.isInitialized && attempts < maxAttempts) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise<void>(resolve => setTimeout(resolve, 1000));
       attempts++;
     }
     

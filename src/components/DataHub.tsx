@@ -20,7 +20,9 @@ import {
   incrementDataRefresh,
   getDataRefreshTrigger,
   registerGlobalRefresh,
-  unregisterGlobalRefresh
+  unregisterGlobalRefresh,
+  clearComponentStates,
+  getStateStorageUsage
 } from '../utils/stateManager';
 import { Transaction, BankAccount } from '../types';
 import './DataHub.css';

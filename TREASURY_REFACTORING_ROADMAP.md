@@ -122,11 +122,11 @@ Files to modify:
 
 > **🔍 PRE-TASK VERIFICATION**: Search thoroughly for existing storage management utilities, quota handlers, or localStorage wrapper services. Check for files like `storage.ts`, `quota.ts`, `storageUtils.ts`, or embedded storage logic in other services. Verify current storage usage patterns.
 
-#### **Objective**
+#### **Objective (Task 1.3)**
 
 Implement comprehensive localStorage quota management with graceful degradation.
 
-#### **Technical Specifications**
+#### **Technical Specifications (Task 1.3)**
 
 Files to modify:
 
@@ -134,7 +134,7 @@ Files to modify:
 - `src/services/unifiedDataService.ts`
 - Add new `src/services/storageQuotaManager.ts`
 
-#### **Implementation Details**
+#### **Implementation Details (Task 1.3)**
 
 1. **Quota Monitoring System**
    - Real-time quota tracking
@@ -151,7 +151,7 @@ Files to modify:
    - User notification system
    - Data recovery mechanisms
 
-#### **Acceptance Criteria**
+#### **Acceptance Criteria (Task 1.3)**
 
 - [ ] Automatic cleanup when quota reaches 80%
 - [ ] Graceful handling of quota exceeded errors

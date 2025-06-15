@@ -858,7 +858,7 @@ class MLNaturalLanguageService {
     return factors.length > 0 ? `Similar due to: ${factors.join(', ')}` : 'Low similarity across all factors';
   }
 
-  private getFallbackAnalysis(description: string): NLPAnalysisResult {
+  private getFallbackAnalysis(_description: string): NLPAnalysisResult {
     return {
       entities: {
         merchants: [],

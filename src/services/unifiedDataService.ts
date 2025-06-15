@@ -262,6 +262,7 @@ class UnifiedDataService {
   }
 
   // SNAPSHOT AND BACKUP OPERATIONS
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   createSnapshot(operationType: 'import' | 'delete' | 'update' | 'cleanup', operationId: string): string {
     return localStorageManager.createSnapshot(operationType);
   }

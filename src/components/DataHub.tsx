@@ -19,7 +19,6 @@ import {
   markServicesInitialized,
   incrementDataRefresh,
   getDataRefreshTrigger,
-  triggerGlobalRefresh,
   registerGlobalRefresh,
   unregisterGlobalRefresh
 } from '../utils/stateManager';

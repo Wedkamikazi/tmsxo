@@ -283,14 +283,35 @@ class StateManager {
   }
 
   /**
-   * Store component-specific state
+   * Store component-specific state (with size limits)
    */
   public setComponentState(componentName: string, state: any): void {
-    this.state.componentStates[componentName] = {
-      ...state,
-      timestamp: Date.now()
-    };
-    this.saveState();
+    try {
+      // Limit the size of component state to prevent quota issues
+      const stateString = JSON.stringify(state);
+      const maxComponentStateSize = 100 * 1024; // 100KB per component
+      
+      if (stateString.length > maxComponentStateSize) {
+        console.warn(`🚨 STATE MANAGER: Component state for ${componentName} too large (${Math.round(stateString.length / 1024)}KB), skipping save`);
+        return;
+      }
+      
+      this.state.componentStates[componentName] = {
+        ...state,
+        timestamp: Date.now()
+      };
+      
+      // Only save if we have reasonable number of component states
+      const componentCount = Object.keys(this.state.componentStates).length;
+      if (componentCount > 10) {
+        console.warn(`🚨 STATE MANAGER: Too many component states (${componentCount}), cleaning up...`);
+        this.cleanupOldComponentStates();
+      }
+      
+      this.saveState();
+    } catch (error) {
+      console.warn(`Failed to save component state for ${componentName}:`, error);
+    }
   }
 
   /**

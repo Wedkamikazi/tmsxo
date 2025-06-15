@@ -569,6 +569,33 @@ class ServiceOrchestrator {
     console.log('✅ System Shutdown Complete');
   }
 
+  // INITIALIZE ML SERVICES IN BACKGROUND (NON-BLOCKING)
+  private async initializeMLServicesInBackground(): Promise<void> {
+    console.log('🤖 Starting ML services initialization in background...');
+    
+    const mlServices = [
+      'mlCategorizationService',
+      'mlNaturalLanguageService', 
+      'mlPredictiveAnalyticsService'
+    ];
+
+    // Initialize each ML service with a delay to prevent blocking
+    for (const serviceName of mlServices) {
+      setTimeout(async () => {
+        try {
+          const service = this.services.get(serviceName)?.service;
+          if (service && typeof service.ensureInitialized === 'function') {
+            console.log(`🔧 Background initializing ${serviceName}...`);
+            await service.ensureInitialized();
+            console.log(`✅ ${serviceName} background initialization complete`);
+          }
+        } catch (error) {
+          console.warn(`⚠️ ${serviceName} background initialization failed:`, error);
+        }
+      }, Math.random() * 2000); // Stagger initialization with random delay
+    }
+  }
+
   // SETUP GLOBAL HANDLERS
   private setupGlobalHandlers(): void {
     // Handle page unload

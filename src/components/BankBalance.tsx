@@ -143,7 +143,7 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
 
   // Statistics
   const stats: BalanceStats = useMemo(() => {
-    return bankBalanceService.getBalanceStats(filteredAndSortedBalances);
+    return unifiedBalanceService.getBalanceStats(filteredAndSortedBalances);
   }, [filteredAndSortedBalances]);
 
   // Pagination calculations

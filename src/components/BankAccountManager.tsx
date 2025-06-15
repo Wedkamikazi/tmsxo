@@ -240,7 +240,7 @@ export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccoun
 
     try {
       const newBalance = parseFloat(balanceFormData.newBalance);
-      const updatedAccount = balanceManagementService.updateAccountBalance(
+              const updatedAccount = unifiedBalanceService.updateAccountBalance(
         adjustingBalanceAccount,
         newBalance,
         balanceFormData.effectiveDate,

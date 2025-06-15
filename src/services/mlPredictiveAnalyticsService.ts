@@ -74,7 +74,13 @@ class MLPredictiveAnalyticsService {
       
       console.log('✅ Predictive Analytics Models Ready');
     } catch (error) {
-      console.error('❌ Predictive Analytics Initialization Failed:', error);
+      systemIntegrityService.logServiceError(
+        'MLPredictiveAnalyticsService',
+        'initializeAdvancedModels',
+        error instanceof Error ? error : new Error(String(error)),
+        'critical',
+        { component: 'initialization', stage: 'modelCreation' }
+      );
       this.isInitialized = false;
     }
   }

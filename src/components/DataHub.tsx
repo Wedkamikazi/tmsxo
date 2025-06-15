@@ -31,7 +31,7 @@ const isDebugMode = typeof window !== 'undefined' && (
 
 export const DataHub: React.FC = () => {
   // Professional state management - persists across refreshes
-  const [activeTab, setActiveTab] = useState<'bankStatement' | 'accounts' | 'transactions' | 'fileManager' | 'qwenStatus' | 'dataCleanup' | 'ollamaChat' | 'settings' | 'payroll' | 'investments' | 'reports'>(() => getActiveTab() as any);
+  const [activeTab, setActiveTab] = useState<'bankStatement' | 'accounts' | 'transactions' | 'bankBalance' | 'fileManager' | 'qwenStatus' | 'dataCleanup' | 'ollamaChat' | 'settings' | 'payroll' | 'investments' | 'reports'>(() => getActiveTab() as any);
   const [dataRefreshTrigger, setDataRefreshTrigger] = useState(() => getDataRefreshTrigger());
   const [servicesLoaded, setServicesLoaded] = useState(false);
   const [eventBus, setEventBus] = useState<any>(null);

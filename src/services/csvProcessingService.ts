@@ -289,14 +289,22 @@ class CSVProcessingService {
   convertToTransactions(rows: CSVRow[]): Transaction[] {
     const baseTimestamp = Date.now();
     return rows.map((row, index) => {
+      // ONLY USE POST DATE from bank statements (not value date)
+      // Post date is when the transaction was actually posted to the account
+      // Value date is for interest calculation purposes and can be different
+      const primaryDate = row.postDate || row.valueDate; // Post date as primary, value date as fallback only
+      
       // Debug logging for problematic dates
       if (!row.postDate || !this.isValidDate(row.postDate)) {
-        console.warn(`Row ${index + 1}: Invalid postDate "${row.postDate}", using valueDate "${row.valueDate}"`);
+        console.warn(`Row ${index + 1}: Invalid or missing postDate "${row.postDate}", using valueDate "${row.valueDate}" as fallback`);
       }
       
-      // Use valueDate as primary, fallback to postDate
-      const primaryDate = row.valueDate || row.postDate;
       const formattedDate = this.formatDate(primaryDate);
+      
+      // Additional debug logging for 31/12/2024 specifically
+      if (primaryDate.includes('31/12/2024')) {
+        console.log(`Row ${index + 1}: Processing 31/12/2024 - postDate: "${row.postDate}", valueDate: "${row.valueDate}", using: "${primaryDate}", formatted: "${formattedDate}"`);
+      }
       
       // Additional debug logging
       if (formattedDate.includes('Invalid') || formattedDate === primaryDate) {
@@ -311,9 +319,9 @@ class CSVProcessingService {
         creditAmount: Math.abs(this.parseAmount(row.creditAmount)), // Ensure credit amounts are positive for display
         balance: this.parseAmount(row.balance),
         reference: row.customerReference,
-        postDate: primaryDate, // Store the original date value
+        postDate: row.postDate, // Store the actual post date from bank statement
         time: row.time,
-        valueDate: row.valueDate
+        valueDate: row.valueDate // Keep value date for reference but don't use for primary date
       };
     });
   }

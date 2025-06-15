@@ -113,7 +113,14 @@ export const MLIntegrationDashboard: React.FC = () => {
 
   useEffect(() => {
     loadSystemData();
-  }, [loadSystemData]);
+    
+    // Set up periodic data refresh using cleanup hook
+    const refreshInterval = timerCleanup.createInterval('data-refresh', loadSystemData, 60000); // Every minute
+    
+    return () => {
+      timerCleanup.clearInterval('data-refresh');
+    };
+  }, [loadSystemData, timerCleanup]);
 
   // Generate comprehensive performance metrics
   const generatePerformanceMetrics = async (): Promise<ModelPerformanceMetrics> => {

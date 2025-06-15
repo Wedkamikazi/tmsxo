@@ -190,25 +190,21 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
       return [];
     }
     
-    console.log('FILTERING DEBUG: Starting with', transactions.length, 'transactions');
     let filtered = [...transactions];
     
     // Apply filters
     if (filters.accountId) {
       filtered = filtered.filter(t => t.accountId === filters.accountId);
-      console.log('FILTERING DEBUG: After accountId filter:', filtered.length);
     }
     
     if (filters.dateFrom) {
       const fromDate = new Date(filters.dateFrom);
       filtered = filtered.filter(t => new Date(t.postDateTime) >= fromDate);
-      console.log('FILTERING DEBUG: After dateFrom filter:', filtered.length);
     }
     
     if (filters.dateTo) {
       const toDate = new Date(filters.dateTo);
       filtered = filtered.filter(t => new Date(t.postDateTime) <= toDate);
-      console.log('FILTERING DEBUG: After dateTo filter:', filtered.length);
     }
     
     if (filters.description) {
@@ -217,7 +213,6 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
         t.description.toLowerCase().includes(searchTerm) ||
         (t.reference && t.reference.toLowerCase().includes(searchTerm))
       );
-      console.log('FILTERING DEBUG: After description filter:', filtered.length);
     }
     
     if (filters.amountFrom) {
@@ -227,7 +222,6 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
           const amount = Math.abs((t.debitAmount || 0) + (t.creditAmount || 0));
           return amount >= minAmount;
         });
-        console.log('FILTERING DEBUG: After amountFrom filter:', filtered.length);
       }
     }
     
@@ -238,23 +232,19 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
           const amount = Math.abs((t.debitAmount || 0) + (t.creditAmount || 0));
           return amount <= maxAmount;
         });
-        console.log('FILTERING DEBUG: After amountTo filter:', filtered.length);
       }
     }
     
     if (filters.type === 'debits') {
       filtered = filtered.filter(t => (t.debitAmount || 0) > 0);
-      console.log('FILTERING DEBUG: After debits filter:', filtered.length);
     } else if (filters.type === 'credits') {
       filtered = filtered.filter(t => (t.creditAmount || 0) > 0);
-      console.log('FILTERING DEBUG: After credits filter:', filtered.length);
     }
     
     // Show duplicates only
     if (showDuplicatesOnly && duplicateGroups.length > 0) {
       const duplicateIds = new Set(duplicateGroups.flat().map(t => t.id));
       filtered = filtered.filter(t => duplicateIds.has(t.id));
-      console.log('FILTERING DEBUG: After duplicates filter:', filtered.length);
     }
     
     // Sort transactions

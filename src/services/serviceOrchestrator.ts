@@ -7,6 +7,8 @@ import { crossTabSyncService } from './crossTabSyncService';
 import { mlCategorizationService } from './mlCategorizationService';
 import { mlNaturalLanguageService } from './mlNaturalLanguageService';
 import { mlPredictiveAnalyticsService } from './mlPredictiveAnalyticsService';
+import { localOllamaIntegration } from './localOllamaIntegration';
+import { enhancedMLOrchestrator } from './enhancedMLOrchestrator';
 
 // SERVICE ORCHESTRATOR - ULTIMATE SYSTEM INITIALIZATION
 // Manages service startup sequence, dependencies, health monitoring, and graceful shutdown

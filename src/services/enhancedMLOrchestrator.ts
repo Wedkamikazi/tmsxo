@@ -375,7 +375,26 @@ if (isDebugMode) {
     initialize: () => Promise.resolve(),
     categorizeTransaction: () => Promise.resolve({ category: 'Other', confidence: 0.5, reasoning: 'Debug mode' }),
     analyzeTransactions: () => Promise.resolve([]),
-    dispose: () => Promise.resolve()
+    dispose: () => Promise.resolve(),
+    getModelStatus: () => ({
+      tensorflowJS: {
+        categorization: false,
+        sentiment: false,
+        anomaly: false,
+        embedding: false
+      },
+      ollama: {
+        available: false,
+        model: null,
+        health: 'failed' as const
+      },
+      performance: {
+        ollamaResponseTime: 0,
+        tensorflowResponseTime: 0,
+        recommendedStrategy: 'tensorflow-only' as const
+      }
+    }),
+    ensureInitialized: () => Promise.resolve()
   } as any;
 } else {
   enhancedMLOrchestrator = new EnhancedMLOrchestrator();

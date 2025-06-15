@@ -15,9 +15,13 @@ This roadmap addresses critical architectural issues in the Treasury Management 
 
 *Timeline: 2-3 weeks | Priority: URGENT*
 
+> **⚠️ WORKFLOW REMINDER**: Proceed step by step without rushing. One critical aspect that requires careful attention is thoroughly verifying all existing directories before creating new files or deleting them. This means not just searching by name but carefully checking for files that might exist under different names or be nested within other directories. This careful review prevents duplication, conflicts, and inefficiencies, ensuring a smooth and error-free workflow.
+
 ### ✅ Task 1.1: Fix Debug Mode Implementation
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
+
+> **🔍 PRE-TASK VERIFICATION**: Before starting, thoroughly scan the entire codebase for all debug-related files and references. Check for variations like `debug.ts`, `debugUtils.ts`, `development.ts`, or nested debug configurations. Verify no duplicate debug implementations exist.
 
 #### **Objective**
 
@@ -44,11 +48,19 @@ Files to modify:
 
 #### **Estimated Effort (Task 1.1)**: 8-12 hours
 
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each small job step and verify there are no linter errors
+> 2. **Review Request**: Ask for review before continuing to next step
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Documentation**: Record any unexpected discoveries, workarounds, or deviations from the plan
+
 ---
 
 ### ✅ Task 1.2: Implement Proper Resource Cleanup
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
+
+> **🔍 PRE-TASK VERIFICATION**: Scan for existing cleanup patterns, disposal methods, or resource management utilities. Check for files like `cleanup.ts`, `disposal.ts`, `resourceManager.ts`, or similar patterns in services and components. Verify no existing cleanup mechanisms will conflict.
 
 #### **Objective**
 
@@ -94,11 +106,19 @@ Files to modify:
 
 #### **Estimated Effort (Task 1.2)**: 12-16 hours
 
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each small job step and verify there are no linter errors
+> 2. **Review Request**: Ask for review before continuing to next step
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Memory Testing**: Verify no memory leaks using browser dev tools before marking complete
+
 ---
 
 ### ✅ Task 1.3: Fix LocalStorage Quota Management
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
+
+> **🔍 PRE-TASK VERIFICATION**: Search thoroughly for existing storage management utilities, quota handlers, or localStorage wrapper services. Check for files like `storage.ts`, `quota.ts`, `storageUtils.ts`, or embedded storage logic in other services. Verify current storage usage patterns.
 
 #### **Objective**
 
@@ -143,12 +163,19 @@ Files to modify:
 
 #### **Estimated Effort (Task 1.3)**: 16-20 hours
 
+> **📋 POST-TASK REQUIREMENTS**: 
+> 1. **Linter Check**: Pause after each small job step and verify there are no linter errors
+> 2. **Review Request**: Ask for review before continuing to next step
+> 3. **Roadmap Update**: After finishing this task, update this roadmap with completion notes and any issues faced
+> 4. **Storage Testing**: Test quota scenarios with large datasets before marking complete
+
 ---
 
 ### ✅ Task 1.4: Consolidate Categorization Services
 
 **Status**: [ ] Not Started [ ] In Progress [ ] Code Review [ ] Complete
 
+> **🔍 PRE-TASK VERIFICATION**: Perform exhaustive search for ALL categorization-related files throughout the codebase. Check for variations like `category.ts`, `categorize.ts`, `classification.ts`, ML categorization utilities, or nested categorization logic. Map all dependencies and imports before consolidation.
 #### **Objective**
 
 Merge three categorization services into one unified service while preserving all functionality.

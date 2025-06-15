@@ -5,7 +5,6 @@
 import { Transaction } from '../types';
 import { 
   UnifiedCategorizationResult,
-  CategorizationStrategy,
   StrategyRegistry,
   StrategyConfig,
   StrategyPerformance

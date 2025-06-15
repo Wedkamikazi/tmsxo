@@ -1,4 +1,4 @@
-import { isDebugMode } from '../utils/debugMode';
+import { isDebugMode as checkDebugMode } from '../utils/debugMode';
 import * as tf from '@tensorflow/tfjs';
 import { Transaction, MLCategorizationResult } from '../types';
 import { categorizationService } from './categorizationService';

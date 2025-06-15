@@ -87,7 +87,7 @@ export class MLEnhancedMethod implements CategorizationStrategy {
       const processingTime = Date.now() - startTime;
 
       // Convert to unified result format
-      const result: UnifiedCategorizationResult = {
+      let result: UnifiedCategorizationResult = {
         categoryId: mlResult.categoryId,
         categoryName: category?.name || mlResult.categoryId,
         confidence: mlResult.confidence,

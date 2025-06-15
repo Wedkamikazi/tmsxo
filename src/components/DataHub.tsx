@@ -440,10 +440,27 @@ export const DataHub: React.FC = () => {
       {debugBanner}
       <div className="datahub-header">
         <div className="container">
-          <h1 className="datahub-title">DataHub</h1>
-          <p className="datahub-description">
-            Central hub for importing, processing, and managing all your financial data
-          </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h1 className="datahub-title">DataHub</h1>
+              <p className="datahub-description">
+                Central hub for importing, processing, and managing all your financial data
+              </p>
+            </div>
+            {initializationSkipped && (
+              <div style={{
+                background: '#d4edda',
+                color: '#155724',
+                padding: '8px 12px',
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: 500,
+                border: '1px solid #c3e6cb'
+              }}>
+                ⚡ Fast Load: Used cached state
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

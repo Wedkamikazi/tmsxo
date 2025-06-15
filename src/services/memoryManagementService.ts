@@ -1,6 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
 import { eventBus } from './eventBus';
-import { performanceManager } from './performanceManager';
 
 // MEMORY MANAGEMENT SERVICE FOR ML MODELS
 // Handles TensorFlow.js memory lifecycle, garbage collection, and optimization

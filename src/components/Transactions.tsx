@@ -299,15 +299,15 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
   const currentTransactions = filteredAndSortedTransactions.slice(startIndex, endIndex);
 
   // Debug pagination issue (simplified)
-  console.log('PAGINATION DEBUG:', {
-    currentPage,
-    itemsPerPage,
-    totalTransactions,
-    totalPages,
-    startIndex,
-    endIndex,
-    currentTransactionsLength: currentTransactions.length
-  });
+  if (currentTransactions.length !== itemsPerPage && totalTransactions > 0) {
+    console.log('PAGINATION ISSUE:', {
+      currentPage,
+      itemsPerPage,
+      totalTransactions,
+      totalPages,
+      currentTransactionsLength: currentTransactions.length
+    });
+  }
 
 
 

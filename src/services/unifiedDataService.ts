@@ -127,7 +127,7 @@ class UnifiedDataService {
     return success;
   }
 
-  // DATA INTEGRITY AND MAINTENANCE
+  // DATA INTEGRITY AND MAINTENANCE - DELEGATED TO SYSTEMINTEGRITYSERVICE
   validateDataIntegrity(): {
     isValid: boolean;
     issues: string[];
@@ -140,64 +140,47 @@ class UnifiedDataService {
     integrityScore: number;
     recommendations: string[];
   } {
-    const result = localStorageManager.validateDataIntegrity();
-    const transactions = this.getAllTransactions();
-    const files = this.getAllFiles();
-    
-    // Count orphaned data
-    const accounts = this.getAllAccounts();
-    const accountIds = new Set(accounts.map(a => a.id));
-    const fileIds = new Set(files.map(f => f.id));
-    
-    const orphanedTransactions = transactions.filter(t => !accountIds.has(t.accountId)).length;
-    const orphanedFiles = transactions.filter(t => t.fileId && !fileIds.has(t.fileId)).length;
-    
-    // ENHANCED DUPLICATE DETECTION
-    const { duplicateDetectionService } = require('./duplicateDetectionService');
-    const duplicateReport = duplicateDetectionService.findSophisticatedDuplicates(transactions);
-    
-    // DATA ANOMALY DETECTION
-    const anomalies = this.findDataAnomalies(transactions, accounts);
-    
-    // CALCULATE INTEGRITY SCORE (0-100)
-    let integrityScore = 100;
-    integrityScore -= result.issues.length * 5; // Storage issues
-    integrityScore -= orphanedTransactions * 2; // Orphaned transactions
-    integrityScore -= orphanedFiles * 2; // Orphaned files
-    integrityScore -= duplicateReport.duplicates.length * 3; // Duplicates
-    integrityScore -= anomalies.length * 2; // Anomalies
-    integrityScore = Math.max(0, integrityScore);
-    
-    // GENERATE RECOMMENDATIONS
-    const recommendations: string[] = [];
-    if (duplicateReport.duplicates.length > 0) {
-      recommendations.push(`Remove ${duplicateReport.duplicates.length} duplicate transactions`);
+    // Delegate to centralized integrity service for comprehensive validation
+    try {
+      const comprehensiveResult = systemIntegrityService.performComprehensiveDataIntegrity();
+      
+      // Convert the comprehensive result to match the expected interface
+      return {
+        isValid: comprehensiveResult.isValid,
+        issues: comprehensiveResult.issues.map(issue => issue.description),
+        totalTransactions: comprehensiveResult.summary.totalTransactions,
+        totalFiles: comprehensiveResult.summary.totalFiles,
+        orphanedTransactions: comprehensiveResult.summary.orphanedTransactions,
+        orphanedFiles: comprehensiveResult.summary.orphanedFiles,
+        duplicateTransactions: comprehensiveResult.duplicateReport.duplicates,
+        anomalies: comprehensiveResult.anomalies,
+        integrityScore: comprehensiveResult.integrityScore,
+        recommendations: comprehensiveResult.recommendations
+      };
+    } catch (error) {
+      // Fallback to basic validation if comprehensive check fails
+      systemIntegrityService.logServiceError(
+        'UnifiedDataService',
+        'validateDataIntegrity',
+        error instanceof Error ? error : new Error(String(error)),
+        'high',
+        { fallbackUsed: true }
+      );
+      
+      const result = localStorageManager.validateDataIntegrity();
+      return {
+        isValid: result.isValid,
+        issues: result.issues,
+        totalTransactions: result.stats.itemCounts.transactions,
+        totalFiles: result.stats.itemCounts.files,
+        orphanedTransactions: 0,
+        orphanedFiles: 0,
+        duplicateTransactions: [],
+        anomalies: [],
+        integrityScore: result.isValid ? 100 : 50,
+        recommendations: result.isValid ? [] : ['Run data cleanup operations']
+      };
     }
-    if (orphanedTransactions > 0) {
-      recommendations.push(`Clean up ${orphanedTransactions} orphaned transactions`);
-    }
-    if (orphanedFiles > 0) {
-      recommendations.push(`Fix ${orphanedFiles} file-transaction mismatches`);
-    }
-    if (anomalies.length > 0) {
-      recommendations.push(`Review ${anomalies.length} data anomalies`);
-    }
-    if (result.stats.totalSize > 5000) {
-      recommendations.push('Consider archiving old data (storage > 5MB)');
-    }
-    
-    return {
-      isValid: result.isValid && duplicateReport.duplicates.length === 0 && anomalies.length === 0,
-      issues: result.issues,
-      totalTransactions: result.stats.itemCounts.transactions,
-      totalFiles: result.stats.itemCounts.files,
-      orphanedTransactions,
-      orphanedFiles,
-      duplicateTransactions: duplicateReport.duplicates,
-      anomalies,
-      integrityScore,
-      recommendations
-    };
   }
 
   // COMPREHENSIVE DATA ANOMALY DETECTION

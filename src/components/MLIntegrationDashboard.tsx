@@ -30,6 +30,15 @@ export const MLIntegrationDashboard: React.FC = () => {
   const tensorFlowCleanup = useTensorFlowCleanup('MLIntegrationDashboard');
   const timerCleanup = useTimerCleanup('MLIntegrationDashboard');
 
+  // Register any TensorFlow models loaded in this component
+  useEffect(() => {
+    // If this component creates any TensorFlow models, register them here
+    // For now, we use the cleanup for general TensorFlow memory management
+    return () => {
+      tensorFlowCleanup.cleanup();
+    };
+  }, [tensorFlowCleanup]);
+
   const [systemStatus, setSystemStatus] = useState<MLSystemStatus | null>(null);
   const [predictiveInsights, setPredictiveInsights] = useState<PredictiveInsight[]>([]);
   const [recentAnalyses, setRecentAnalyses] = useState<Array<{

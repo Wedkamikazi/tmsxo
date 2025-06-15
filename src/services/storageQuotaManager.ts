@@ -665,7 +665,7 @@ class StorageQuotaManager {
   private compressData(data: any): string {
     try {
       // Simple compression: remove unnecessary whitespace and optimize structure
-      return JSON.stringify(data, (key, value) => {
+      return JSON.stringify(data, (_, value) => {
         // Remove null/undefined values to reduce size
         return value === null || value === undefined ? undefined : value;
       });

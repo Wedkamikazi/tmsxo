@@ -8,33 +8,50 @@ import SimpleDataCleanup from './SimpleDataCleanup';
 import { ErrorBoundary } from './ErrorBoundary';
 import SystemHealthMonitor from './SystemHealthMonitor';
 import { Transaction, BankAccount } from '../types';
-// Conditional imports based on debug mode
-let eventBus: any = null;
-let unifiedDataService: any = null;
-
-// Only import services if not in debug mode
-const isDebugMode = window.location.search.includes('debug') || localStorage.getItem('debugMode') === 'true';
-if (!isDebugMode) {
-  try {
-    const eventBusModule = require('../services/eventBus');
-    const unifiedDataServiceModule = require('../services/unifiedDataService');
-    eventBus = eventBusModule.eventBus;
-    unifiedDataService = unifiedDataServiceModule.unifiedDataService;
-  } catch (error) {
-    console.warn('Services not available in debug mode:', error);
-  }
-}
-
 import './DataHub.css';
+
+// Check for debug mode
+const isDebugMode = typeof window !== 'undefined' && (
+  window.location.search.includes('debug') || 
+  localStorage.getItem('debugMode') === 'true'
+);
 
 export const DataHub: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'bankStatement' | 'accounts' | 'transactions' | 'fileManager' | 'qwenStatus' | 'dataCleanup' | 'payroll' | 'investments' | 'reports'>('bankStatement');
   const [dataRefreshTrigger, setDataRefreshTrigger] = useState(0);
+  const [servicesLoaded, setServicesLoaded] = useState(false);
+  const [eventBus, setEventBus] = useState<any>(null);
+  const [unifiedDataService, setUnifiedDataService] = useState<any>(null);
 
   useEffect(() => {
     // Skip service operations in debug mode
-    if (isDebugMode || !unifiedDataService || !eventBus) {
+    if (isDebugMode) {
       console.log('🚨 DataHub: Running in debug mode - skipping service operations');
+      return;
+    }
+
+    // Dynamically load services only when not in debug mode
+    const loadServices = async () => {
+      try {
+        const [eventBusModule, unifiedDataServiceModule] = await Promise.all([
+          import('../services/eventBus'),
+          import('../services/unifiedDataService')
+        ]);
+        
+        setEventBus(eventBusModule.eventBus);
+        setUnifiedDataService(unifiedDataServiceModule.unifiedDataService);
+        setServicesLoaded(true);
+      } catch (error) {
+        console.warn('Failed to load services:', error);
+      }
+    };
+
+    loadServices();
+  }, []);
+
+  useEffect(() => {
+    // Skip service operations if in debug mode or services not loaded
+    if (isDebugMode || !servicesLoaded || !unifiedDataService || !eventBus) {
       return;
     }
 
@@ -91,7 +108,7 @@ export const DataHub: React.FC = () => {
       unsubscribeFilesUpdated();
       unsubscribeAccountsUpdated();
     };
-  }, []);
+  }, [servicesLoaded, unifiedDataService, eventBus]);
 
   const handleImportComplete = (transactions: Transaction[], bankAccount: BankAccount) => {
     console.log(`Imported ${transactions.length} transactions for ${bankAccount.name}`);

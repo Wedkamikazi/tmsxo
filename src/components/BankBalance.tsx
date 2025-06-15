@@ -57,7 +57,7 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
       setBankAccounts(accounts);
       
       // Load daily balances
-      const dailyBalances = bankBalanceService.getDailyBalances();
+      const dailyBalances = unifiedBalanceService.getDailyBalances();
       setBalances(dailyBalances);
       
     } catch (err) {

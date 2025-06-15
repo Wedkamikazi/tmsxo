@@ -1,3 +1,4 @@
+import { DEBUG_MODE_ACTIVE } from '../utils/debugMode';
 import { eventBus } from './eventBus';
 import { localStorageManager } from './localStorageManager';
 import { unifiedDataService } from './unifiedDataService';
@@ -11,11 +12,7 @@ import { localOllamaIntegration } from './localOllamaIntegration';
 import { enhancedMLOrchestrator } from './enhancedMLOrchestrator';
 
 // Check for debug mode to prevent service initialization
-const isDebugMode = typeof window !== 'undefined' && (
-  window.location.search.includes('debug') || 
-  localStorage.getItem('debugMode') === 'true' ||
-  (window as any).__TREASURY_DEBUG_MODE === true
-);
+const isDebugMode = DEBUG_MODE_ACTIVE;
 
 // SERVICE ORCHESTRATOR - ULTIMATE SYSTEM INITIALIZATION
 // Manages service startup sequence, dependencies, health monitoring, and graceful shutdown

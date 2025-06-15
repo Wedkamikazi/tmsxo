@@ -428,7 +428,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
     const uncategorized = total - categorized;
     const mlCategorized = categorizations.filter(c => c.method === 'ml').length;
     const manualCategorized = categorizations.filter(c => c.method === 'manual').length;
-    const enhancedCategorized = categorizations.filter(c => c.method === 'enhanced').length;
+         const enhancedCategorized = categorizations.filter(c => c.method === 'ml').length;
     const averageMLConfidence = categorizations
       .filter(c => c.method === 'ml' && c.confidence !== undefined)
       .reduce((sum, c, _, arr) => sum + (c.confidence || 0) / arr.length, 0);

@@ -179,6 +179,7 @@ export interface CreditTransactionView {
   date: string;
   description: string;
   creditAmount: number;
+  debitAmount: number;
   balance: number;
   accountId: string;
   accountName: string;
@@ -186,6 +187,17 @@ export interface CreditTransactionView {
   postDate?: string;
   time?: string;
   categorization?: TransactionCategorization;
+  amount: number;
+  reconciliation?: any;
+  arEntry?: any;
+  forecastEntry?: any;
+  matchConfidence?: number;
+  reconciliationStatus: 'matched' | 'unmatched' | 'disputed' | 'manual';
+  importDate: string;
+  fileId?: string;
+  postDateTime: string;
+  categoryId?: string;
+  manualCategoryId?: string;
 }
 
 // Collection Types

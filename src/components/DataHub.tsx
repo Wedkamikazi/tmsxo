@@ -111,41 +111,49 @@ export const DataHub: React.FC = () => {
       }
     }
 
-    // Subscribe to all data events for UI updates
-    const unsubscribeTransactions = eventBus.on('TRANSACTIONS_UPDATED', () => {
-      setDataRefreshTrigger(prev => prev + 1);
-    });
+    // Subscribe to all data events for UI updates (only if we have eventBus)
+    if (eventBus) {
+      const unsubscribeTransactions = eventBus.on('TRANSACTIONS_UPDATED', () => {
+        const newTrigger = incrementDataRefresh();
+        setDataRefreshTrigger(newTrigger);
+      });
 
-    const unsubscribeFiles = eventBus.on('FILE_UPLOADED', () => {
-      setDataRefreshTrigger(prev => prev + 1);
-    });
+      const unsubscribeFiles = eventBus.on('FILE_UPLOADED', () => {
+        const newTrigger = incrementDataRefresh();
+        setDataRefreshTrigger(newTrigger);
+      });
 
-    const unsubscribeDelete = eventBus.on('FILE_DELETED', () => {
-      setDataRefreshTrigger(prev => prev + 1);
-    });
+      const unsubscribeDelete = eventBus.on('FILE_DELETED', () => {
+        const newTrigger = incrementDataRefresh();
+        setDataRefreshTrigger(newTrigger);
+      });
 
-    const unsubscribeAccounts = eventBus.on('ACCOUNT_UPDATED', () => {
-      setDataRefreshTrigger(prev => prev + 1);
-    });
+      const unsubscribeAccounts = eventBus.on('ACCOUNT_UPDATED', () => {
+        const newTrigger = incrementDataRefresh();
+        setDataRefreshTrigger(newTrigger);
+      });
 
-    // Add listeners for new events
-    const unsubscribeFilesUpdated = eventBus.on('FILES_UPDATED', () => {
-      setDataRefreshTrigger(prev => prev + 1);
-    });
+      // Add listeners for new events
+      const unsubscribeFilesUpdated = eventBus.on('FILES_UPDATED', () => {
+        const newTrigger = incrementDataRefresh();
+        setDataRefreshTrigger(newTrigger);
+      });
 
-    const unsubscribeAccountsUpdated = eventBus.on('ACCOUNTS_UPDATED', () => {
-      setDataRefreshTrigger(prev => prev + 1);
-    });
+      const unsubscribeAccountsUpdated = eventBus.on('ACCOUNTS_UPDATED', () => {
+        const newTrigger = incrementDataRefresh();
+        setDataRefreshTrigger(newTrigger);
+      });
 
-    return () => {
-      unsubscribeTransactions();
-      unsubscribeFiles();
-      unsubscribeDelete();
-      unsubscribeAccounts();
-      unsubscribeFilesUpdated();
-      unsubscribeAccountsUpdated();
-    };
-  }, [servicesLoaded, unifiedDataService, eventBus]);
+      return () => {
+        unsubscribeTransactions();
+        unsubscribeFiles();
+        unsubscribeDelete();
+        unsubscribeAccounts();
+        unsubscribeFilesUpdated();
+        unsubscribeAccountsUpdated();
+      };
+    }
+  }, [servicesLoaded, unifiedDataService, eventBus, initializationSkipped]);
 
   const handleImportComplete = (transactions: Transaction[], bankAccount: BankAccount) => {
     console.log(`Imported ${transactions.length} transactions for ${bankAccount.name}`);

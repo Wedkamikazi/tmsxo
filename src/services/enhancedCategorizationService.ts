@@ -415,7 +415,7 @@ class EnhancedCategorizationService {
     console.log(`📋 Loaded ${categories.length} category mappings`);
   }
 
-  private createDefaultResult(transaction: Transaction, processingTime: number): CategorizationResult {
+  private createDefaultResult(_transaction: Transaction, processingTime: number): CategorizationResult {
     this.performance.methodBreakdown.default++;
     
     return {

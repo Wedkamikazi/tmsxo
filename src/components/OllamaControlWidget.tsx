@@ -57,24 +57,32 @@ const OllamaControlWidget: React.FC = () => {
     setStatus(prev => ({ ...prev, isLoading: true }));
     
     try {
-      // In browser environment, we can't actually start processes
-      // Show instructions to user
-      setStatus(prev => ({ 
-        ...prev, 
-        isLoading: false, 
-        error: 'Browser Limitation: Please manually start Ollama in terminal with the command shown in console' 
-      }));
+      const response = await fetch('http://localhost:3001/api/ollama/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
       
-      // Log the command for reference
-      console.log('🚀 MANUAL ACTION REQUIRED: Start Ollama with this command in PowerShell:');
-      console.log('   $env:OLLAMA_ORIGINS="*"; $env:OLLAMA_NUM_PARALLEL="1"; $env:OLLAMA_MAX_LOADED_MODELS="1"; $env:OLLAMA_GPU_OVERHEAD="2048"; ollama serve');
-      console.log('   This ensures safe operation with proper environment variables');
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log('✅ Ollama started successfully:', result.message);
+        // Wait a moment then check status
+        setTimeout(() => {
+          checkStatus();
+        }, 2000);
+      } else {
+        setStatus(prev => ({ 
+          ...prev, 
+          isLoading: false, 
+          error: result.message 
+        }));
+      }
       
     } catch (error) {
       setStatus(prev => ({ 
         ...prev, 
         isLoading: false, 
-        error: 'Failed to start Ollama' 
+        error: 'Failed to start Ollama - Is the process controller running?' 
       }));
     }
   };

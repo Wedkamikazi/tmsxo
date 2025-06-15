@@ -1,7 +1,7 @@
 import * as tf from '@tensorflow/tfjs';
 import { Transaction, MLCategorizationResult } from '../types';
 import { localOllamaIntegration } from './localOllamaIntegration';
-import { systemIntegrityService } from './systemIntegrityService';
+// import { systemIntegrityService } from './systemIntegrityService';
 import { performanceManager } from './performanceManager';
 import { localStorageManager } from './localStorageManager';
 import { categorizationService } from './categorizationService';

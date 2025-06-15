@@ -333,13 +333,23 @@ export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccoun
       <div className="accounts-section">
         <div className="section-header">
           <h3>Your Bank Accounts ({accounts.length})</h3>
-          <button
-            type="button"
-            onClick={handleAddAccount}
-            className="btn btn-primary"
-          >
-            Add New Account
-          </button>
+          <div className="section-actions">
+            <button
+              type="button"
+              onClick={handleUpdateBalances}
+              className="btn btn-secondary"
+              title="Update all account balances based on most recent transactions"
+            >
+              Update Balances
+            </button>
+            <button
+              type="button"
+              onClick={handleAddAccount}
+              className="btn btn-primary"
+            >
+              Add New Account
+            </button>
+          </div>
         </div>
 
         {accounts.length === 0 ? (

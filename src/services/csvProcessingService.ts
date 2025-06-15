@@ -248,18 +248,18 @@ class CSVProcessingService {
         const part2 = parseInt(parts[1]);
         const year = parseInt(parts[2]);
         
-        // Try MM/DD/YYYY format first (US format)
-        if (part1 >= 1 && part1 <= 12 && part2 >= 1 && part2 <= 31 && year >= 1900 && year <= 2100) {
-          const date = new Date(year, part1 - 1, part2);
-          if (date.getFullYear() === year && date.getMonth() === part1 - 1 && date.getDate() === part2) {
+        // Try DD/MM/YYYY format first (European format - based on user's CSV)
+        if (part1 >= 1 && part1 <= 31 && part2 >= 1 && part2 <= 12 && year >= 1900 && year <= 2100) {
+          const date = new Date(year, part2 - 1, part1);
+          if (date.getFullYear() === year && date.getMonth() === part2 - 1 && date.getDate() === part1) {
             return true;
           }
         }
         
-        // Try DD/MM/YYYY format (European format) 
-        if (part1 >= 1 && part1 <= 31 && part2 >= 1 && part2 <= 12 && year >= 1900 && year <= 2100) {
-          const date = new Date(year, part2 - 1, part1);
-          if (date.getFullYear() === year && date.getMonth() === part2 - 1 && date.getDate() === part1) {
+        // Try MM/DD/YYYY format (US format) as fallback
+        if (part1 >= 1 && part1 <= 12 && part2 >= 1 && part2 <= 31 && year >= 1900 && year <= 2100) {
+          const date = new Date(year, part1 - 1, part2);
+          if (date.getFullYear() === year && date.getMonth() === part1 - 1 && date.getDate() === part2) {
             return true;
           }
         }

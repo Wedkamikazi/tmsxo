@@ -766,8 +766,35 @@ let performanceManager: PerformanceManager;
 if (isDebugMode) {
   console.log('🚨 PerformanceManager: Debug mode detected - creating mock instance (no TensorFlow)');
   performanceManager = {
-    getMemoryHealthStatus: () => ({ isHealthy: true, overall: 'excellent', details: {} }),
+    getMemoryHealthStatus: () => ({ 
+      status: 'healthy' as const,
+      currentUsage: 25,
+      threshold: 'normal',
+      recommendations: [],
+      modelStats: { total: 0, active: 0, inactive: 0, highPriority: 0 },
+      cacheStats: { size: 0, hitRate: 1.0, memoryUsage: 0 }
+    }),
+    getPerformanceReport: () => ({
+      metrics: {
+        memoryUsage: 25,
+        cacheSize: 0,
+        operationCount: 0,
+        averageResponseTime: 0,
+        errorCount: 0,
+        lastCleanup: new Date()
+      },
+      memoryStats: {
+        used: 25,
+        total: 100,
+        percentage: 25
+      },
+      cacheHitRate: 1.0,
+      recommendations: ['Debug mode - all services mocked']
+    }),
     registerModel: () => {},
+    setCache: () => {},
+    getCache: () => null,
+    startOperation: () => () => {},
     dispose: () => Promise.resolve()
   } as any;
 } else {

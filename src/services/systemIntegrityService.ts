@@ -298,19 +298,25 @@ class SystemIntegrityService {
     // Get storage stats
     const storageStats = localStorageManager.getStorageStats();
     
+    // Get cross-tab sync stats
+    const syncStats = crossTabSyncService.getSyncStats();
+    
     return {
       overall,
       components: {
         storage: storageHealth,
         eventBus: eventBusHealth,
         dataIntegrity: dataIntegrityHealth,
-        performance: performanceHealth
+        performance: performanceHealth,
+        crossTabSync: crossTabSyncHealth
       },
       metrics: {
         storageUsed: storageStats.totalSize,
         eventLatency: Date.now() - startTime,
-        dataConsistency: healthyComponents / 4,
-        errorRate: this.calculateErrorRate()
+        dataConsistency: healthyComponents / 5,
+        errorRate: this.calculateErrorRate(),
+        activeTabs: syncStats.activeTabs,
+        syncConflicts: syncStats.conflictsDetected - syncStats.conflictsResolved
       },
       lastCheck: new Date().toISOString()
     };

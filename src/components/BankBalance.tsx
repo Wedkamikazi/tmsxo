@@ -182,7 +182,7 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
 
   const handleExport = () => {
     try {
-      const csvContent = bankBalanceService.exportToCSV(filteredAndSortedBalances);
+      const csvContent = unifiedBalanceService.exportToCSV(filteredAndSortedBalances);
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       

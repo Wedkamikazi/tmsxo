@@ -492,7 +492,13 @@ class LocalStorageManager {
     try {
       localStorage.setItem(key, JSON.stringify(data));
     } catch (error) {
-      console.error(`Error saving ${key}:`, error);
+      systemIntegrityService.logServiceError(
+        'LocalStorageManager',
+        'setStorageData',
+        error instanceof Error ? error : new Error(String(error)),
+        'high',
+        { key, operation: 'save' }
+      );
       throw error;
     }
   }

@@ -297,10 +297,238 @@ export class TensorFlowMethod implements CategorizationStrategy {
     }
   }
 
-  // STORAGE METHODS (to be implemented in next micro-job)
-  private loadOrCreateModels(): Promise<void> {
-    // Placeholder - will be implemented in next micro-job
-    return Promise.resolve();
+  // TENSORFLOW.JS MODEL CREATION AND LOADING
+  private async loadOrCreateModels(): Promise<void> {
+    console.log('🔧 Loading/Creating TensorFlow.js Models...');
+    
+    try {
+      // Try to load existing models from localStorage
+      await this.loadModelsFromStorage();
+      console.log('📂 Models loaded from localStorage');
+    } catch (error) {
+      console.log('📦 Creating new models...');
+      await this.createNewModels();
+      await this.saveModelsToStorage();
+    }
+  }
+
+  // CREATE ADVANCED NEURAL NETWORK MODELS
+  private async createNewModels(): Promise<void> {
+    const vocabSize = Math.max(this.vocabulary.size, this.modelConfig.vocabSize);
+    const numCategories = Math.max(this.categoryMapping.size, this.modelConfig.numCategories);
+    
+    // Update model config with actual sizes
+    this.modelConfig.vocabSize = vocabSize;
+    this.modelConfig.numCategories = numCategories;
+    
+    console.log(`🔧 Creating models - Vocab: ${vocabSize}, Categories: ${numCategories}`);
+    
+    // TRANSACTION CATEGORIZATION MODEL (Enhanced)
+    this.categorizationModel = tf.sequential({
+      layers: [
+        // Embedding layer for text vectorization
+        tf.layers.embedding({
+          inputDim: vocabSize,
+          outputDim: this.modelConfig.embeddingDim,
+          inputLength: this.modelConfig.sequenceLength
+        }),
+        
+        // Bidirectional LSTM for sequence understanding
+        tf.layers.bidirectional({
+          layer: tf.layers.lstm({
+            units: this.modelConfig.lstmUnits,
+            returnSequences: true,
+            dropout: this.modelConfig.dropoutRate,
+            recurrentDropout: this.modelConfig.dropoutRate
+          })
+        }),
+        
+        // Global average pooling
+        tf.layers.globalAveragePooling1d(),
+        
+        // Dense layers with batch normalization
+        tf.layers.dense({ 
+          units: this.modelConfig.denseUnits[0], 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.batchNormalization(),
+        tf.layers.dropout({ rate: 0.5 }),
+        
+        tf.layers.dense({ 
+          units: this.modelConfig.denseUnits[1], 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.batchNormalization(),
+        tf.layers.dropout({ rate: this.modelConfig.dropoutRate }),
+        
+        // Output layer with softmax for probability distribution
+        tf.layers.dense({ units: numCategories, activation: 'softmax' })
+      ]
+    });
+    
+    this.categorizationModel.compile({
+      optimizer: tf.train.adam(this.modelConfig.learningRate),
+      loss: 'categoricalCrossentropy',
+      metrics: ['accuracy']
+    });
+
+    // SENTIMENT ANALYSIS MODEL
+    this.sentimentModel = tf.sequential({
+      layers: [
+        tf.layers.embedding({
+          inputDim: vocabSize,
+          outputDim: 64,
+          inputLength: this.modelConfig.sequenceLength
+        }),
+        tf.layers.lstm({ units: 32, dropout: 0.2 }),
+        tf.layers.dense({ 
+          units: 16, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.dense({ units: 3, activation: 'softmax' }) // positive, neutral, negative
+      ]
+    });
+    
+    this.sentimentModel.compile({
+      optimizer: 'adam',
+      loss: 'categoricalCrossentropy',
+      metrics: ['accuracy']
+    });
+
+    // ANOMALY DETECTION MODEL (Autoencoder)
+    this.anomalyModel = tf.sequential({
+      layers: [
+        tf.layers.dense({ 
+          units: 48, 
+          activation: 'relu', 
+          inputShape: [10],
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.dropout({ rate: 0.2 }),
+        tf.layers.dense({ 
+          units: 24, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.dense({ 
+          units: 12, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.dense({ 
+          units: 6, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.dense({ 
+          units: 12, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.dense({ 
+          units: 24, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.dense({ 
+          units: 10, 
+          activation: 'linear',
+          kernelInitializer: 'glorotUniform'
+        }) // Autoencoder reconstruction
+      ]
+    });
+    
+    this.anomalyModel.compile({
+      optimizer: 'adam',
+      loss: 'meanSquaredError',
+      metrics: ['mae']
+    });
+
+    // PATTERN RECOGNITION MODEL
+    this.patternModel = tf.sequential({
+      layers: [
+        tf.layers.dense({ 
+          units: 96, 
+          activation: 'relu', 
+          inputShape: [20],
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.batchNormalization(),
+        tf.layers.dropout({ rate: 0.3 }),
+        tf.layers.dense({ 
+          units: 48, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.batchNormalization(),
+        tf.layers.dropout({ rate: 0.2 }),
+        tf.layers.dense({ 
+          units: 24, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.dense({ units: 5, activation: 'softmax' }) // Pattern types
+      ]
+    });
+    
+    this.patternModel.compile({
+      optimizer: tf.train.adamax(0.002),
+      loss: 'categoricalCrossentropy',
+      metrics: ['accuracy']
+    });
+
+    console.log('✅ Advanced TensorFlow.js Models Created');
+  }
+
+  // SAVE MODELS TO LOCAL STORAGE
+  private async saveModelsToStorage(): Promise<void> {
+    try {
+      if (this.categorizationModel) {
+        await this.categorizationModel.save('localstorage://tms-tf-categorization-model');
+        console.log('💾 Categorization model saved to localStorage');
+      }
+      
+      if (this.sentimentModel) {
+        await this.sentimentModel.save('localstorage://tms-tf-sentiment-model');
+        console.log('💾 Sentiment model saved to localStorage');
+      }
+      
+      if (this.anomalyModel) {
+        await this.anomalyModel.save('localstorage://tms-tf-anomaly-model');
+        console.log('💾 Anomaly model saved to localStorage');
+      }
+      
+      if (this.patternModel) {
+        await this.patternModel.save('localstorage://tms-tf-pattern-model');
+        console.log('💾 Pattern model saved to localStorage');
+      }
+      
+    } catch (error) {
+      this.logError('saveModelsToStorage', error, 'high');
+    }
+  }
+
+  // LOAD MODELS FROM LOCAL STORAGE
+  private async loadModelsFromStorage(): Promise<void> {
+    try {
+      this.categorizationModel = await tf.loadLayersModel('localstorage://tms-tf-categorization-model');
+      console.log('📂 Categorization model loaded from localStorage');
+      
+      this.sentimentModel = await tf.loadLayersModel('localstorage://tms-tf-sentiment-model');
+      console.log('📂 Sentiment model loaded from localStorage');
+      
+      this.anomalyModel = await tf.loadLayersModel('localstorage://tms-tf-anomaly-model');
+      console.log('📂 Anomaly model loaded from localStorage');
+      
+      this.patternModel = await tf.loadLayersModel('localstorage://tms-tf-pattern-model');
+      console.log('📂 Pattern model loaded from localStorage');
+      
+    } catch (error) {
+      throw new Error('Models not found in localStorage - will create new models');
+    }
   }
 
   private loadVocabulary(): void {

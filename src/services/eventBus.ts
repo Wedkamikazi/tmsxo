@@ -212,10 +212,17 @@ class EventBus {
     return this.eventHistory.slice(-count);
   }
 
+  // Generate unique event ID
+  private generateEventId(): string {
+    return `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
   // Clear all listeners
   clearAll(): void {
     this.listeners.clear();
+    this.errorHandlers.clear();
     this.eventHistory = [];
+    this.deliveryQueue = [];
   }
 }
 

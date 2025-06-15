@@ -13,7 +13,7 @@ This roadmap addresses critical architectural issues in the Treasury Management 
 
 ## 🎯 **PHASE 1: CRITICAL FIXES**
 
-*Timeline: 2-3 weeks | Priority: URGENT*
+**Timeline: 2-3 weeks | Priority: URGENT**
 
 > **⚠️ WORKFLOW REMINDER**: Proceed step by step without rushing. One critical aspect that requires careful attention is thoroughly verifying all existing directories before creating new files or deleting them. This means not just searching by name but carefully checking for files that might exist under different names or be nested within other directories. This careful review prevents duplication, conflicts, and inefficiencies, ensuring a smooth and error-free workflow.
 
@@ -255,7 +255,7 @@ Merge three categorization services into one unified service while preserving al
 
 ## 🏗️ **PHASE 2: ARCHITECTURE CLEANUP**
 
-*Timeline: 4-5 weeks | Priority: HIGH*
+**Timeline: 4-5 weeks | Priority: HIGH**
 
 > **⚠️ WORKFLOW REMINDER**: This phase involves major architectural changes. Proceed with extreme caution, creating backup branches for each service consolidation. Verify all service dependencies and interactions before making changes.
 
@@ -531,7 +531,7 @@ Reduce bundle size from ~8MB to ~3MB through code splitting and optimization.
 
 ## 🚀 **PHASE 3: PERFORMANCE OPTIMIZATION**
 
-*Timeline: 3-4 weeks | Priority: MEDIUM*
+**Timeline: 3-4 weeks | Priority: MEDIUM**
 
 > **⚠️ WORKFLOW REMINDER**: Performance optimization requires careful measurement before and after changes. Establish baseline metrics before implementing optimizations.
 
@@ -768,7 +768,7 @@ Create a comprehensive performance monitoring system with real-time metrics and 
 
 ## 🎨 **PHASE 4: FEATURE COMPLETION**
 
-*Timeline: 4-5 weeks | Priority: MEDIUM-LOW*
+**Timeline: 4-5 weeks | Priority: MEDIUM-LOW**
 
 > **⚠️ WORKFLOW REMINDER**: Feature development should follow established patterns from previous phases. Ensure all new features integrate seamlessly with consolidated services and state management.
 
@@ -977,7 +977,7 @@ Create comprehensive financial reporting with PDF export capabilities.
 
 ## 🧪 **PHASE 5: TESTING & DOCUMENTATION**
 
-*Timeline: 2-3 weeks | Priority: HIGH*
+**Timeline: 2-3 weeks | Priority: HIGH**
 
 > **⚠️ WORKFLOW REMINDER**: Testing and documentation are critical for project success. Ensure comprehensive coverage and clear documentation for future maintainers.
 

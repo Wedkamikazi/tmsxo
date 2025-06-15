@@ -253,6 +253,42 @@ export const DataHub: React.FC = () => {
       </button>
       <button 
         onClick={() => {
+          clearComponentStates();
+          console.log('🧹 Component states cleared');
+        }}
+        style={{
+          background: 'rgba(255,255,255,0.2)',
+          color: 'white',
+          border: '1px solid rgba(255,255,255,0.3)',
+          padding: '4px 12px',
+          borderRadius: '4px',
+          fontSize: '12px',
+          cursor: 'pointer',
+          marginLeft: '8px'
+        }}
+      >
+        🧹 Clear Cache
+      </button>
+      <button 
+        onClick={() => {
+          const usage = getStateStorageUsage();
+          alert(`State Storage Usage:\nTotal: ${Math.round(usage.totalSize / 1024)}KB\nComponent States: ${Math.round(usage.componentStatesSize / 1024)}KB\nComponents: ${usage.componentCount}`);
+        }}
+        style={{
+          background: 'rgba(255,255,255,0.2)',
+          color: 'white',
+          border: '1px solid rgba(255,255,255,0.3)',
+          padding: '4px 12px',
+          borderRadius: '4px',
+          fontSize: '12px',
+          cursor: 'pointer',
+          marginLeft: '8px'
+        }}
+      >
+        📊 Storage Info
+      </button>
+      <button 
+        onClick={() => {
           stateManager.emergencyReset();
         }}
         style={{

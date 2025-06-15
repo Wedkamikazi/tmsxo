@@ -625,11 +625,11 @@ Add virtual scrolling to transaction lists to handle 10,000+ transactions smooth
 
 > **🔍 PRE-TASK VERIFICATION**: Search for existing migration systems, database versioning utilities, or schema management files. Check for files like `migration.ts`, `schema.ts`, `version.ts`, or database upgrade/downgrade logic. Verify current data schema before implementing migrations.
 
-#### **Objective**
+#### **Objective (Task 3.2)**
 
 Implement a robust data migration system for schema changes and data updates.
 
-#### **Technical Specifications**
+#### **Technical Specifications (Task 3.2)**
 
 **Migration System Features:**
 
@@ -638,7 +638,7 @@ Implement a robust data migration system for schema changes and data updates.
 - Safe rollback capabilities
 - Data validation pre/post migration
 
-#### **Implementation Details**
+#### **Implementation Details (Task 3.2)**
 
 1. **Version Management**
    - Track applied migrations
@@ -655,7 +655,7 @@ Implement a robust data migration system for schema changes and data updates.
    - On data structure changes
    - Manual migration tools
 
-#### **Files to Create**
+#### **Files to Create (Task 3.2)**
 
 - `src/services/migrationService.ts`
 - `src/migrations/index.ts`
@@ -663,12 +663,12 @@ Implement a robust data migration system for schema changes and data updates.
 - `src/migrations/002_enhance_categories.ts`
 - `src/components/MigrationStatus.tsx`
 
-#### **Files to Modify**
+#### **Files to Modify (Task 3.2)**
 
 - `src/services/coreDataService.ts`
 - `src/components/SystemInitializer.tsx`
 
-#### **Acceptance Criteria**
+#### **Acceptance Criteria (Task 3.2)**
 
 - [ ] Automatic migration detection and execution
 - [ ] Safe rollback capabilities

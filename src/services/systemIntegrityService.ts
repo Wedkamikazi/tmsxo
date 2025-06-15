@@ -443,9 +443,8 @@ class SystemIntegrityService {
 
   private async validateFileConsistency(payload: any): Promise<void> {
     // Reserved for future file-specific consistency check implementation
-    // @ts-ignore: payloadData reserved for future implementation
-    const payloadData = payload || {};
-    // TODO: Implement file-specific consistency checks using payloadData.fileId
+    const _payloadData = payload || {};
+    // TODO: Implement file-specific consistency checks using _payloadData.fileId
   }
 
   private async validateGlobalConsistency(): Promise<void> {

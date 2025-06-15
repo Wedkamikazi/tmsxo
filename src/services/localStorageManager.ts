@@ -477,7 +477,13 @@ class LocalStorageManager {
       const data = localStorage.getItem(key);
       return data ? JSON.parse(data) : defaultValue;
     } catch (error) {
-      console.error(`Error loading ${key}:`, error);
+      systemIntegrityService.logServiceError(
+        'LocalStorageManager',
+        'getStorageData',
+        error instanceof Error ? error : new Error(String(error)),
+        'medium',
+        { key, operation: 'load' }
+      );
       return defaultValue;
     }
   }

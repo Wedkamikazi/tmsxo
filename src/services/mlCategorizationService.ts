@@ -1059,10 +1059,10 @@ class MLCategorizationService {
     console.log('🧹 Cleaning up ML resources...');
     
     // Unregister models from memory management
-    memoryManagementService.unregisterModel('categorization-model');
-    memoryManagementService.unregisterModel('sentiment-model');
-    memoryManagementService.unregisterModel('anomaly-model');
-    memoryManagementService.unregisterModel('pattern-model');
+    performanceManager.unregisterModel('categorization-model');
+    performanceManager.unregisterModel('sentiment-model');
+    performanceManager.unregisterModel('anomaly-model');
+    performanceManager.unregisterModel('pattern-model');
     
     if (this.categorizationModel) {
       this.categorizationModel.dispose();

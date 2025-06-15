@@ -323,6 +323,17 @@ class EnhancedMLOrchestrator {
       loss: 'categoricalCrossentropy',
       metrics: ['accuracy']
     });
+    
+    // Register models with cleanup manager
+    if (this.categorizationModel) {
+      cleanupManager.registerTensorFlowModel(
+        'enhanced-orchestrator-categorization-model',
+        this.categorizationModel,
+        'EnhancedMLOrchestrator'
+      );
+    }
+    
+    console.log('✅ Enhanced ML TensorFlow models created and registered for cleanup');
   }
 
   private async categorizeWithTensorFlowPrimary(_transaction: Transaction): Promise<EnhancedMLResult> {

@@ -1,5 +1,5 @@
 import { systemIntegrityService } from './systemIntegrityService';
-import { performanceManager } from './performanceManager';
+// import { performanceManager } from './performanceManager';
 import { localStorageManager } from './localStorageManager';
 
 // LOCAL OLLAMA INTEGRATION SERVICE

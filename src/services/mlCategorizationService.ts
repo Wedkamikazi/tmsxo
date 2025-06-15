@@ -222,7 +222,11 @@ class MLCategorizationService {
           inputLength: 50
         }),
         tf.layers.lstm({ units: 32, dropout: 0.2 }),
-        tf.layers.dense({ units: 16, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 16, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.dense({ units: 3, activation: 'softmax' }) // positive, neutral, negative
       ]
     });

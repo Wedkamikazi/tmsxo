@@ -240,14 +240,43 @@ class MLCategorizationService {
     // ANOMALY DETECTION MODEL
     this.anomalyModel = tf.sequential({
       layers: [
-        tf.layers.dense({ units: 64, activation: 'relu', inputShape: [10] }),
+        tf.layers.dense({ 
+          units: 48, 
+          activation: 'relu', 
+          inputShape: [10],
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.dropout({ rate: 0.2 }),
-        tf.layers.dense({ units: 32, activation: 'relu' }),
-        tf.layers.dense({ units: 16, activation: 'relu' }),
-        tf.layers.dense({ units: 8, activation: 'relu' }),
-        tf.layers.dense({ units: 16, activation: 'relu' }),
-        tf.layers.dense({ units: 32, activation: 'relu' }),
-        tf.layers.dense({ units: 10, activation: 'linear' }) // Autoencoder
+        tf.layers.dense({ 
+          units: 24, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.dense({ 
+          units: 12, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.dense({ 
+          units: 6, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.dense({ 
+          units: 12, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.dense({ 
+          units: 24, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
+        tf.layers.dense({ 
+          units: 10, 
+          activation: 'linear',
+          kernelInitializer: 'glorotUniform'
+        }) // Autoencoder
       ]
     });
     

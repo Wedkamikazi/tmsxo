@@ -50,11 +50,9 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
         (window as any).unifiedDataService = unifiedDataService;
         (window as any).eventBus = eventBus;
         
-        // Import test script
-        await import('../test-quota-management.js');
-        
         console.log('✅ Storage Quota Manager ready and available globally');
-        console.log('🧪 Test suite available - run testQuotaManagement() in console');
+        console.log('🧪 Test suite available in browser console');
+        console.log('📋 Open http://localhost:3000/test-quota-management.html for test interface');
       }
 
       // STEP 4: Continue with normal initialization

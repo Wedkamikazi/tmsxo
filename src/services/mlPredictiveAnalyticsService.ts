@@ -798,7 +798,7 @@ class MLPredictiveAnalyticsService {
       seasonality: boolean;
       riskAssessment: boolean;
     };
-    modelConfig: typeof this.modelConfig;
+    modelConfig: any;
     cacheSize: number;
     tfMemory: any;
   } {

@@ -305,7 +305,11 @@ class MLNaturalLanguageService {
             dropout: 0.3
           })
         }),
-        tf.layers.dense({ units: embeddingDim, activation: 'tanh' }),
+        tf.layers.dense({ 
+          units: embeddingDim, 
+          activation: 'tanh',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.batchNormalization() // Normalize for better training
       ]
     });

@@ -279,6 +279,360 @@ export class TensorFlowMethod implements CategorizationStrategy {
     return [...tokens, ...nGrams];
   }
 
+  // FEATURE PROCESSING METHODS
+  private prepareTextFeatures(description: string): tf.Tensor {
+    const tokens = this.advancedTokenization(description);
+    const sequence = new Array(this.featureConfig.textFeatures.maxSequenceLength).fill(0);
+    
+    // Convert tokens to indices
+    tokens.slice(0, this.featureConfig.textFeatures.maxSequenceLength).forEach((token, index) => {
+      const tokenIndex = this.vocabulary.get(token);
+      if (tokenIndex !== undefined) {
+        sequence[index] = tokenIndex;
+      }
+    });
+    
+    return tf.tensor2d([sequence], [1, this.featureConfig.textFeatures.maxSequenceLength]);
+  }
+
+  private prepareNumericalFeatures(transaction: Transaction): tf.Tensor {
+    const features = [
+      Math.abs(transaction.debitAmount || 0),
+      Math.abs(transaction.creditAmount || 0),
+      transaction.balance,
+      new Date(transaction.date).getDay(), // Day of week
+      new Date(transaction.date).getMonth(), // Month
+      new Date(transaction.date).getHours() || 12, // Hour (default noon)
+      transaction.description.length,
+      (transaction.description.match(/\d/g) || []).length, // Number count
+      (transaction.description.match(/[A-Z]/g) || []).length, // Capital letters
+      transaction.reference ? 1 : 0 // Has reference
+    ];
+    
+    // Normalize features
+    const normalizedFeatures = this.normalizeFeatures(features);
+    return tf.tensor2d([normalizedFeatures], [1, features.length]);
+  }
+
+  private normalizeFeatures(features: number[]): number[] {
+    // Min-max normalization for better model performance
+    const stats = this.getFeatureStats();
+    
+    return features.map((feature, index) => {
+      const min = stats.mins[index] || 0;
+      const max = stats.maxs[index] || 1;
+      return max > min ? (feature - min) / (max - min) : 0;
+    });
+  }
+
+  private getFeatureStats(): { mins: number[]; maxs: number[] } {
+    const allTransactions = localStorageManager.getAllTransactions();
+    
+    if (allTransactions.length === 0) {
+      return {
+        mins: new Array(10).fill(0),
+        maxs: new Array(10).fill(1)
+      };
+    }
+    
+    const features = allTransactions.map(t => [
+      Math.abs(t.debitAmount || 0),
+      Math.abs(t.creditAmount || 0),
+      t.balance,
+      new Date(t.date).getDay(),
+      new Date(t.date).getMonth(),
+      new Date(t.date).getHours() || 12,
+      t.description.length,
+      (t.description.match(/\d/g) || []).length,
+      (t.description.match(/[A-Z]/g) || []).length,
+      t.reference ? 1 : 0
+    ]);
+    
+    const mins = new Array(10).fill(Infinity);
+    const maxs = new Array(10).fill(-Infinity);
+    
+    features.forEach(featureSet => {
+      featureSet.forEach((value, index) => {
+        mins[index] = Math.min(mins[index], value);
+        maxs[index] = Math.max(maxs[index], value);
+      });
+    });
+    
+    return { mins, maxs };
+  }
+
+  // PREDICTION METHODS
+  private async predictCategory(textFeatures: tf.Tensor): Promise<{ categoryId: string; confidence: number; probabilities: number[] }> {
+    if (!this.categorizationModel) {
+      throw new Error('Categorization model not available');
+    }
+    
+    const prediction = this.categorizationModel.predict(textFeatures) as tf.Tensor;
+    const probabilities = await prediction.data();
+    
+    // Find best category
+    let maxIndex = 0;
+    let maxConfidence = probabilities[0];
+    
+    for (let i = 1; i < probabilities.length; i++) {
+      if (probabilities[i] > maxConfidence) {
+        maxConfidence = probabilities[i];
+        maxIndex = i;
+      }
+    }
+    
+    const categoryId = this.reverseCategoryMapping.get(maxIndex) || 'cat_uncategorized';
+    
+    // Cleanup tensors
+    prediction.dispose();
+    
+    return {
+      categoryId,
+      confidence: maxConfidence,
+      probabilities: Array.from(probabilities)
+    };
+  }
+
+  private async predictSentiment(textFeatures: tf.Tensor): Promise<{ sentiment: string; confidence: number }> {
+    if (!this.sentimentModel) {
+      return { sentiment: 'neutral', confidence: 0.5 };
+    }
+    
+    const prediction = this.sentimentModel.predict(textFeatures) as tf.Tensor;
+    const probabilities = await prediction.data();
+    
+    const sentiments = ['negative', 'neutral', 'positive'];
+    let maxIndex = 0;
+    let maxConfidence = probabilities[0];
+    
+    for (let i = 1; i < probabilities.length; i++) {
+      if (probabilities[i] > maxConfidence) {
+        maxConfidence = probabilities[i];
+        maxIndex = i;
+      }
+    }
+    
+    prediction.dispose();
+    
+    return {
+      sentiment: sentiments[maxIndex],
+      confidence: maxConfidence
+    };
+  }
+
+  private async detectAnomaly(numericalFeatures: tf.Tensor): Promise<{ isAnomaly: boolean; score: number }> {
+    if (!this.anomalyModel) {
+      return { isAnomaly: false, score: 0 };
+    }
+    
+    const reconstruction = this.anomalyModel.predict(numericalFeatures) as tf.Tensor;
+    const original = await numericalFeatures.data();
+    const reconstructed = await reconstruction.data();
+    
+    // Calculate reconstruction error
+    let totalError = 0;
+    const originalArray = Array.from(original);
+    const reconstructedArray = Array.from(reconstructed);
+    
+    for (let i = 0; i < originalArray.length; i++) {
+      totalError += Math.pow(originalArray[i] - reconstructedArray[i], 2);
+    }
+    
+    const anomalyScore = totalError / originalArray.length;
+    const isAnomaly = anomalyScore > 0.1; // Threshold for anomaly detection
+    
+    reconstruction.dispose();
+    
+    return {
+      isAnomaly,
+      score: anomalyScore
+    };
+  }
+
+  private async recognizePattern(numericalFeatures: tf.Tensor): Promise<{ pattern: string; confidence: number }> {
+    if (!this.patternModel) {
+      return { pattern: 'regular', confidence: 0.5 };
+    }
+    
+    const prediction = this.patternModel.predict(numericalFeatures) as tf.Tensor;
+    const probabilities = await prediction.data();
+    
+    const patterns = ['recurring', 'seasonal', 'trending', 'irregular', 'regular'];
+    let maxIndex = 0;
+    let maxConfidence = probabilities[0];
+    
+    for (let i = 1; i < probabilities.length; i++) {
+      if (probabilities[i] > maxConfidence) {
+        maxConfidence = probabilities[i];
+        maxIndex = i;
+      }
+    }
+    
+    prediction.dispose();
+    
+    return {
+      pattern: patterns[maxIndex],
+      confidence: maxConfidence
+    };
+  }
+
+  // PREDICTION COMBINATION AND RESULT PROCESSING
+  private combineModelPredictions(
+    transaction: Transaction,
+    categoryPrediction: { categoryId: string; confidence: number; probabilities: number[] },
+    sentimentPrediction: { sentiment: string; confidence: number },
+    anomalyScore: { isAnomaly: boolean; score: number },
+    patternPrediction: { pattern: string; confidence: number }
+  ): any {
+    
+    // Enhanced reasoning with multiple model insights
+    const reasoning = this.generateEnhancedReasoning(
+      categoryPrediction,
+      sentimentPrediction,
+      anomalyScore,
+      patternPrediction,
+      transaction
+    );
+    
+    // Generate alternative categories based on probability distribution
+    const alternativeCategories = categoryPrediction.probabilities
+      .map((prob, index) => ({
+        categoryId: this.reverseCategoryMapping.get(index) || 'unknown',
+        confidence: prob
+      }))
+      .filter(alt => alt.categoryId !== categoryPrediction.categoryId)
+      .sort((a, b) => b.confidence - a.confidence)
+      .slice(0, 3);
+    
+    return {
+      categoryId: categoryPrediction.categoryId,
+      confidence: categoryPrediction.confidence,
+      reasoning,
+      alternativeCategories,
+      metadata: {
+        sentiment: sentimentPrediction.sentiment,
+        sentimentConfidence: sentimentPrediction.confidence,
+        isAnomaly: anomalyScore.isAnomaly,
+        anomalyScore: anomalyScore.score,
+        pattern: patternPrediction.pattern,
+        patternConfidence: patternPrediction.confidence,
+        modelVersion: this.modelStats.modelVersion,
+        predictionTimestamp: new Date().toISOString()
+      }
+    };
+  }
+
+  private generateEnhancedReasoning(
+    categoryPrediction: any,
+    sentimentPrediction: any,
+    anomalyScore: any,
+    patternPrediction: any,
+    transaction: Transaction
+  ): string {
+    const reasons = [];
+    
+    reasons.push(`Neural network confidence: ${(categoryPrediction.confidence * 100).toFixed(1)}%`);
+    
+    if (sentimentPrediction.confidence > 0.7) {
+      reasons.push(`Transaction sentiment: ${sentimentPrediction.sentiment}`);
+    }
+    
+    if (anomalyScore.isAnomaly) {
+      reasons.push(`⚠️ Anomaly detected (score: ${anomalyScore.score.toFixed(3)})`);
+    }
+    
+    if (patternPrediction.confidence > 0.6) {
+      reasons.push(`Pattern identified: ${patternPrediction.pattern}`);
+    }
+    
+    // Add contextual reasoning
+    const amount = Math.abs(transaction.debitAmount || transaction.creditAmount || 0);
+    if (amount > 10000) {
+      reasons.push('Large transaction amount detected');
+    }
+    
+    const timeContext = this.getTimeContext(transaction.date);
+    if (timeContext) {
+      reasons.push(timeContext);
+    }
+    
+    return reasons.join('. ') + '.';
+  }
+
+  private getTimeContext(dateString: string): string | null {
+    const date = new Date(dateString);
+    const hour = date.getHours();
+    const dayOfWeek = date.getDay();
+    
+    if (hour < 6 || hour > 22) {
+      return 'Outside business hours';
+    }
+    
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      return 'Weekend transaction';
+    }
+    
+    return null;
+  }
+
+  private updateModelStats(result: any): void {
+    this.modelStats.totalPredictions++;
+    this.modelStats.averageConfidence = 
+      (this.modelStats.averageConfidence * (this.modelStats.totalPredictions - 1) + result.confidence) / 
+      this.modelStats.totalPredictions;
+  }
+
+  private storePredictionForLearning(transaction: Transaction, result: any): void {
+    const dataPoint: TrainingDataPoint = {
+      transaction,
+      predictedCategory: result.categoryId,
+      actualCategory: result.categoryId, // Will be updated when user provides feedback
+      confidence: result.confidence,
+      wasCorrect: true, // Will be updated when user provides feedback
+      timestamp: new Date().toISOString()
+    };
+    
+    this.trainingHistory.push(dataPoint);
+    
+    // Keep only recent training data to prevent memory bloat
+    if (this.trainingHistory.length > 1000) {
+      this.trainingHistory = this.trainingHistory.slice(-800);
+    }
+    
+    // Save to localStorage periodically
+    if (this.trainingHistory.length % 10 === 0) {
+      try {
+        localStorage.setItem(this.TRAINING_HISTORY_KEY, JSON.stringify(this.trainingHistory));
+      } catch (error) {
+        console.warn('Failed to save training history:', error);
+      }
+    }
+  }
+
+  private getCategoryName(categoryId: string): string {
+    const categories = localStorageManager.getAllCategories();
+    const category = categories.find(c => c.id === categoryId);
+    return category?.name || 'Unknown Category';
+  }
+
+  private generateSuggestions(result: any): string[] {
+    const suggestions = [];
+    
+    if (result.confidence < 0.6) {
+      suggestions.push('Consider manual review due to low confidence');
+    }
+    
+    if (result.metadata.isAnomaly) {
+      suggestions.push('Anomaly detected - verify transaction details');
+    }
+    
+    if (result.alternativeCategories.length > 0 && result.alternativeCategories[0].confidence > 0.4) {
+      suggestions.push(`Alternative: ${this.getCategoryName(result.alternativeCategories[0].categoryId)}`);
+    }
+    
+    return suggestions;
+  }
+
   // UTILITY METHODS
   private createFallbackResult(
     _transaction: Transaction,

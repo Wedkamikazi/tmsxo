@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useCleanup, useTimerCleanup, useEventListenerCleanup } from '../hooks/useCleanup';
 import { Transaction, TransactionCategory, TransactionCategorization as TransactionCategorizationData } from '../types';
 import { unifiedDataService, type StoredTransaction } from '../services/unifiedDataService';
-import { categorizationService } from '../services/categorizationService';
-import { enhancedCategorizationService } from '../services/enhancedCategorizationService';
+import { unifiedCategorizationService } from '../services/unifiedCategorizationService';
+import { categorizationService } from '../services/categorizationService'; // Keep for category management only
 import { enhancedMLOrchestrator } from '../services/enhancedMLOrchestrator';
 import { localOllamaIntegration } from '../services/localOllamaIntegration';
 import './TransactionCategorization.css';

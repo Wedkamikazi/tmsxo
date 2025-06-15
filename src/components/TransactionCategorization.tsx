@@ -154,10 +154,14 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
     loadData();
     checkServiceStatus();
     
-    // Refresh status every 30 seconds
-    const statusInterval = setInterval(checkServiceStatus, 30000);
-    return () => clearInterval(statusInterval);
-  }, [loadData, refreshTrigger, checkServiceStatus]);
+    // Refresh status every 30 seconds using cleanup hook
+    const statusInterval = timerCleanup.createInterval('status-check', checkServiceStatus, 30000);
+    
+    // Manual cleanup on unmount (automatically handled by hook)
+    return () => {
+      timerCleanup.clearInterval('status-check');
+    };
+  }, [loadData, refreshTrigger, checkServiceStatus, timerCleanup]);
 
   // Get categorization data for a transaction
   const getTransactionCategorization = useCallback((transactionId: string): TransactionCategorizationData | undefined => {

@@ -243,7 +243,7 @@ export const SystemHealthMonitor: React.FC<SystemHealthProps> = ({
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         .system-health-monitor {
           background: #f8f9fa;
           border: 1px solid #dee2e6;

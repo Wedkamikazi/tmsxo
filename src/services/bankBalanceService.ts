@@ -1,5 +1,4 @@
 import { unifiedDataService, type StoredTransaction } from './unifiedDataService';
-import { BankAccount } from '../types';
 
 export interface DailyBalance {
   id: string;

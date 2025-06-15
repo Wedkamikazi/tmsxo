@@ -3,6 +3,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { SystemInitializer } from './components/SystemInitializer';
 import { initializeSystemSafety } from './utils/systemSafetyManager';
 import { shouldReinitializeServices } from './utils/stateManager';
+import { dataFixerService } from './services/dataFixer';
 import { DataHub } from './components/DataHub'; // Direct import for instant refresh
 import './styles/globals.css';
 

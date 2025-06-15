@@ -638,5 +638,23 @@ class CrossTabSyncService {
   }
 }
 
-// Export singleton instance
-export const crossTabSyncService = new CrossTabSyncService(); 
+// Check for debug mode
+const isDebugMode = typeof window !== 'undefined' && (
+  window.location.search.includes('debug') || 
+  localStorage.getItem('debugMode') === 'true'
+);
+
+// Export singleton instance (skip in debug mode)
+let crossTabSyncService: CrossTabSyncService;
+
+if (isDebugMode) {
+  console.log('🚨 CrossTabSyncService: Debug mode detected - creating mock instance');
+  crossTabSyncService = {
+    getSyncStats: () => ({ activeTabs: 0, lastSync: Date.now(), syncEnabled: false }),
+    dispose: () => Promise.resolve()
+  } as any;
+} else {
+  crossTabSyncService = new CrossTabSyncService();
+}
+
+export { crossTabSyncService }; 

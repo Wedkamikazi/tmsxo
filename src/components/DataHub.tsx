@@ -514,9 +514,15 @@ export const DataHub: React.FC = () => {
                 borderRadius: '6px',
                 fontSize: '12px',
                 fontWeight: 500,
-                border: '1px solid #c3e6cb'
+                border: '1px solid #c3e6cb',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
               }}>
-                ⚡ Fast Load: Used cached state
+                🚀 Instant Refresh: No reinitialization needed
+                <span style={{ fontSize: '10px', opacity: 0.8 }}>
+                  (Tab: {activeTab})
+                </span>
               </div>
             )}
           </div>

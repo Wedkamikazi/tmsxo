@@ -222,7 +222,7 @@ export const MLIntegrationDashboard: React.FC = () => {
       setIsRetraining(true);
       
       // Simulate user feedback (in real app, this would come from user corrections)
-      const feedback = [
+      const _feedback = [
         {
           transactionId: 'sample-1',
           correctCategory: 'cat_business_expense',

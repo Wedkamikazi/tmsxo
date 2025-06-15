@@ -64,11 +64,29 @@ export const BankAccountManager: React.FC<BankAccountManagerProps> = ({ onAccoun
   const [showBalanceHistory, setShowBalanceHistory] = useState<Record<string, boolean>>({});
 
   const refreshAccounts = useCallback(() => {
-    setAccounts(unifiedDataService.getAllAccounts());
+    console.log('🔄 BANK ACCOUNTS: Refreshing account data...');
+    const freshAccounts = unifiedDataService.getAllAccounts();
+    setAccounts(freshAccounts);
+    
+    // Save state for caching
+    setComponentState('BankAccountManager', {
+      accounts: freshAccounts,
+      isAddingAccount
+    });
+    
     if (onAccountsUpdated) {
       onAccountsUpdated();
     }
-  }, [onAccountsUpdated]);
+  }, [onAccountsUpdated, isAddingAccount]);
+
+  // Register for global refresh
+  useEffect(() => {
+    registerGlobalRefresh('BankAccountManager', refreshAccounts);
+    
+    return () => {
+      unregisterGlobalRefresh('BankAccountManager');
+    };
+  }, [refreshAccounts]);
 
   const resetForm = useCallback(() => {
     setFormData({

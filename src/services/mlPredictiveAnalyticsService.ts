@@ -254,7 +254,13 @@ class MLPredictiveAnalyticsService {
 
       return insights;
     } catch (error) {
-      console.error('❌ Failed to generate insights:', error);
+      systemIntegrityService.logServiceError(
+        'MLPredictiveAnalyticsService',
+        'generateComprehensiveInsights',
+        error instanceof Error ? error : new Error(String(error)),
+        'high',
+        { accountId, cacheKey }
+      );
       return [];
     }
   }

@@ -919,7 +919,7 @@ class MLCategorizationService {
     vocabularySize: number;
     categoriesCount: number;
     lastCheck: string;
-    modelStats: typeof this.modelStats;
+    modelStats: any;
     tfVersion: string;
     modelsLoaded: {
       categorization: boolean;

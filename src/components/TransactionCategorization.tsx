@@ -311,7 +311,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
       .reduce((sum, c, _, arr) => sum + (c.confidence || 0) / arr.length, 0);
 
     // Get Qwen performance stats
-    const qwenStats = mlCategorizationService.getQwenPerformanceStats();
+    const qwenStats = mlCategorizationService.getAdvancedPerformanceStats();
 
     return {
       total,

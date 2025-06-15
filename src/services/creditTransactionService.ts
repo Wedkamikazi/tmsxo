@@ -120,7 +120,7 @@ class CreditTransactionService {
         forecastEntry,
         matchConfidence: undefined,
         reconciliationStatus,
-        postDateTime: `${transaction.postDate || transaction.date}T${transaction.time || '00:00'}:00`
+        postDateTime: `${transaction.date}T${transaction.time || '00:00'}:00`
       };
     }).sort((a, b) => new Date(b.postDateTime).getTime() - new Date(a.postDateTime).getTime());
   }

@@ -202,7 +202,7 @@ class MLPredictiveAnalyticsService {
     this.riskAssessmentModel.compile({
       optimizer: tf.train.adam(0.001),
       loss: 'categoricalCrossentropy',
-      metrics: ['accuracy', 'precision']
+      metrics: ['accuracy'] // Removed unsupported precision metric for TensorFlow.js compatibility
     });
 
     console.log('✅ Advanced Predictive Models Created');

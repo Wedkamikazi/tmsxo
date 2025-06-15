@@ -151,6 +151,7 @@ node processController.js
 ## 🚨 When to Use
 
 Use these termination tools when:
+
 - Development server becomes unresponsive
 - Ports are occupied by zombie processes
 - System resources are not being freed properly

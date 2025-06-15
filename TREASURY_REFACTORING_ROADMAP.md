@@ -37,12 +37,12 @@ Files to modify:
 
 #### **Acceptance Criteria**
 
-- [ ] ML services initialize properly when debug mode is OFF
-- [ ] Mock services work correctly when debug mode is ON
-- [ ] Debug mode can be toggled via URL parameter `?debug=true`
-- [ ] Debug mode can be toggled via localStorage
-- [ ] All existing functionality preserved
-- [ ] No console errors during mode switching
+- [✅] ML services initialize properly when debug mode is OFF
+- [✅] Mock services work correctly when debug mode is ON
+- [✅] Debug mode can be toggled via URL parameter `?debug=true`
+- [✅] Debug mode can be toggled via localStorage
+- [✅] All existing functionality preserved
+- [✅] No console errors during mode switching
 
 #### **Dependencies**: None
 
@@ -72,11 +72,38 @@ Files to modify:
 > - ✅ **ML services now initialize properly when debug mode is OFF**
 > - ✅ Debug mode can be toggled without code changes
 >
+> **🛡️ CRITICAL SAFETY ENHANCEMENT ADDED:**
+>
+> - ✅ **NEW: System Safety Manager** (`src/utils/systemSafetyManager.ts`)
+>   - **MANDATORY SAFETY PROTOCOL**: Prevents duplicate servers, LLMs, and processes
+>   - **Automatic enforcement**: No duplicate Ollama instances, no duplicate Node.js servers
+>   - **Memory monitoring**: Tracks and limits memory usage to prevent system damage
+>   - **Emergency stop**: User can immediately stop all processes if system becomes unstable
+>   - **Startup integration**: Safety rules enforced automatically at application startup
+>   - **Process registration**: All services must register with safety manager before starting
+>   - **Automatic cleanup**: Processes cleaned up on application exit
+>   - **Real-time monitoring**: Continuous health monitoring with visual dashboard
+>
+> **Integration Points:**
+> - ✅ `src/App.tsx` - Safety system initialized at app startup
+> - ✅ `src/components/SystemInitializer.tsx` - Safety dashboard and emergency controls
+> - ✅ `src/services/localOllamaIntegration.ts` - Ollama process registration and cleanup
+>
+> **Safety Features Active:**
+> - 🛡️ **No Duplicate Rule**: Prevents multiple instances of same process type
+> - 📊 **Memory Monitoring**: Tracks memory usage and triggers cleanup at 2GB limit
+> - 🚨 **Emergency Stop**: Immediate process termination for system protection
+> - 🔄 **Automatic Cleanup**: Processes cleaned up on browser close/refresh
+> - 📋 **Process Registry**: All running processes tracked and managed
+> - ⚠️ **Health Monitoring**: Real-time system health with visual indicators
+>
 > **Issues encountered:**
 >
 > - Import conflicts resolved by using aliased imports in services with local debug variables
 > - Linter errors for imports in module body resolved by moving imports to top
 > - Hardcoded debug forcing in SystemInitializer.tsx resolved by removing override code
+> - **CRITICAL**: User reported system damage from multiple Ollama instances using 9GB+ RAM
+> - **SOLUTION**: Implemented comprehensive safety system to prevent future incidents
 >
 > **Verification:** 
 > - ✅ Build completed successfully with no errors
@@ -85,6 +112,8 @@ Files to modify:
 > - ✅ Debug mode toggle works via URL parameter and localStorage
 > - ✅ All 8 services respond correctly to debug mode changes
 > - ✅ ML functionality restored when debug mode is OFF
+> - ✅ **SAFETY SYSTEM TESTED** - Prevents duplicate processes and monitors system health
+> - ✅ **EMERGENCY STOP VERIFIED** - User can immediately stop all processes for safety
 
 ---
 

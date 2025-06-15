@@ -52,7 +52,6 @@ class StorageQuotaManager {
   private readonly QUOTA_EMERGENCY_THRESHOLD = 0.98; // 98%
   
   private readonly MONITORING_INTERVAL = 60000; // 1 minute
-  private readonly CLEANUP_BATCH_SIZE = 50; // Items per cleanup batch
   
   private monitoringTimer: NodeJS.Timeout | null = null;
   private currentQuotaInfo: StorageQuotaInfo | null = null;

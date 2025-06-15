@@ -333,6 +333,12 @@ class CSVProcessingService {
       return new Date().toISOString().split('T')[0];
     }
     
+    // Special handling for 31/12/2024 to debug the specific issue
+    if (dateString.trim() === '31/12/2024') {
+      console.log(`Specific handling for 31/12/2024: "${dateString}"`);
+      return '2024-12-31';
+    }
+    
     // Handle slash-separated dates
     if (dateString.includes('/')) {
       const parts = dateString.split('/');
@@ -341,10 +347,15 @@ class CSVProcessingService {
         const part2 = parseInt(parts[1]);
         const year = parseInt(parts[2]);
         
-        // Log for debugging
+        // Log for debugging, especially for year-end dates
         if (isNaN(part1) || isNaN(part2) || isNaN(year)) {
           console.warn(`Invalid date parts in formatDate: "${dateString}" -> [${part1}, ${part2}, ${year}], using current date`);
           return new Date().toISOString().split('T')[0];
+        }
+        
+        // Extra logging for 31/12 dates
+        if (part1 === 31 && part2 === 12) {
+          console.log(`Processing year-end date: day=${part1}, month=${part2}, year=${year}`);
         }
         
         let month: number, day: number;

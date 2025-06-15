@@ -334,7 +334,7 @@ class EnhancedMLOrchestrator {
     this.performanceMetrics.averageResponseTime = responseTime;
   }
 
-  private createFallbackResult(transaction: Transaction, processingTime: number): EnhancedMLResult {
+  private createFallbackResult(_transaction: Transaction, processingTime: number): EnhancedMLResult {
     return {
       categoryId: 'Other',
       confidence: 0.3,

@@ -49,6 +49,12 @@
   margin: 0;
 }
 
+.section-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
 /* Empty State */
 .empty-state {
   text-align: center;

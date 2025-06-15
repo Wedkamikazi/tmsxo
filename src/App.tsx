@@ -44,12 +44,9 @@ function App(): React.ReactElement {
     initSafety();
   }, [canUseInstantRefresh]);
 
-  // INSTANT REFRESH: If we can use cached state, skip SystemInitializer entirely
-  if (canUseInstantRefresh) {
-    console.log('🚀 INSTANT REFRESH: No loading, no delays - direct render like normal web apps');
-    
-    // Run data fixes in the background for instant refresh mode
-    React.useEffect(() => {
+  // Run data fixes for instant refresh mode
+  React.useEffect(() => {
+    if (canUseInstantRefresh) {
       setTimeout(() => {
         try {
           dataFixerService.runAllFixes();
@@ -57,7 +54,12 @@ function App(): React.ReactElement {
           console.error('❌ Data fixer error in instant refresh mode:', error);
         }
       }, 100); // Small delay to avoid blocking initial render
-    }, []);
+    }
+  }, [canUseInstantRefresh]);
+
+  // INSTANT REFRESH: If we can use cached state, skip SystemInitializer entirely
+  if (canUseInstantRefresh) {
+    console.log('🚀 INSTANT REFRESH: No loading, no delays - direct render like normal web apps');
     
     return (
       <ErrorBoundary componentName="App">

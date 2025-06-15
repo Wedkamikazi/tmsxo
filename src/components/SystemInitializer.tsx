@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { isDebugMode, enableDebugMode, disableDebugMode } from '../utils/debugMode';
 import { systemSafetyManager, initializeSystemSafety } from '../utils/systemSafetyManager';
+import { storageQuotaManager } from '../services/storageQuotaManager';
 // import { serviceOrchestrator, SystemStatus } from '../services/serviceOrchestrator';
 
 interface SystemInitializerProps {

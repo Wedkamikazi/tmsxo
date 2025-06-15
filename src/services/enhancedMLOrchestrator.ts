@@ -359,5 +359,25 @@ class EnhancedMLOrchestrator {
   }
 }
 
-// Export singleton instance
-export const enhancedMLOrchestrator = new EnhancedMLOrchestrator(); 
+// Check for debug mode
+const isDebugMode = typeof window !== 'undefined' && (
+  window.location.search.includes('debug') || 
+  localStorage.getItem('debugMode') === 'true'
+);
+
+// Export singleton instance (skip in debug mode)
+let enhancedMLOrchestrator: EnhancedMLOrchestrator;
+
+if (isDebugMode) {
+  console.log('🚨 EnhancedMLOrchestrator: Debug mode detected - creating mock instance');
+  enhancedMLOrchestrator = {
+    initialize: () => Promise.resolve(),
+    categorizeTransaction: () => Promise.resolve({ category: 'Other', confidence: 0.5, reasoning: 'Debug mode' }),
+    analyzeTransactions: () => Promise.resolve([]),
+    dispose: () => Promise.resolve()
+  } as any;
+} else {
+  enhancedMLOrchestrator = new EnhancedMLOrchestrator();
+}
+
+export { enhancedMLOrchestrator }; 

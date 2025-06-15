@@ -21,7 +21,6 @@ const DEFAULT_ITEMS_PER_PAGE = 50;
 
 export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
   // State management
-  const [balances, setBalances] = useState<DailyBalance[]>([]);
   const [filteredBalances, setFilteredBalances] = useState<DailyBalance[]>([]);
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [stats, setStats] = useState<BankBalanceStats | null>(null);

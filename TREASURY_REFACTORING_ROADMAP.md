@@ -698,11 +698,11 @@ Implement a robust data migration system for schema changes and data updates.
 
 > **🔍 PRE-TASK VERIFICATION**: Search for existing performance monitoring tools, metrics collectors, or dashboard components. Check for files like `monitor.ts`, `metrics.ts`, `dashboard.ts`, or performance tracking utilities. Verify current performance measurement patterns.
 
-#### **Objective**
+#### **Objective (Task 3.3)**
 
 Create a comprehensive performance monitoring system with real-time metrics and alerts.
 
-#### **Technical Specifications**
+#### **Technical Specifications (Task 3.3)**
 
 **Metrics to Track:**
 
@@ -712,7 +712,7 @@ Create a comprehensive performance monitoring system with real-time metrics and 
 - User experience metrics (TTI, FCP, LCP)
 - Business metrics (transactions/sec, accuracy)
 
-#### **Implementation Details**
+#### **Implementation Details (Task 3.3)**
 
 1. **Core Monitoring Service**
    - Metric collection points
@@ -729,7 +729,7 @@ Create a comprehensive performance monitoring system with real-time metrics and 
    - Degradation detection
    - Optimization recommendations
 
-#### **Files to Create**
+#### **Files to Create (Task 3.3)**
 
 - `src/services/performanceMonitor.ts`
 - `src/components/PerformanceDashboard.tsx`
@@ -737,12 +737,12 @@ Create a comprehensive performance monitoring system with real-time metrics and 
 - `src/components/PerformanceChart.tsx`
 - `src/hooks/usePerformanceMetrics.ts`
 
-#### **Files to Modify**
+#### **Files to Modify (Task 3.3)**
 
 - All major components (add measurement points)
 - `src/components/DataHub.tsx` (add dashboard tab)
 
-#### **Acceptance Criteria**
+#### **Acceptance Criteria (Task 3.3)**
 
 - [ ] Real-time performance metrics collection
 - [ ] Visual dashboard with charts and alerts

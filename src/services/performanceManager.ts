@@ -756,4 +756,24 @@ class PerformanceManager {
   }
 }
 
-export const performanceManager = new PerformanceManager(); 
+// Check for debug mode
+const isDebugMode = typeof window !== 'undefined' && (
+  window.location.search.includes('debug') || 
+  localStorage.getItem('debugMode') === 'true'
+);
+
+// Export singleton instance (skip TensorFlow initialization in debug mode)
+let performanceManager: PerformanceManager;
+
+if (isDebugMode) {
+  console.log('🚨 PerformanceManager: Debug mode detected - creating mock instance (no TensorFlow)');
+  performanceManager = {
+    getMemoryHealthStatus: () => ({ isHealthy: true, overall: 'excellent', details: {} }),
+    registerModel: () => {},
+    dispose: () => Promise.resolve()
+  } as any;
+} else {
+  performanceManager = new PerformanceManager();
+}
+
+export { performanceManager }; 

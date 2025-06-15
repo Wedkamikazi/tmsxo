@@ -9,6 +9,15 @@ import { OllamaChat } from './OllamaChat';
 import { ErrorBoundary } from './ErrorBoundary';
 import SystemHealthMonitor from './SystemHealthMonitor';
 import OllamaControlWidget from './OllamaControlWidget';
+import { 
+  stateManager, 
+  saveActiveTab, 
+  getActiveTab, 
+  shouldReinitializeServices, 
+  markServicesInitialized,
+  incrementDataRefresh,
+  getDataRefreshTrigger
+} from '../utils/stateManager';
 import { Transaction, BankAccount } from '../types';
 import './DataHub.css';
 

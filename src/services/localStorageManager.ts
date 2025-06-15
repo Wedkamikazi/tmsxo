@@ -203,8 +203,16 @@ class LocalStorageManager {
 
   deleteFile(fileId: string): boolean {
     return this.executeTransaction(() => {
+      // Get the transactions that will be deleted to identify affected accounts
+      const allTransactions = this.getAllTransactions();
+      const deletedTransactions = allTransactions.filter(t => t.fileId === fileId);
+      const affectedAccountIds = new Set(deletedTransactions.map(t => t.accountId));
+      
       // First delete all transactions for this file
       this.deleteTransactionsByFile(fileId);
+      
+      // Update account balances for affected accounts
+      this.updateAccountBalancesFromTransactions(Array.from(affectedAccountIds));
       
       // Then delete the file record
       const files = this.getAllFiles();
@@ -603,6 +611,42 @@ class LocalStorageManager {
         modifiedDate: now
       }
     ];
+  }
+
+  // BALANCE MANAGEMENT - Update account balances based on remaining transactions
+  private updateAccountBalancesFromTransactions(accountIds: string[]): void {
+    const accounts = this.getAllAccounts();
+    const allTransactions = this.getAllTransactions();
+    
+    accountIds.forEach(accountId => {
+      const accountIndex = accounts.findIndex(a => a.id === accountId);
+      if (accountIndex === -1) return;
+      
+      // Get all transactions for this account, sorted by date/time (most recent first)
+      const accountTransactions = allTransactions
+        .filter(t => t.accountId === accountId)
+        .sort((a, b) => {
+          // First sort by postDateTime (which combines date and time)
+          const dateComparison = new Date(b.postDateTime).getTime() - new Date(a.postDateTime).getTime();
+          if (dateComparison !== 0) return dateComparison;
+          
+          // If postDateTime is the same, fall back to regular date comparison
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        });
+      
+      if (accountTransactions.length > 0) {
+        // Use the balance from the most recent transaction
+        const mostRecentTransaction = accountTransactions[0];
+        accounts[accountIndex].currentBalance = mostRecentTransaction.balance;
+        console.log(`🔄 Updated account ${accounts[accountIndex].name} balance to ${mostRecentTransaction.balance} based on most recent transaction`);
+      } else {
+        // No transactions left for this account - reset to 0 or keep existing balance
+        console.log(`⚠️ No transactions remaining for account ${accounts[accountIndex].name}, keeping current balance`);
+      }
+    });
+    
+    // Save updated accounts
+    this.setStorageData(this.STORAGE_KEYS.accounts, accounts);
   }
 }
 

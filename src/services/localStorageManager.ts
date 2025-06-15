@@ -364,16 +364,48 @@ class LocalStorageManager {
       categorizations: this.getAllCategorizations()
     };
 
-    const snapshots = this.getStorageData<StorageSnapshot[]>(this.STORAGE_KEYS.snapshots, []);
-    snapshots.push(snapshot);
+    try {
+      const snapshots = this.getStorageData<StorageSnapshot[]>(this.STORAGE_KEYS.snapshots, []);
+      snapshots.push(snapshot);
 
-    // Keep only the most recent snapshots
-    if (snapshots.length > this.MAX_SNAPSHOTS) {
-      snapshots.splice(0, snapshots.length - this.MAX_SNAPSHOTS);
+      // Keep only the most recent snapshots
+      if (snapshots.length > this.MAX_SNAPSHOTS) {
+        snapshots.splice(0, snapshots.length - this.MAX_SNAPSHOTS);
+      }
+
+      this.setStorageData(this.STORAGE_KEYS.snapshots, snapshots);
+      return timestamp;
+    } catch (error) {
+      // If we hit quota exceeded, try to clean up old snapshots first
+      if (error instanceof Error && error.name === 'QuotaExceededError') {
+        console.warn('🚨 Snapshot storage quota exceeded, attempting cleanup...');
+        
+        try {
+          // Clear all existing snapshots and try again with just the new one
+          this.setStorageData(this.STORAGE_KEYS.snapshots, [snapshot]);
+          console.log('✅ Snapshot cleanup successful, created new snapshot');
+          return timestamp;
+        } catch (secondError) {
+          // If still failing, we can't create snapshots - continue without backup
+          console.error('🚨 Cannot create snapshots due to storage quota limits. Operations will continue without backup protection.');
+          
+          // Clear snapshots completely to free space
+          try {
+            this.setStorageData(this.STORAGE_KEYS.snapshots, []);
+          } catch {
+            // If we can't even clear snapshots, localStorage is severely constrained
+            console.error('🚨 Critical: Unable to manage snapshot storage. Consider clearing browser data.');
+          }
+          
+          // Return a timestamp anyway so operations can continue
+          return timestamp;
+        }
+      }
+      
+      // For other types of errors, log and continue
+      console.error('Error creating snapshot:', error);
+      return timestamp;
     }
-
-    this.setStorageData(this.STORAGE_KEYS.snapshots, snapshots);
-    return timestamp;
   }
 
   restoreSnapshot(timestamp: string): boolean {

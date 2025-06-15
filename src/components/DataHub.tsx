@@ -329,6 +329,12 @@ export const DataHub: React.FC = () => {
             <SimpleDataCleanup />
           </ErrorBoundary>
         );
+      case 'ollamaChat':
+        return (
+          <ErrorBoundary componentName="OllamaChat">
+            <OllamaChat />
+          </ErrorBoundary>
+        );
       case 'payroll':
         return (
           <div className="coming-soon-container">

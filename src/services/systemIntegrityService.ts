@@ -702,6 +702,85 @@ class SystemIntegrityService {
     this.activeTransactions.clear();
     console.log('🧹 System Integrity Service disposed');
   }
+
+  // CENTRALIZED ERROR LOGGING FOR ALL SERVICES
+  public logServiceError(
+    serviceName: string, 
+    operation: string, 
+    error: Error | string, 
+    severity: 'critical' | 'high' | 'medium' | 'low' = 'medium',
+    metadata?: Record<string, any>
+  ): void {
+    const errorEntry = {
+      timestamp: new Date().toISOString(),
+      component: serviceName,
+      operation,
+      error: error instanceof Error ? error.message : error,
+      severity,
+      metadata,
+      resolved: false,
+      stack: error instanceof Error ? error.stack : undefined
+    };
+
+    this.errorLog.push(errorEntry);
+
+    // Keep error log manageable
+    if (this.errorLog.length > 1000) {
+      this.errorLog = this.errorLog.slice(-800);
+    }
+
+    // Emit critical errors immediately
+    if (severity === 'critical') {
+      eventBus.emit('SYSTEM_ERROR', {
+        serviceName,
+        operation,
+        error: errorEntry.error,
+        timestamp: errorEntry.timestamp
+      }, 'SystemIntegrityService');
+    }
+
+    // Console logging with appropriate level
+    const logMessage = `[${serviceName}] ${operation}: ${errorEntry.error}`;
+    switch (severity) {
+      case 'critical':
+        console.error('🚨', logMessage, metadata);
+        break;
+      case 'high':
+        console.error('❌', logMessage, metadata);
+        break;
+      case 'medium':
+        console.warn('⚠️', logMessage, metadata);
+        break;
+      case 'low':
+        console.log('ℹ️', logMessage, metadata);
+        break;
+    }
+  }
+
+  // GET ERROR STATISTICS
+  public getErrorStats(): {
+    totalErrors: number;
+    errorsByService: Record<string, number>;
+    errorsBySeverity: Record<string, number>;
+    recentErrors: typeof this.errorLog;
+    errorRate: number;
+  } {
+    const errorsByService: Record<string, number> = {};
+    const errorsBySeverity: Record<string, number> = {};
+
+    this.errorLog.forEach(error => {
+      errorsByService[error.component] = (errorsByService[error.component] || 0) + 1;
+      errorsBySeverity[error.severity] = (errorsBySeverity[error.severity] || 0) + 1;
+    });
+
+    return {
+      totalErrors: this.errorLog.length,
+      errorsByService,
+      errorsBySeverity,
+      recentErrors: this.errorLog.slice(-20), // Last 20 errors
+      errorRate: this.calculateErrorRate()
+    };
+  }
 }
 
 // Export singleton instance

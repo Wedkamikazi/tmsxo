@@ -634,7 +634,13 @@ class PerformanceManager {
         return count + (layer.getWeights ? layer.getWeights().length : 0);
       }, 0);
     } catch (error) {
-      console.warn('Could not count model tensors:', error);
+      systemIntegrityService.logServiceError(
+        'PerformanceManager',
+        'countModelTensors',
+        error instanceof Error ? error : new Error(String(error)),
+        'low',
+        { operation: 'TensorFlow model tensor counting' }
+      );
       return 0;
     }
   }

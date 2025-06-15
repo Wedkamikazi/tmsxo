@@ -131,7 +131,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
       const orchestratorModelStatus = enhancedMLOrchestrator.getModelStatus();
       
       // Check Enhanced Categorization status
-      const categorizationPerformance = enhancedCategorizationService.getPerformanceMetrics();
+      const categorizationPerformance = unifiedCategorizationService.getPerformanceMetrics();
 
       setServiceStatus({
         ollama: {

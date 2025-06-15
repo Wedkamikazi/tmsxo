@@ -272,7 +272,7 @@ export const DataHub: React.FC = () => {
       <button 
         onClick={() => {
           const usage = getStateStorageUsage();
-          alert(`State Storage Usage:\nTotal: ${Math.round(usage.totalSize / 1024)}KB\nComponent States: ${Math.round(usage.componentStatesSize / 1024)}KB\nComponents: ${usage.componentCount}`);
+          window.alert(`State Storage Usage:\nTotal: ${Math.round(usage.totalSize / 1024)}KB\nComponent States: ${Math.round(usage.componentStatesSize / 1024)}KB\nComponents: ${usage.componentCount}`);
         }}
         style={{
           background: 'rgba(255,255,255,0.2)',

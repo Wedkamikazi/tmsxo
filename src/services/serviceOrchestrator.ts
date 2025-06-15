@@ -110,17 +110,6 @@ class ServiceOrchestrator {
 
     // System Services (Tier 3)
     this.registerService({
-      name: 'memoryManagementService',
-      service: memoryManagementService,
-      dependencies: ['eventBus', 'performanceManager'],
-      healthCheckMethod: 'getMemoryHealthStatus',
-      disposeMethod: 'dispose',
-      timeout: 15000,
-      critical: true,
-      retryAttempts: 2
-    });
-
-    this.registerService({
       name: 'crossTabSyncService',
       service: crossTabSyncService,
       dependencies: ['eventBus', 'unifiedDataService'],

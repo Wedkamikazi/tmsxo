@@ -304,12 +304,12 @@ Provide detailed analysis in JSON format.`;
     date: string;
   }>): Promise<Array<{
     id: string;
-    analysis: Awaited<ReturnType<typeof this.analyzeTransaction>>;
+    analysis: OllamaTransactionAnalysis;
     error?: string;
   }>> {
     const results: Array<{
       id: string;
-      analysis: Awaited<ReturnType<typeof this.analyzeTransaction>>;
+      analysis: OllamaTransactionAnalysis;
       error?: string;
     }> = [];
 

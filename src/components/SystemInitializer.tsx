@@ -51,7 +51,7 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
         (window as any).eventBus = eventBus;
         
         // Import test script
-        const testScript = await import('../test-quota-management.js');
+        await import('../test-quota-management.js');
         
         console.log('✅ Storage Quota Manager ready and available globally');
         console.log('🧪 Test suite available - run testQuotaManagement() in console');

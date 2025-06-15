@@ -21,9 +21,26 @@ const QwenIntegrationStatus: React.FC = () => {
   } | null>(null);
 
   React.useEffect(() => {
-    // Get local model status
-    const modelStatus = mlCategorizationService.getModelStatus();
-    setStatus(modelStatus);
+    // Get local model status from TensorFlow method
+    const getModelStatus = async () => {
+      try {
+        const tfMethod = new TensorFlowMethod();
+        const modelStatus = tfMethod.getModelStatus();
+        setStatus(modelStatus);
+      } catch (error) {
+        console.error('Failed to get model status:', error);
+        setStatus({
+          isAvailable: false,
+          modelLoaded: false,
+          localModelLoaded: false,
+          vocabularySize: 0,
+          categoriesCount: 0,
+          lastCheck: new Date().toISOString()
+        });
+      }
+    };
+    
+    getModelStatus();
   }, []);
 
   const handleTestCategorization = async () => {

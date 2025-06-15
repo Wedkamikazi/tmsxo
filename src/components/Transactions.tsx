@@ -309,7 +309,7 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
   const endIndex = Math.min(startIndex + itemsPerPage, totalTransactions);
   const currentTransactions = filteredAndSortedTransactions.slice(startIndex, endIndex);
 
-  // Debug pagination issue
+  // Debug pagination issue (simplified)
   console.log('PAGINATION DEBUG:', {
     currentPage,
     itemsPerPage,
@@ -317,18 +317,8 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
     totalPages,
     startIndex,
     endIndex,
-    sliceLength: currentTransactions.length,
-    expectedLength: Math.min(itemsPerPage, totalTransactions - startIndex),
-    filteredAndSortedLength: filteredAndSortedTransactions.length,
-    transactionsLength: transactions.length,
-    actualSlice: currentTransactions.slice(0, 3).map(t => ({ id: t.id, desc: t.description.substring(0, 20) }))
+    currentTransactionsLength: currentTransactions.length
   });
-
-  // Check DOM rendering
-  React.useEffect(() => {
-    const tableRows = document.querySelectorAll('.transactions-table tbody tr');
-    console.log('DOM ROWS COUNT:', tableRows.length, 'Expected:', currentTransactions.length);
-  }, [currentTransactions]);
 
 
 

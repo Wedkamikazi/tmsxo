@@ -73,23 +73,23 @@ class ServiceOrchestrator {
   private registerServices(): void {
     console.log('🎯 Registering System Services...');
 
-    // Core Infrastructure Services (Tier 1)
+    // Core Infrastructure Services (Tier 1) - Fast initialization
     this.registerService({
       name: 'eventBus',
       service: eventBus,
       dependencies: [],
-      timeout: 5000,
+      timeout: 2000,
       critical: true,
-      retryAttempts: 3
+      retryAttempts: 2
     });
 
     this.registerService({
       name: 'localStorageManager',
       service: localStorageManager,
       dependencies: [],
-      timeout: 5000,
+      timeout: 2000,
       critical: true,
-      retryAttempts: 3
+      retryAttempts: 2
     });
 
     this.registerService({
@@ -97,42 +97,42 @@ class ServiceOrchestrator {
       service: performanceManager,
       dependencies: [],
       healthCheckMethod: 'getMemoryHealthStatus',
-      timeout: 5000,
+      timeout: 2000,
       critical: true,
-      retryAttempts: 2
+      retryAttempts: 1
     });
 
-    // Data Services (Tier 2)
+    // Data Services (Tier 2) - Reduced timeout for faster startup
     this.registerService({
       name: 'unifiedDataService',
       service: unifiedDataService,
       dependencies: ['localStorageManager', 'eventBus'],
-      timeout: 10000,
+      timeout: 3000,
       critical: true,
-      retryAttempts: 3
+      retryAttempts: 2
     });
 
-    // System Services (Tier 3)
+    // System Services (Tier 3) - Made non-critical for faster startup
     this.registerService({
       name: 'crossTabSyncService',
       service: crossTabSyncService,
       dependencies: ['eventBus', 'unifiedDataService'],
       healthCheckMethod: 'getSyncStats',
       disposeMethod: 'dispose',
-      timeout: 10000,
+      timeout: 3000,
       critical: false,
-      retryAttempts: 2
+      retryAttempts: 1
     });
 
     this.registerService({
       name: 'systemIntegrityService',
       service: systemIntegrityService,
-      dependencies: ['localStorageManager', 'eventBus', 'performanceManager', 'crossTabSyncService'],
+      dependencies: ['localStorageManager', 'eventBus', 'performanceManager'],
       healthCheckMethod: 'getSystemHealthStatus',
       disposeMethod: 'dispose',
-      timeout: 15000,
-      critical: true,
-      retryAttempts: 2
+      timeout: 4000,
+      critical: false, // Made non-critical to prevent blocking
+      retryAttempts: 1
     });
 
     // ML Services are initialized in background only - not part of main startup flow

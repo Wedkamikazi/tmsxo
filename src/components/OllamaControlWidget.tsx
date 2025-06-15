@@ -55,38 +55,19 @@ const OllamaControlWidget: React.FC = () => {
     setStatus(prev => ({ ...prev, isLoading: true }));
     
     try {
-      // Register with safety manager first
-      const registered = await systemSafetyManager.registerProcess('ollama', 11434);
+      // In browser environment, we can't actually start processes
+      // Show instructions to user
+      setStatus(prev => ({ 
+        ...prev, 
+        isLoading: false, 
+        error: 'Browser Limitation: Please manually start Ollama in terminal with the command shown in console' 
+      }));
       
-      if (!registered) {
-        setStatus(prev => ({ 
-          ...prev, 
-          isLoading: false, 
-          error: 'Safety violation: Ollama already running or port in use' 
-        }));
-        return;
-      }
-
-      // Use process controller to start Ollama
-      const result = await startOllamaProcess();
+      // Log the command for reference
+      console.log('🚀 MANUAL ACTION REQUIRED: Start Ollama with this command in PowerShell:');
+      console.log('   $env:OLLAMA_ORIGINS="*"; $env:OLLAMA_NUM_PARALLEL="1"; $env:OLLAMA_MAX_LOADED_MODELS="1"; $env:OLLAMA_GPU_OVERHEAD="2048"; ollama serve');
+      console.log('   This ensures safe operation with proper environment variables');
       
-      if (result.success) {
-        console.log('✅ Ollama start initiated:', result.message);
-        
-        // Set loading state and wait for status check to confirm
-        setStatus(prev => ({ 
-          ...prev, 
-          isLoading: false,
-          modelName: 'Starting...'
-        }));
-      } else {
-        setStatus(prev => ({ 
-          ...prev, 
-          isLoading: false, 
-          error: result.message 
-        }));
-      }
-
     } catch (error) {
       setStatus(prev => ({ 
         ...prev, 

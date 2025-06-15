@@ -75,27 +75,40 @@ export const DataHub: React.FC = () => {
 
   useEffect(() => {
     // Skip service operations if in debug mode or services not loaded
-    if (isDebugMode || !servicesLoaded || !unifiedDataService || !eventBus) {
+    if (isDebugMode || !servicesLoaded || (!unifiedDataService && !initializationSkipped)) {
       return;
     }
 
-    // Perform startup integrity check
-    const integrityCheck = unifiedDataService.validateDataIntegrity();
-    if (!integrityCheck.isValid) {
-      console.warn('Data integrity issues detected:', integrityCheck.issues);
-      // Auto-cleanup orphaned data on startup
-      const cleanup = unifiedDataService.cleanupOrphanedData();
-      if (cleanup.deletedTransactions > 0 || cleanup.deletedFiles > 0) {
-        console.log('Cleaned up orphaned data:', cleanup);
-        setDataRefreshTrigger(prev => prev + 1);
-      }
+    // Skip intensive operations if we used cached state
+    if (initializationSkipped) {
+      console.log('⚡ PERFORMANCE: Skipping integrity checks - using cached initialization');
+      return;
     }
 
-    // Migrate any legacy data on startup
-    const migration = unifiedDataService.migrateLegacyData();
-    if (migration.migratedTransactions > 0 || migration.migratedFiles > 0) {
-      console.log('Migrated legacy data:', migration);
-      setDataRefreshTrigger(prev => prev + 1);
+    // Only perform these expensive operations on fresh initialization
+    if (unifiedDataService && eventBus) {
+      console.log('🔧 Performing one-time integrity checks...');
+      
+      // Perform startup integrity check
+      const integrityCheck = unifiedDataService.validateDataIntegrity();
+      if (!integrityCheck.isValid) {
+        console.warn('Data integrity issues detected:', integrityCheck.issues);
+        // Auto-cleanup orphaned data on startup
+        const cleanup = unifiedDataService.cleanupOrphanedData();
+        if (cleanup.deletedTransactions > 0 || cleanup.deletedFiles > 0) {
+          console.log('Cleaned up orphaned data:', cleanup);
+          const newTrigger = incrementDataRefresh();
+          setDataRefreshTrigger(newTrigger);
+        }
+      }
+
+      // Migrate any legacy data on startup
+      const migration = unifiedDataService.migrateLegacyData();
+      if (migration.migratedTransactions > 0 || migration.migratedFiles > 0) {
+        console.log('Migrated legacy data:', migration);
+        const newTrigger = incrementDataRefresh();
+        setDataRefreshTrigger(newTrigger);
+      }
     }
 
     // Subscribe to all data events for UI updates

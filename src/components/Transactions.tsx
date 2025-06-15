@@ -369,7 +369,7 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
     } else {
       setSelectedTransactions(new Set(currentTransactions.map(t => t.id)));
     }
-  }, [selectedTransactions.size, currentTransactions]);
+  }, [selectedTransactions.size, currentTransactions, transactions.length]);
 
   const clearFilters = () => {
     setFilters({

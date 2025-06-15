@@ -251,6 +251,83 @@ export class MLEnhancedMethod implements CategorizationStrategy {
     }
   }
 
+  // PERFORMANCE AND LEARNING METHODS
+  private updatePerformanceMetrics(result: UnifiedCategorizationResult): void {
+    // Update averages
+    const total = this.performance.totalCategorizations;
+    this.performance.averageConfidence = 
+      (this.performance.averageConfidence * (total - 1) + result.confidence) / total;
+    this.performance.averageProcessingTime = 
+      (this.performance.averageProcessingTime * (total - 1) + result.processingTime) / total;
+
+    // Calculate enhanced metrics
+    if (result.method === 'fallback') {
+      this.performance.enhancedMetrics.fallbackRate = 
+        (this.performance.enhancedMetrics.fallbackRate * (total - 1) + 1) / total;
+    }
+
+    this.performance.enhancedMetrics.averageAlternativesProvided = 
+      (this.performance.enhancedMetrics.averageAlternativesProvided * (total - 1) + result.alternatives.length) / total;
+
+    // Save performance data
+    this.savePerformanceHistory();
+  }
+
+  private storeLearningData(transaction: Transaction, result: UnifiedCategorizationResult): void {
+    const learningPoint: LearningDataPoint = {
+      transactionId: transaction.id,
+      originalPrediction: result.categoryId,
+      correctedCategory: result.categoryId, // Will be updated if user corrects
+      confidence: result.confidence,
+      method: result.method,
+      timestamp: new Date().toISOString(),
+      contextualFactors: result.metadata.patterns
+    };
+
+    this.learningHistory.push(learningPoint);
+    
+    // Keep only recent learning data (last 1000 points)
+    if (this.learningHistory.length > 1000) {
+      this.learningHistory = this.learningHistory.slice(-1000);
+    }
+
+    this.performance.learningDataPoints = this.learningHistory.length;
+    this.saveLearningHistory();
+  }
+
+  private savePerformanceHistory(): void {
+    try {
+      localStorage.setItem(this.PERFORMANCE_KEY, JSON.stringify(this.performance));
+    } catch (error) {
+      console.warn('Failed to save ML-Enhanced performance history:', error);
+    }
+  }
+
+  private saveLearningHistory(): void {
+    try {
+      localStorage.setItem(this.LEARNING_KEY, JSON.stringify(this.learningHistory));
+    } catch (error) {
+      console.warn('Failed to save ML-Enhanced learning history:', error);
+    }
+  }
+
+  // FEEDBACK AND IMPROVEMENT
+  async improveFromFeedback(transactionId: string, correctCategoryId: string): Promise<void> {
+    const learningPoint = this.learningHistory.find(l => l.transactionId === transactionId);
+    
+    if (learningPoint) {
+      learningPoint.correctedCategory = correctCategoryId;
+      learningPoint.improvementFactor = learningPoint.originalPrediction !== correctCategoryId ? 1 : 0;
+      
+      this.performance.enhancedMetrics.userCorrectionRate = 
+        (this.performance.enhancedMetrics.userCorrectionRate * this.performance.totalCategorizations + 1) / 
+        (this.performance.totalCategorizations + 1);
+      
+      this.saveLearningHistory();
+      this.savePerformanceHistory();
+    }
+  }
+
   dispose(): void {
     this.categoryMappings.clear();
     this.learningHistory = [];

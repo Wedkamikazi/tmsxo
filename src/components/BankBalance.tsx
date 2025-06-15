@@ -406,15 +406,29 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
           </thead>
           <tbody>
             {paginatedBalances.map(balance => (
-              <tr key={balance.id}>
-                <td className="date-cell">{formatDate(balance.date)}</td>
+              <tr key={balance.id} className={balance.hasDuplicates ? 'has-duplicates' : ''}>
+                <td className="date-cell">
+                  {formatDate(balance.date)}
+                  {balance.hasDuplicates && (
+                    <span className="duplicate-warning" title={`${balance.duplicateCount} duplicate transactions detected`}>
+                      ⚠️
+                    </span>
+                  )}
+                </td>
                 <td className="account-cell">{balance.accountName}</td>
                 <td className="currency-cell">{formatCurrency(balance.openingBalance)}</td>
                 <td className="currency-cell">{formatCurrency(balance.closingBalance)}</td>
                 <td className={`currency-cell ${getMovementColorClass(balance.movement)}`}>
                   {formatCurrency(balance.movement)}
                 </td>
-                <td className="count-cell">{balance.transactionCount}</td>
+                <td className="count-cell">
+                  {balance.transactionCount}
+                  {balance.hasDuplicates && (
+                    <span className="duplicate-info" title="Unique transactions only">
+                      *
+                    </span>
+                  )}
+                </td>
                 <td className="time-cell">{balance.lastTransactionTime.substring(0, 5)}</td>
               </tr>
             ))}

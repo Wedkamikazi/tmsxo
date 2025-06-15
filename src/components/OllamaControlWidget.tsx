@@ -146,75 +146,80 @@ const OllamaControlWidget: React.FC = () => {
   return (
     <>
       <div className="ollama-control-widget">
-        <div className="ollama-status-section">
-          <div className="ollama-status-indicator">
-            <div className={`status-light ${status.isRunning ? 'running' : 'stopped'} ${status.isLoading ? 'loading' : ''}`}>
-              <div className="light-core"></div>
-              <div className="light-glow"></div>
+        <div className="ai-status-bar">
+          <div className="ai-status-left">
+            <div className="ai-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 19c-5 0-8-3-8-6s3-6 8-6c0-2 2-4 4-4s4 2 4 4c5 0 8 3 8 6s-3 6-8 6c0 2-2 4-4 4s-4-2-4-4z" />
+                <circle cx="12" cy="12" r="2" />
+              </svg>
             </div>
-            <div className="status-info">
-              <div className="status-title">
-                Ollama AI Engine
-              </div>
-              <div className="status-details">
-                {status.isLoading ? (
-                  <span className="status-loading">Processing...</span>
-                ) : status.isRunning ? (
-                  <div className="status-running">
-                    <span className="status-text">Active</span>
-                    {status.modelName && (
-                      <span className="model-info">{status.modelName}</span>
-                    )}
-                    {status.memoryUsage && (
-                      <span className="memory-info">{status.memoryUsage}</span>
-                    )}
-                  </div>
-                ) : (
-                  <span className="status-stopped">Offline</span>
+            <div className="ai-status-info">
+              <span className="ai-label">AI Engine</span>
+              <div className="ai-status-badge">
+                <div className={`status-dot ${status.isRunning ? 'active' : 'inactive'} ${status.isLoading ? 'loading' : ''}`}></div>
+                <span className="status-text">
+                  {status.isLoading ? 'Starting...' : status.isRunning ? 'Ready' : 'Offline'}
+                </span>
+                {status.modelName && status.isRunning && (
+                  <span className="model-name">({status.modelName})</span>
                 )}
               </div>
             </div>
           </div>
           
-          <div className="ollama-controls">
+          <div className="ai-controls">
             {status.isRunning ? (
               <button 
-                className="control-button stop-button"
+                className="ai-btn stop-btn"
                 onClick={() => handleActionClick('stop')}
                 disabled={status.isLoading}
+                title="Stop AI Engine"
               >
-                <span className="button-icon">⏹</span>
-                Stop
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="6" y="6" width="12" height="12" />
+                </svg>
               </button>
             ) : (
               <button 
-                className="control-button start-button"
+                className="ai-btn start-btn"
                 onClick={() => handleActionClick('start')}
                 disabled={status.isLoading}
+                title="Start AI Engine"
               >
-                <span className="button-icon">▶</span>
-                Start
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polygon points="5,3 19,12 5,21" />
+                </svg>
               </button>
             )}
+            
+            <button 
+              className="ai-btn refresh-btn"
+              onClick={checkStatus}
+              disabled={status.isLoading}
+              title="Refresh Status"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="23,4 23,10 17,10" />
+                <polyline points="1,20 1,14 7,14" />
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64l-.85 1.92" />
+                <path d="M3.51 15a9 9 0 0 0 14.85 3.36l.85-1.92" />
+              </svg>
+            </button>
           </div>
         </div>
         
         {status.error && (
-          <div className="ollama-error">
-            <span className="error-icon">⚠</span>
-            <div className="error-content">
-              <div className="error-message">{status.error}</div>
-              <button 
-                className="refresh-button"
-                onClick={() => {
-                  setStatus(prev => ({ ...prev, error: undefined }));
-                  // Trigger status check
-                  checkStatus();
-                }}
-              >
-                🔄 Refresh Status
-              </button>
-            </div>
+          <div className="ai-error-notice">
+            <div className="error-icon">⚠</div>
+            <span className="error-text">{status.error}</span>
+            <button 
+              className="error-dismiss"
+              onClick={() => setStatus(prev => ({ ...prev, error: undefined }))}
+              title="Dismiss"
+            >
+              ×
+            </button>
           </div>
         )}
       </div>

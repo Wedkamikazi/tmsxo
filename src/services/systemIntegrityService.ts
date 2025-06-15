@@ -1896,8 +1896,8 @@ const debugModeActive = isDebugMode();
 // Export singleton instance (skip in debug mode)
 let systemIntegrityService: SystemIntegrityService;
 
-if (isDebugMode) {
-  console.log('🚨 SystemIntegrityService: Debug mode detected - creating mock instance');
+if (debugModeActive) {
+  console.log('🔧 SystemIntegrityService: Debug mode detected - creating mock instance');
   systemIntegrityService = {
     getSystemHealthStatus: () => ({ isHealthy: true, overall: 'excellent' }),
     getUnifiedSystemHealth: () => Promise.resolve({

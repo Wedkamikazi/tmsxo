@@ -121,7 +121,7 @@ class MLPredictiveAnalyticsService {
     this.cashFlowModel.compile({
       optimizer: tf.train.adam(0.001),
       loss: 'meanSquaredError',
-      metrics: ['mae', 'mse']
+      metrics: ['mse'] // Using only mse metric for TensorFlow.js compatibility
     });
 
     // SPENDING PATTERN ANALYSIS MODEL

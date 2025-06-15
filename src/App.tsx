@@ -83,7 +83,7 @@ function App(): React.ReactElement {
                 `}</style>
               </div>
             }>
-              <DataHub />
+              <LazyDataHub />
             </React.Suspense>
           </ErrorBoundary>
         </div>

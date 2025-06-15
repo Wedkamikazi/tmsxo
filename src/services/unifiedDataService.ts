@@ -140,47 +140,34 @@ class UnifiedDataService {
     integrityScore: number;
     recommendations: string[];
   } {
-    // Delegate to centralized integrity service for comprehensive validation
-    try {
-      const comprehensiveResult = systemIntegrityService.performComprehensiveDataIntegrity();
-      
-      // Convert the comprehensive result to match the expected interface
-      return {
-        isValid: comprehensiveResult.isValid,
-        issues: comprehensiveResult.issues.map(issue => issue.description),
-        totalTransactions: comprehensiveResult.summary.totalTransactions,
-        totalFiles: comprehensiveResult.summary.totalFiles,
-        orphanedTransactions: comprehensiveResult.summary.orphanedTransactions,
-        orphanedFiles: comprehensiveResult.summary.orphanedFiles,
-        duplicateTransactions: comprehensiveResult.duplicateReport.duplicates,
-        anomalies: comprehensiveResult.anomalies,
-        integrityScore: comprehensiveResult.integrityScore,
-        recommendations: comprehensiveResult.recommendations
-      };
-    } catch (error) {
-      // Fallback to basic validation if comprehensive check fails
-      systemIntegrityService.logServiceError(
-        'UnifiedDataService',
-        'validateDataIntegrity',
-        error instanceof Error ? error : new Error(String(error)),
-        'high',
-        { fallbackUsed: true }
-      );
-      
-      const result = localStorageManager.validateDataIntegrity();
-      return {
-        isValid: result.isValid,
-        issues: result.issues,
-        totalTransactions: result.stats.itemCounts.transactions,
-        totalFiles: result.stats.itemCounts.files,
-        orphanedTransactions: 0,
-        orphanedFiles: 0,
-        duplicateTransactions: [],
-        anomalies: [],
-        integrityScore: result.isValid ? 100 : 50,
-        recommendations: result.isValid ? [] : ['Run data cleanup operations']
-      };
-    }
+    // Fallback to basic validation since comprehensive check is async but this method needs to be sync
+    const result = localStorageManager.validateDataIntegrity();
+    const transactions = this.getAllTransactions();
+    const files = this.getAllFiles();
+    const accounts = this.getAllAccounts();
+    
+    // Basic orphaned data detection
+    const accountIds = new Set(accounts.map(a => a.id));
+    const fileIds = new Set(files.map(f => f.id));
+    
+    const orphanedTransactions = transactions.filter(t => !accountIds.has(t.accountId)).length;
+    const orphanedFiles = transactions.filter(t => t.fileId && !fileIds.has(t.fileId)).length;
+    
+    // Note: For comprehensive integrity checks including sophisticated duplicate detection,
+    // use systemIntegrityService.performComprehensiveDataIntegrity() directly
+    
+    return {
+      isValid: result.isValid && orphanedTransactions === 0,
+      issues: result.issues,
+      totalTransactions: result.stats.itemCounts.transactions,
+      totalFiles: result.stats.itemCounts.files,
+      orphanedTransactions,
+      orphanedFiles,
+      duplicateTransactions: [], // Simplified - use comprehensive method for full duplicate detection
+      anomalies: orphanedTransactions > 0 ? [`${orphanedTransactions} orphaned transactions found`] : [],
+      integrityScore: result.isValid && orphanedTransactions === 0 ? 100 : 80,
+      recommendations: orphanedTransactions > 0 ? ['Clean up orphaned transactions using systemIntegrityService'] : []
+    };
   }
 
   // COMPREHENSIVE DATA ANOMALY DETECTION

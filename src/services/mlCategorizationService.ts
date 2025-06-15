@@ -4,6 +4,7 @@ import { Transaction, MLCategorizationResult } from '../types';
 import { categorizationService } from './categorizationService';
 import { localStorageManager } from './localStorageManager';
 import { performanceManager } from './performanceManager';
+import { cleanupManager } from './cleanupManager';
 import { systemIntegrityService } from './systemIntegrityService';
 
 // ADVANCED ML CATEGORIZATION SERVICE WITH TENSORFLOW.JS

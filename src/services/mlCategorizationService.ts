@@ -1061,20 +1061,30 @@ class MLCategorizationService {
   dispose(): void {
     console.log('🧹 Cleaning up ML resources...');
     
+    // Unregister models from memory management
+    memoryManagementService.unregisterModel('categorization-model');
+    memoryManagementService.unregisterModel('sentiment-model');
+    memoryManagementService.unregisterModel('anomaly-model');
+    memoryManagementService.unregisterModel('pattern-model');
+    
     if (this.categorizationModel) {
       this.categorizationModel.dispose();
+      this.categorizationModel = null;
     }
     
     if (this.sentimentModel) {
       this.sentimentModel.dispose();
+      this.sentimentModel = null;
     }
     
     if (this.anomalyModel) {
       this.anomalyModel.dispose();
+      this.anomalyModel = null;
     }
     
     if (this.patternModel) {
       this.patternModel.dispose();
+      this.patternModel = null;
     }
     
     console.log('✅ ML resources cleaned up');

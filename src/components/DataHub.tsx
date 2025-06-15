@@ -122,82 +122,41 @@ export const DataHub: React.FC = () => {
     // No additional handling needed here - event bus will trigger UI updates
   };
 
-  // Debug mode notification
-  if (isDebugMode) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-      }}>
-        <div style={{
-          background: 'white',
-          borderRadius: '16px',
-          padding: '48px',
-          maxWidth: '600px',
-          textAlign: 'center',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)'
-        }}>
-          <div style={{ fontSize: '64px', marginBottom: '24px' }}>🎯</div>
-          <h1 style={{
-            color: '#1a1a1a',
-            margin: '0 0 16px 0',
-            fontSize: '28px',
-            fontWeight: 600
-          }}>Treasury Management System</h1>
-          <h2 style={{
-            color: '#666',
-            margin: '0 0 24px 0',
-            fontSize: '18px',
-            fontWeight: 400
-          }}>Debug Mode Active</h2>
-          <p style={{
-            color: '#666',
-            margin: '0 0 32px 0',
-            lineHeight: 1.6,
-            fontSize: '16px'
-          }}>
-            The application is running in debug mode with all backend services disabled.
-            This allows you to test the user interface without service initialization delays.
-          </p>
-          <div style={{
-            background: '#f8f9fa',
-            borderRadius: '8px',
-            padding: '20px',
-            marginBottom: '24px',
-            textAlign: 'left'
-          }}>
-            <h3 style={{ margin: '0 0 12px 0', fontSize: '16px', color: '#333' }}>Debug Mode Features:</h3>
-            <ul style={{ margin: 0, paddingLeft: '20px', color: '#666' }}>
-              <li>UI components are fully functional</li>
-              <li>All backend services are bypassed</li>
-              <li>No data persistence or processing</li>
-              <li>Fast loading with no service delays</li>
-              <li>Safe for testing interface components</li>
-            </ul>
-          </div>
-          <button 
-            onClick={() => {
-              localStorage.removeItem('debugMode');
-              window.location.reload();
-            }}
-            style={{
-              background: '#007AFF',
-              color: 'white',
-              border: 'none',
-              padding: '12px 24px',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: 500,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            Exit Debug Mode
-          </button>
+  // In debug mode, show the app interface with a debug banner
+  const debugBanner = isDebugMode ? (
+    <div style={{
+      background: 'linear-gradient(135deg, #ff9500 0%, #ff6b00 100%)',
+      color: 'white',
+      padding: '8px 16px',
+      fontSize: '14px',
+      fontWeight: 500,
+      textAlign: 'center',
+      position: 'sticky',
+      top: 0,
+      zIndex: 1000,
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+    }}>
+      🚨 Debug Mode Active - Services Disabled
+      <button 
+        onClick={() => {
+          localStorage.removeItem('debugMode');
+          window.location.reload();
+        }}
+        style={{
+          background: 'rgba(255,255,255,0.2)',
+          color: 'white',
+          border: '1px solid rgba(255,255,255,0.3)',
+          padding: '4px 12px',
+          borderRadius: '4px',
+          fontSize: '12px',
+          cursor: 'pointer',
+          marginLeft: '16px'
+        }}
+      >
+        Exit Debug Mode
+      </button>
+    </div>
+  ) : null;
         </div>
       </div>
     );

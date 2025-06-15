@@ -249,6 +249,28 @@ class SystemSafetyManager {
   }
 
   /**
+   * Stop a specific process safely
+   */
+  public async stopProcess(name: string): Promise<void> {
+    console.log(`🛑 Stopping process: ${name}`);
+    
+    try {
+      // For Ollama specifically, we need to terminate the process
+      if (name === 'ollama') {
+        await this.terminateProcess('ollama.exe');
+      }
+      
+      // Unregister the process
+      this.unregisterProcess(name);
+      
+      console.log(`✅ Process ${name} stopped successfully`);
+    } catch (error) {
+      console.error(`❌ Failed to stop process ${name}:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Get system status report
    */
   public getSystemStatus(): {

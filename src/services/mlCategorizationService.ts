@@ -1139,4 +1139,26 @@ class MLCategorizationService {
   }
 }
 
-export const mlCategorizationService = new MLCategorizationService(); 
+// Check for debug mode
+const isDebugMode = typeof window !== 'undefined' && (
+  window.location.search.includes('debug') || 
+  localStorage.getItem('debugMode') === 'true'
+);
+
+// Export singleton instance (skip heavy initialization in debug mode)
+let mlCategorizationService: MLCategorizationService;
+
+if (isDebugMode) {
+  console.log('🚨 MLCategorizationService: Debug mode detected - creating mock instance (no TensorFlow)');
+  mlCategorizationService = {
+    ensureInitialized: () => Promise.resolve(),
+    categorizeTransaction: () => Promise.resolve({ category: 'Other', confidence: 0.5, reasoning: 'Debug mode' }),
+    analyzeTransactions: () => Promise.resolve([]),
+    getModelInfo: () => ({ modelSize: 0, modelType: 'mock', isReady: true }),
+    dispose: () => Promise.resolve()
+  } as any;
+} else {
+  mlCategorizationService = new MLCategorizationService();
+}
+
+export { mlCategorizationService }; 

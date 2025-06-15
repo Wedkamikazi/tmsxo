@@ -395,5 +395,18 @@ Click "Quick Test" below to run a simplified test, or follow the instructions ab
         appendToConsole('Test interface loaded successfully!', 'log');
         appendToConsole('Use the buttons above to interact with the quota management system.', 'log');
     </script>
+    
+    <!-- Load the test script -->
+    <script src="/test-quota-management.js"></script>
+    
+    <script>
+        // Announce test suite availability
+        if (typeof testQuotaManagement === 'function') {
+            appendToConsole('✅ Test suite loaded successfully!', 'log');
+            appendToConsole('🚀 Run testQuotaManagement() in console or use buttons above', 'log');
+        } else {
+            appendToConsole('⚠️ Test suite not loaded - check console for errors', 'warn');
+        }
+    </script>
 </body>
 </html> 

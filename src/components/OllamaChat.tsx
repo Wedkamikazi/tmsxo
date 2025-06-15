@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { localOllamaIntegration } from '../services/localOllamaIntegration';
+import { localStorageManager } from '../services/localStorageManager';
 import './OllamaChat.css';
 
 interface ChatMessage {
@@ -65,6 +66,70 @@ export const OllamaChat: React.FC = () => {
     }
   };
 
+  // Search for transactions based on user query
+  const searchTransactions = (query: string) => {
+    const transactions = localStorageManager.getAllTransactions();
+    const searchTerm = query.toLowerCase();
+    
+    return transactions.filter(transaction => 
+      transaction.description.toLowerCase().includes(searchTerm) ||
+      (transaction.reference && transaction.reference.toLowerCase().includes(searchTerm))
+    );
+  };
+
+  // Get transaction statistics
+  const getTransactionStats = () => {
+    const transactions = localStorageManager.getAllTransactions();
+    const accounts = localStorageManager.getAllAccounts();
+    
+    return {
+      totalTransactions: transactions.length,
+      totalAccounts: accounts.length,
+      totalDebitAmount: transactions.reduce((sum, t) => sum + (t.debitAmount || 0), 0),
+      totalCreditAmount: transactions.reduce((sum, t) => sum + (t.creditAmount || 0), 0),
+    };
+  };
+
+  // Process transaction-related queries
+  const processTransactionQuery = async (userMessage: string): Promise<string | null> => {
+    const lowerMessage = userMessage.toLowerCase();
+    
+    // Check if user is looking for specific transactions
+    const searchPatterns = [
+      /find.*(transaction|payment).*"([^"]+)"/i,
+      /search.*"([^"]+)"/i,
+      /look.*for.*"([^"]+)"/i,
+      /show.*transactions.*"([^"]+)"/i,
+      /(sadeem|technology|company)/i
+    ];
+    
+    for (const pattern of searchPatterns) {
+      const match = userMessage.match(pattern);
+      if (match) {
+        const searchTerm = match[1] || match[0];
+        const foundTransactions = searchTransactions(searchTerm);
+        
+        if (foundTransactions.length > 0) {
+          const transactionList = foundTransactions.slice(0, 5).map(t => 
+            `• ${new Date(t.postDateTime).toLocaleDateString()}: ${t.description} - ${t.debitAmount ? `-$${t.debitAmount.toFixed(2)}` : `+$${(t.creditAmount || 0).toFixed(2)}`} (Ref: ${t.reference || 'N/A'})`
+          ).join('\n');
+          
+          return `I found ${foundTransactions.length} transaction(s) matching "${searchTerm}":\n\n${transactionList}${foundTransactions.length > 5 ? '\n\n...and ' + (foundTransactions.length - 5) + ' more.' : ''}`;
+        } else {
+          return `I searched through your ${getTransactionStats().totalTransactions} transactions but couldn't find any containing "${searchTerm}". You might want to check the spelling or try a different search term.`;
+        }
+      }
+    }
+    
+    // Check for general transaction queries
+    if (lowerMessage.includes('transaction') && (lowerMessage.includes('how many') || lowerMessage.includes('total'))) {
+      const stats = getTransactionStats();
+      return `You have ${stats.totalTransactions} transactions across ${stats.totalAccounts} accounts. Total debits: $${stats.totalDebitAmount.toFixed(2)}, Total credits: $${stats.totalCreditAmount.toFixed(2)}.`;
+    }
+    
+    return null; // No transaction-specific query detected
+  };
+
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
 
@@ -84,19 +149,37 @@ export const OllamaChat: React.FC = () => {
         throw new Error('Ollama is not available. Please start Ollama using the control widget above.');
       }
 
-      const response = await localOllamaIntegration.generateText(userMessage.content, {
-        temperature: 0.7,
-        system: 'You are a helpful AI assistant for a treasury management system. Be concise but informative. If asked about financial data, remind users that you can\'t access their actual data but can provide general financial advice and explanations.'
-      });
+      // First check if this is a transaction-specific query
+      const transactionResponse = await processTransactionQuery(userMessage.content);
+      
+      if (transactionResponse) {
+        // If we found transaction data, provide that response
+        const assistantMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: transactionResponse,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+      } else {
+        // Otherwise, use Ollama for general conversation
+        const stats = getTransactionStats();
+        const systemPrompt = `You are a helpful AI assistant for a treasury management system. The user has ${stats.totalTransactions} transactions across ${stats.totalAccounts} accounts. You can help with financial analysis, categorization suggestions, and general treasury management advice. Be concise but informative. If users ask about specific transactions, help them understand how to search their data.`;
 
-      const assistantMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: response.response,
-        timestamp: new Date()
-      };
+        const response = await localOllamaIntegration.generateText(userMessage.content, {
+          temperature: 0.7,
+          system: systemPrompt
+        });
 
-      setMessages(prev => [...prev, assistantMessage]);
+        const assistantMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: response.response,
+          timestamp: new Date()
+        };
+
+        setMessages(prev => [...prev, assistantMessage]);
+      }
     } catch (error) {
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),

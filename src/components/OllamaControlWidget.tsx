@@ -67,18 +67,25 @@ const OllamaControlWidget: React.FC = () => {
         return;
       }
 
-      // Note: In a real implementation, you'd execute this command:
-      // $env:OLLAMA_ORIGINS="*"; $env:OLLAMA_NUM_PARALLEL="1"; $env:OLLAMA_MAX_LOADED_MODELS="1"; $env:OLLAMA_GPU_OVERHEAD="2048"; Start-Process -FilePath "ollama" -ArgumentList "serve" -WindowStyle Hidden
-      console.log('🚀 Starting Ollama with safety parameters...');
+      // Use process controller to start Ollama
+      const result = await startOllamaProcess();
       
-      // Simulate startup delay
-      setTimeout(() => {
-        setStatus({
-          isRunning: true,
+      if (result.success) {
+        console.log('✅ Ollama start initiated:', result.message);
+        
+        // Set loading state and wait for status check to confirm
+        setStatus(prev => ({ 
+          ...prev, 
           isLoading: false,
           modelName: 'Starting...'
-        });
-      }, 2000);
+        }));
+      } else {
+        setStatus(prev => ({ 
+          ...prev, 
+          isLoading: false, 
+          error: result.message 
+        }));
+      }
 
     } catch (error) {
       setStatus(prev => ({ 

@@ -699,7 +699,13 @@ class MLCategorizationService {
         this.trainingHistory = JSON.parse(stored);
       }
     } catch (error) {
-      console.error('Failed to load training history:', error);
+      systemIntegrityService.logServiceError(
+        'MLCategorizationService',
+        'loadTrainingHistory',
+        error instanceof Error ? error : new Error(String(error)),
+        'medium',
+        { component: 'training', operation: 'loadHistory' }
+      );
       this.trainingHistory = [];
     }
   }

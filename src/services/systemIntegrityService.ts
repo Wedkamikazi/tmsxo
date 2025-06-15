@@ -15,12 +15,15 @@ export interface SystemHealthStatus {
     eventBus: 'healthy' | 'degraded' | 'failed';
     dataIntegrity: 'healthy' | 'degraded' | 'failed';
     performance: 'healthy' | 'degraded' | 'failed';
+    crossTabSync: 'healthy' | 'degraded' | 'failed';
   };
   metrics: {
     storageUsed: number;
     eventLatency: number;
     dataConsistency: number;
     errorRate: number;
+    activeTabs: number;
+    syncConflicts: number;
   };
   lastCheck: string;
 }

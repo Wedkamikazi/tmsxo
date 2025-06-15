@@ -178,7 +178,7 @@ export const DataHub: React.FC = () => {
     
     // Return undefined when no cleanup is needed
     return undefined;
-  }, [servicesLoaded, unifiedDataService, eventBus, initializationSkipped]);
+  }, [servicesLoaded, unifiedDataService, eventBus, initializationSkipped, activeTab]);
 
   const handleImportComplete = (transactions: Transaction[], bankAccount: BankAccount) => {
     console.log(`Imported ${transactions.length} transactions for ${bankAccount.name}`);

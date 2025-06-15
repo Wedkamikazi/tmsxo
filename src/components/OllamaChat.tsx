@@ -29,6 +29,13 @@ export const OllamaChat: React.FC = () => {
       content: 'Hello! I\'m your AI assistant powered by Ollama. I can help you with questions about your financial data, provide insights, or just have a conversation. What would you like to know?',
       timestamp: new Date()
     }]);
+
+    // Check status every 5 seconds
+    const statusInterval = setInterval(() => {
+      checkOllamaStatus();
+    }, 5000);
+
+    return () => clearInterval(statusInterval);
   }, []);
 
   useEffect(() => {

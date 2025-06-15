@@ -455,11 +455,11 @@ Replace EventBus pattern with React Context + useReducer for better state manage
 
 > **🔍 PRE-TASK VERIFICATION**: Analyze current bundle structure and dependencies. Check for existing webpack configurations, lazy loading implementations, or code splitting patterns. Verify current bundle sizes and loading patterns.
 
-#### **Objective**
+#### **Objective (Task 2.3)**
 
 Reduce bundle size from ~8MB to ~3MB through code splitting and optimization.
 
-#### **Technical Specifications**
+#### **Technical Specifications (Task 2.3)**
 
 **Current Bundle Analysis:**
 
@@ -476,7 +476,7 @@ Reduce bundle size from ~8MB to ~3MB through code splitting and optimization.
 - Advanced Features: ~1MB (lazy loaded)
 - **Total Initial: ~1.5MB (67% reduction)**
 
-#### **Implementation Details**
+#### **Implementation Details (Task 2.3)**
 
 1. **Code Splitting Strategy**
    - Lazy load ML components
@@ -493,19 +493,19 @@ Reduce bundle size from ~8MB to ~3MB through code splitting and optimization.
    - Bundle analysis tools
    - Performance budgets
 
-#### **Files to Create**
+#### **Files to Create (Task 2.3)**
 
 - `craco.config.js`
 - `webpack-bundle-analyzer.config.js`
 - `src/utils/dynamicImports.ts`
 
-#### **Files to Modify**
+#### **Files to Modify (Task 2.3)**
 
 - `package.json` (add scripts)
 - `src/App.tsx` (add Suspense boundaries)
 - All heavy components (add lazy loading)
 
-#### **Acceptance Criteria**
+#### **Acceptance Criteria (Task 2.3)**
 
 - [ ] Initial bundle < 2MB
 - [ ] ML features load < 3 seconds on slow connections

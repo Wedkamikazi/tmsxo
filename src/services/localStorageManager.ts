@@ -376,7 +376,7 @@ class LocalStorageManager {
   }
 
   restoreSnapshot(timestamp: string): boolean {
-    const snapshots = this.getStorageData(this.STORAGE_KEYS.snapshots, []);
+    const snapshots = this.getStorageData<StorageSnapshot[]>(this.STORAGE_KEYS.snapshots, []);
     const snapshot = snapshots.find(s => s.timestamp === timestamp);
     
     if (!snapshot) return false;

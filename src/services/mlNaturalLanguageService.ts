@@ -63,7 +63,7 @@ class MLNaturalLanguageService {
   // TensorFlow.js Models for NLP
   private sentimentModel: tf.LayersModel | null = null;
   private intentClassificationModel: tf.LayersModel | null = null;
-  private entityExtractionModel: tf.LayersModel | null = null;
+
   private embeddingModel: tf.LayersModel | null = null;
   private topicModelingModel: tf.LayersModel | null = null;
   

@@ -561,6 +561,12 @@ Provide detailed analysis in JSON format.`;
     return this.healthStatus;
   }
 
+  async ensureInitialized(): Promise<void> {
+    if (!this.isInitialized) {
+      await this.initializeOllamaIntegration();
+    }
+  }
+
   dispose(): void {
     this.requestQueue.length = 0;
     this.isProcessingQueue = false;

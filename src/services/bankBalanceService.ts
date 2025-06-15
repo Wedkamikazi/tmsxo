@@ -135,8 +135,8 @@ class BankBalanceService {
     const transactionsByAccountAndDate = new Map<string, Map<string, StoredTransaction[]>>();
     
     transactions.forEach(transaction => {
-      // Extract date from postDateTime or fallback to date
-      const dateTime = transaction.postDateTime || `${transaction.postDate || transaction.date}T${transaction.time || '00:00'}:00`;
+      // Extract date from postDateTime or fallback to formatted date
+      const dateTime = transaction.postDateTime || `${transaction.date}T${transaction.time || '00:00'}:00`;
       const date = dateTime.split('T')[0]; // Extract YYYY-MM-DD
       
       if (!transactionsByAccountAndDate.has(transaction.accountId)) {

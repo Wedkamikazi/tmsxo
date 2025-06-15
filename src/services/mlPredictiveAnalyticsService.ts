@@ -217,16 +217,25 @@ class MLPredictiveAnalyticsService {
       name: 'RiskAssessment',
       layers: [
         tf.layers.dense({
-          units: 128,
+          units: 96,
           activation: 'relu',
-          inputShape: [15] // Risk factors
+          inputShape: [15], // Risk factors
+          kernelInitializer: 'glorotUniform'
         }),
         tf.layers.batchNormalization(),
         tf.layers.dropout({ rate: 0.3 }),
-        tf.layers.dense({ units: 64, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 48, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.batchNormalization(),
         tf.layers.dropout({ rate: 0.2 }),
-        tf.layers.dense({ units: 32, activation: 'relu' }),
+        tf.layers.dense({ 
+          units: 24, 
+          activation: 'relu',
+          kernelInitializer: 'glorotUniform'
+        }),
         tf.layers.dense({ units: 4, activation: 'softmax' }) // Low, Medium, High, Critical risk
       ]
     });

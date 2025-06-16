@@ -5,15 +5,15 @@ import {
   type BalanceFilters, 
   type BalanceStats 
 } from './UnifiedBalanceService';
-import { unifiedDataService } from '../../data/storage/UnifiedDataService';
-import { BankAccount } from '../../shared/types';
+import { unifiedDataService } from '@/data/storage/UnifiedDataService';
+import { BankAccount } from '@/shared/types';
 import { 
   registerGlobalRefresh, 
   unregisterGlobalRefresh, 
   shouldComponentUseCache,
   setComponentState,
   getComponentState 
-} from '../../core/performance/StateManager';
+} from '@/core/performance/StateManager';
 import './BankBalance.css';
 
 interface BankBalanceProps {

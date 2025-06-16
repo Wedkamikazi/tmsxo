@@ -85,7 +85,7 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
     } finally {
       setIsProcessing(false);
     }
-  }, []);
+  }, [selectedBankAccount?.id]);
 
   const handleBankAccountSelect = useCallback((accountId: string) => {
     const account = bankAccounts.find(acc => acc.id === accountId);

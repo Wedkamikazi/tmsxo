@@ -18,7 +18,7 @@ import {
   DailyCashEntry,
   AuditLogEntry
 } from '../../../shared/types';
-import { eventBus } from './EventBus';
+import { eventBus } from '../../core/orchestration/EventBus';
 
 // =============================================
 // DAILY CASH MANAGEMENT SERVICE FOUNDATION

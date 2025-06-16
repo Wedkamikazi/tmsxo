@@ -337,6 +337,12 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
       });
     }
     
+    console.log('🔍 SORTING DEBUG: Final filtered/sorted transactions:', filtered.length);
+    if (filtered.length > 0) {
+      console.log('🔍 SORTING DEBUG: First transaction date:', filtered[0].postDateTime);
+      console.log('🔍 SORTING DEBUG: Last transaction date:', filtered[filtered.length - 1].postDateTime);
+    }
+    
     return filtered;
   }, [transactions, filters, sortField, sortDirection, showDuplicatesOnly, duplicateGroups, bankAccounts]);
 

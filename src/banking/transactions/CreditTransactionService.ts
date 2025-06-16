@@ -1,8 +1,8 @@
 import { 
   CreditTransactionView, 
   CollectionType
-} from '../../shared/types';
-import { unifiedDataService } from '../../data/storage/UnifiedDataService';
+} from '@/shared/types';
+import { unifiedDataService } from '@/data/storage/UnifiedDataService';
 
 
 // Stub services for missing dependencies - minimal implementation for production build

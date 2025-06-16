@@ -31,7 +31,6 @@ export const HRPayments: React.FC<HRPaymentsProps> = ({ dataRefreshTrigger }) =>
   const [isReconciling, setIsReconciling] = useState(false);
   const [reconciliationNotes, setReconciliationNotes] = useState('');
   const [selectedPayrollEntry, setSelectedPayrollEntry] = useState<string>('');
-  const [verificationObservations, setVerificationObservations] = useState('');
 
   const loadHRPayments = useCallback(async () => {
     setIsLoading(true);

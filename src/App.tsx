@@ -24,10 +24,17 @@ function App(): React.ReactElement {
         
         // CRITICAL: Set debug mode for safer initialization
         if (!isDebugMode()) {
-          console.log('⚠️ BROWSER HANG PREVENTION: Enabling debug mode for safer startup');
-          localStorage.setItem('debugMode', 'true');
-          window.location.reload(); // Reload to apply debug mode
-          return;
+          // Safety check to prevent infinite reload loop
+          const reloadAttempted = sessionStorage.getItem('debugModeReloadAttempted');
+          if (!reloadAttempted) {
+            console.log('⚠️ BROWSER HANG PREVENTION: Enabling debug mode for safer startup');
+            sessionStorage.setItem('debugModeReloadAttempted', 'true');
+            localStorage.setItem('debugMode', 'true');
+            window.location.reload(); // Reload to apply debug mode
+            return;
+          } else {
+            console.warn('⚠️ Debug mode reload attempted but failed - continuing without debug mode');
+          }
         }
         
         await initializeSystemSafety();

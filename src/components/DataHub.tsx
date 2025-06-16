@@ -385,6 +385,18 @@ export const DataHub: React.FC = () => {
       description: 'Credit transaction reconciliation with AR Aging and forecasts'
     },
     {
+      id: 'debitTransactions' as const,
+      label: 'Debit Transactions',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M7 7l10 10" />
+          <path d="M7 17L17 7" />
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+        </svg>
+      ),
+      description: 'Debit transaction reconciliation with AP Aging and forecasted payments'
+    },
+    {
       id: 'bankBalance' as const,
       label: 'Bank Balance',
       icon: (

@@ -187,9 +187,10 @@ class BankBalanceService {
         // Opening balance is either previous day's closing or calculated from first transaction
         let openingBalance: number;
         if (index === 0) {
-          // For first day, calculate opening balance from first transaction
-          const firstTransaction = transactionsToProcess[0];
-          openingBalance = firstTransaction.balance - (firstTransaction.creditAmount - firstTransaction.debitAmount);
+          // For first day, calculate opening balance from oldest transaction
+          // Opening balance = balance before the oldest transaction for the day
+          const transactionImpact = (oldestTransaction.creditAmount || 0) - (oldestTransaction.debitAmount || 0);
+          openingBalance = oldestTransaction.balance - transactionImpact;
         } else {
           openingBalance = previousClosingBalance;
         }

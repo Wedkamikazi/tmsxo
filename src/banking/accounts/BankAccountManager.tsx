@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BankAccount } from '../../shared/types';
-import { unifiedDataService } from '../../data/storage/UnifiedDataService';
+import { BankAccount } from '@/shared/types';
+import { unifiedDataService } from '@/data/storage/UnifiedDataService';
 import { unifiedBalanceService } from './UnifiedBalanceService';
 import { 
   registerGlobalRefresh, 
@@ -8,7 +8,7 @@ import {
   shouldComponentUseCache,
   setComponentState,
   getComponentState 
-} from '../../core/performance/StateManager';
+} from '@/core/performance/StateManager';
 import './BankAccountManager.css';
 
 interface BankAccountManagerProps {

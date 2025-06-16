@@ -365,15 +365,19 @@ interface CurrencyService {
 - [ ] Rate change alerts
 
 #### **Job 2.1.4: Risk Management Framework**
+
 **Duration**: 5 days
 **Priority**: CRITICAL
+
 **Files to Create**:
+
 - `src/risk/riskCalculationEngine.ts`
 - `src/risk/exposureAnalyzer.ts`
 - `src/risk/limitMonitoring.ts`
 - `src/components/RiskDashboard.tsx`
 
 **Implementation Details**:
+
 ```typescript
 // Comprehensive risk management
 interface RiskManagementService {
@@ -386,6 +390,7 @@ interface RiskManagementService {
 ```
 
 **Acceptance Criteria**:
+
 - [ ] Counterparty risk calculation
 - [ ] Credit limit monitoring
 - [ ] Liquidity risk analysis

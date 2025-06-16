@@ -258,13 +258,14 @@ export interface DebitTransaction {
 // HR Payment Types
 export interface HRPayment {
   id: string;
-  employeeId: string;
-  employeeName: string;
   date: string;
+  description: string;
   amount: number;
-  paymentType: 'salary' | 'bonus' | 'overtime' | 'reimbursement' | 'final_settlement';
   reference: string;
   accountId: string;
+  accountName: string;
+  extractionDate: string;
+  paymentType: 'salary' | 'bonus' | 'overtime' | 'reimbursement' | 'final_settlement';
   reconciliationStatus: 'pending' | 'auto_matched' | 'manually_matched' | 'confirmed';
   confidenceRatio?: number;
   payrollMatch?: PayrollEntry;

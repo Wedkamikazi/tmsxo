@@ -591,7 +591,7 @@ class UnifiedBalanceService {
 
   // Extract date from transaction
   private extractDateFromTransaction(transaction: StoredTransaction): string {
-    const postDate = transaction.postDate || transaction.date;
+    const postDate = transaction.date || transaction.postDate;
     
     // Convert DD/MM/YYYY to YYYY-MM-DD
     if (postDate.includes('/')) {

@@ -704,6 +704,16 @@ class DailyCashManagementService {
       entry.cashIn = await this.calculateCashIn(entry.date, entry.accountNumber);
       entry.cashOut = await this.calculateCashOut(entry.date, entry.accountNumber);
       
+      // Calculate intercompany transfers (Job 1.4 - NOW IMPLEMENTED)
+      const intercoData = await this.calculateIntercompanyTransfers(entry.date, entry.accountNumber);
+      entry.intercoIn = intercoData.intercoIn;
+      entry.intercoOut = intercoData.intercoOut;
+      
+      // Calculate time deposit movements (Job 1.5 - NOW IMPLEMENTED)
+      const timeDepositData = await this.calculateTimeDepositMovements(entry.date, entry.accountNumber);
+      entry.timeDepositOut = timeDepositData.timeDepositOut;
+      entry.timeDepositIn = timeDepositData.timeDepositIn;
+      
       // Calculate projected closing balance
       entry.closingBalanceProjected = entry.openingBalance + entry.cashIn - entry.cashOut + entry.intercoIn - entry.intercoOut - entry.timeDepositOut + entry.timeDepositIn;
       

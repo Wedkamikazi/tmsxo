@@ -35,7 +35,46 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
       const summaries: ImportSummary[] = [];
       
       for (const file of selectedFiles) {
-        const summary = await csvProcessingService.processFile(file);
+        // Convert file to CSV content for processing
+      const csvContent = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target?.result as string);
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsText(file);
+      });
+
+      // Process using the new ImportProcessingService
+      const result = await importProcessingService.processFile(
+        csvContent, 
+        file.name, 
+        selectedBankAccount?.id || 'default'
+      );
+
+      // Convert to ImportSummary format for compatibility
+      const summary: ImportSummary = {
+        fileName: file.name,
+        totalTransactions: result.transactionCount,
+        totalDebitAmount: 0, // Will be calculated from transactions
+        totalCreditAmount: 0, // Will be calculated from transactions
+        closingBalance: 0, // Will be calculated from transactions
+        openingBalance: 0, // Will be calculated from transactions
+        dailyMovement: 0, // Will be calculated from transactions
+        validationErrors: result.validationResult.errors.map((error, index) => ({
+          row: index + 1,
+          field: 'general',
+          message: error,
+          value: ''
+        })),
+        transactions: [], // Will be populated from the processed data
+        dateRange: {
+          from: new Date().toISOString().split('T')[0],
+          to: new Date().toISOString().split('T')[0]
+        }
+      };
+
+      if (!result.success) {
+        throw new Error(result.error || 'Processing failed');
+      }
         summaries.push(summary);
       }
       

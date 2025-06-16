@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { BankAccount } from '../../shared/types';
 import { unifiedDataService } from '../../data/storage/UnifiedDataService';
-import { unifiedBalanceService } from '../banking/accounts/UnifiedBalanceService';
+import { unifiedBalanceService } from './UnifiedBalanceService';
 import { 
   registerGlobalRefresh, 
   unregisterGlobalRefresh, 

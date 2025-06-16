@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useTensorFlowCleanup, useTimerCleanup } from '../shared/hooks/useCleanup';
-import { useInfiniteLoopProtection } from '../utils/infiniteLoopProtection';
-import { unifiedCategorizationService } from '../analytics/categorization/UnifiedCategorizationService';
-import { TensorFlowMethod } from '../services/categorization/tensorFlowMethod';
-import { mlPredictiveAnalyticsService, PredictiveInsight } from '../analytics/machine-learning/MLPredictiveAnalyticsService';
-import { mlNaturalLanguageService, NLPAnalysisResult } from '../analytics/machine-learning/MLNaturalLanguageService';
-import { unifiedDataService } from '../data/storage/UnifiedDataService';
+import { useTensorFlowCleanup, useTimerCleanup } from '../../shared/hooks/useCleanup';
+import { useInfiniteLoopProtection } from '../../core/safety/InfiniteLoopProtection';
+import { unifiedCategorizationService } from '../categorization/UnifiedCategorizationService';
+import { TensorFlowMethod } from '../categorization/TensorFlowMethod';
+import { mlPredictiveAnalyticsService, PredictiveInsight } from './MLPredictiveAnalyticsService';
+import { mlNaturalLanguageService, NLPAnalysisResult } from './MLNaturalLanguageService';
+import { unifiedDataService } from '../../data/storage/UnifiedDataService';
 import { Transaction } from '../../shared/types';
 import * as tf from '@tensorflow/tfjs';
 import './MLIntegrationDashboard.css';

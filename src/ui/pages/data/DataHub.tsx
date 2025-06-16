@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BankStatementImport } from './BankStatementImport';
 import { BankAccountManager } from './BankAccountManager';
-import { Transactions } from './Transactions';
+import { Transactions } from '../../../banking/transactions/Transactions';
 import { BankBalance } from './BankBalance';
 import { FileManager } from './FileManager';
 import QwenIntegrationStatus from './QwenIntegrationStatus';

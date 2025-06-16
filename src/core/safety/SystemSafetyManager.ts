@@ -62,26 +62,26 @@ class SystemSafetyManager {
       return;
     }
 
-    console.log('🛡️ INITIALIZING SYSTEM SAFETY MANAGER');
+    console.log('🛡️ INITIALIZING SYSTEM SAFETY MANAGER (NON-BLOCKING)');
     console.log('📋 SAFETY RULES ACTIVE:');
     console.log('   ✅ No duplicate servers allowed');
     console.log('   ✅ No duplicate LLMs allowed');
     console.log('   ✅ Automatic process cleanup');
     console.log('   ✅ Memory usage monitoring');
 
-    // Step 1: Clean any existing processes
-    await this.enforceCleanSlate();
+    // Step 1: Clean any existing processes (NON-BLOCKING)
+    setImmediate(() => this.enforceCleanSlate());
 
-    // Step 2: Set up monitoring
-    this.setupProcessMonitoring();
+    // Step 2: Set up monitoring (NON-BLOCKING)
+    setImmediate(() => this.setupProcessMonitoring());
 
-    // Step 3: Register cleanup handlers
-    this.registerCleanupHandlers();
+    // Step 3: Register cleanup handlers (NON-BLOCKING)
+    setImmediate(() => this.registerCleanupHandlers());
 
-    // Mark as initialized globally
+    // Mark as initialized globally IMMEDIATELY to prevent blocking
     globalSafetyInitialized = true;
     this.isInitialized = true;
-    console.log('✅ System Safety Manager: ACTIVE');
+    console.log('✅ System Safety Manager: ACTIVE (background initialization in progress)');
   }
 
   /**

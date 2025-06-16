@@ -781,4 +781,4 @@ class IntercompanyTransferService {
 
 // Export singleton instance
 export const intercompanyTransferService = new IntercompanyTransferService();
-export default intercompanyTransferService; 
+export default intercompanyTransferService;

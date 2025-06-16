@@ -70,13 +70,13 @@ class SystemSafetyManager {
     console.log('   ✅ Memory usage monitoring');
 
     // Step 1: Clean any existing processes (NON-BLOCKING)
-    setImmediate(() => this.enforceCleanSlate());
+    setTimeout(() => this.enforceCleanSlate(), 0);
 
     // Step 2: Set up monitoring (NON-BLOCKING)
-    setImmediate(() => this.setupProcessMonitoring());
+    setTimeout(() => this.setupProcessMonitoring(), 10);
 
     // Step 3: Register cleanup handlers (NON-BLOCKING)
-    setImmediate(() => this.registerCleanupHandlers());
+    setTimeout(() => this.registerCleanupHandlers(), 20);
 
     // Mark as initialized globally IMMEDIATELY to prevent blocking
     globalSafetyInitialized = true;

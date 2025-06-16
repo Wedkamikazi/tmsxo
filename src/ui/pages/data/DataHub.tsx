@@ -37,8 +37,8 @@ import {
   unregisterGlobalRefresh,
   clearComponentStates,
   getStateStorageUsage
-} from '../../../core/performance/StateManager';
-import { Transaction, BankAccount } from '../../../shared/types';
+} from '@/core';
+import { Transaction, BankAccount } from '@/shared/types';
 import './DataHub.css';
 
 // Check for debug mode

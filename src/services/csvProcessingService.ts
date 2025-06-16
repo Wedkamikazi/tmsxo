@@ -291,11 +291,11 @@ class CSVProcessingService {
     return rows.map((row, index) => {
       // Debug logging for problematic dates
       if (!row.postDate || !this.isValidDate(row.postDate)) {
-        console.warn(`Row ${index + 1}: Invalid postDate "${row.postDate}", using valueDate "${row.valueDate}" as fallback`);
+        console.warn(`Row ${index + 1}: Invalid postDate "${row.postDate}", using valueDate "${row.valueDate}"`);
       }
       
-      // Use postDate as primary (when transaction was actually posted), fallback to valueDate only if postDate is missing
-      const primaryDate = row.postDate || row.valueDate;
+      // Use valueDate as primary, fallback to postDate
+      const primaryDate = row.valueDate || row.postDate;
       const formattedDate = this.formatDate(primaryDate);
       
       // Additional debug logging
@@ -413,7 +413,6 @@ class CSVProcessingService {
   }
 
   // Helper method to create a sortable datetime from Post date and Time
-  // Uses Post Date (when transaction was actually posted) for accurate chronological sorting
   private createSortableDateTime(postDate: string, time: string): Date {
     const formattedDate = this.formatDate(postDate);
     

@@ -236,9 +236,6 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
       return [];
     }
     
-    console.log('🔍 SORTING DEBUG: Starting with', transactions.length, 'total transactions');
-    console.log('🔍 SORTING DEBUG: Sort field:', sortField, 'Direction:', sortDirection);
-    
     let filtered = [...transactions];
     
     // Apply filters
@@ -337,12 +334,6 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
       });
     }
     
-    console.log('🔍 SORTING DEBUG: Final filtered/sorted transactions:', filtered.length);
-    if (filtered.length > 0) {
-      console.log('🔍 SORTING DEBUG: First transaction date:', filtered[0].postDateTime);
-      console.log('🔍 SORTING DEBUG: Last transaction date:', filtered[filtered.length - 1].postDateTime);
-    }
-    
     return filtered;
   }, [transactions, filters, sortField, sortDirection, showDuplicatesOnly, duplicateGroups, bankAccounts]);
 
@@ -373,15 +364,9 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
 
   // Event handlers
   const handleSort = (field: SortField) => {
-    console.log('🔍 SORTING DEBUG: User clicked sort on field:', field);
-    console.log('🔍 SORTING DEBUG: Current sort field:', sortField, 'direction:', sortDirection);
-    
     if (sortField === field) {
-      const newDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-      console.log('🔍 SORTING DEBUG: Toggling direction to:', newDirection);
-      setSortDirection(newDirection);
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
-      console.log('🔍 SORTING DEBUG: Changing sort field to:', field, 'with direction: desc');
       setSortField(field);
       setSortDirection('desc');
     }

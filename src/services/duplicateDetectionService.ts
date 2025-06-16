@@ -186,18 +186,20 @@ class DuplicateDetectionService {
     const existingDate = existing.date || existing.postDate;
     const newDate = newTxn.date || newTxn.postDate;
     
-    if (existingDate === newDate) {
-      score += 0.4;
-      matchReasons.push('Same post date');
-      
-      // If we have time information, check for exact time match
-      if (existing.time && newTxn.time && existing.time === newTxn.time) {
-        score += 0.1; // Bonus for exact time match
-        matchReasons.push('Same time');
+    if (existingDate && newDate) {
+      if (existingDate === newDate) {
+        score += 0.4;
+        matchReasons.push('Same post date');
+        
+        // If we have time information, check for exact time match
+        if (existing.time && newTxn.time && existing.time === newTxn.time) {
+          score += 0.1; // Bonus for exact time match
+          matchReasons.push('Same time');
+        }
+      } else if (this.isWithinDays(existingDate, newDate, 1)) {
+        score += 0.2;
+        matchReasons.push('Post date within 1 day');
       }
-    } else if (this.isWithinDays(existingDate, newDate, 1)) {
-      score += 0.2;
-      matchReasons.push('Post date within 1 day');
     }
     
     // Amount match (critical)

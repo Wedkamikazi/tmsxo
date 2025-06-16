@@ -153,48 +153,55 @@ export class DateMigrationUtils {
       // Get all accounts
       const accounts = localStorageManager.getAllAccounts();
       
-      for (const account of accounts) {
-        try {
-          // Get transactions for this account
-          const transactions = localStorageManager.getTransactionsByAccount(account.id);
-          let accountFixed = 0;
-          
-          for (const transaction of transactions) {
-            result.totalProcessed++;
+              for (const account of accounts) {
+          try {
+            // Get transactions for this account
+            const transactions = localStorageManager.getTransactionsByAccount(account.id);
+            const fixedTransactions: any[] = [];
+            let accountFixed = 0;
             
-            // Check if postDateTime is invalid
-            if (this.isInvalidPostDateTime(transaction.postDateTime)) {
-              try {
-                // Fix the postDateTime using the transaction's date and time
-                const fixedPostDateTime = this.fixPostDateTime(
-                  transaction.postDateTime, 
-                  transaction.time
-                );
-                
-                // Update the transaction
-                const updatedTransaction = {
-                  ...transaction,
-                  postDateTime: fixedPostDateTime
-                };
-                
-                // Save the updated transaction
-                localStorageManager.updateTransaction(transaction.id, updatedTransaction);
-                
-                result.totalFixed++;
-                accountFixed++;
-                
-                console.log(`✅ Fixed transaction ${transaction.id}: "${transaction.postDateTime}" -> "${fixedPostDateTime}"`);
-              } catch (error) {
-                const errorMsg = `Failed to fix transaction ${transaction.id}: ${error instanceof Error ? error.message : 'Unknown error'}`;
-                result.errors.push(errorMsg);
-                console.error('❌', errorMsg);
+            for (const transaction of transactions) {
+              result.totalProcessed++;
+              
+              // Check if postDateTime is invalid
+              if (this.isInvalidPostDateTime(transaction.postDateTime)) {
+                try {
+                  // Fix the postDateTime using the transaction's date and time
+                  const fixedPostDateTime = this.fixPostDateTime(
+                    transaction.postDateTime, 
+                    transaction.time
+                  );
+                  
+                  // Create fixed transaction
+                  const fixedTransaction = {
+                    ...transaction,
+                    postDateTime: fixedPostDateTime
+                  };
+                  
+                  fixedTransactions.push(fixedTransaction);
+                  result.totalFixed++;
+                  accountFixed++;
+                  
+                  console.log(`✅ Fixed transaction ${transaction.id}: "${transaction.postDateTime}" -> "${fixedPostDateTime}"`);
+                } catch (error) {
+                  const errorMsg = `Failed to fix transaction ${transaction.id}: ${error instanceof Error ? error.message : 'Unknown error'}`;
+                  result.errors.push(errorMsg);
+                  console.error('❌', errorMsg);
+                  fixedTransactions.push(transaction); // Keep original if fix fails
+                }
+              } else {
+                fixedTransactions.push(transaction); // Keep valid transactions as-is
               }
             }
-          }
-          
-          if (accountFixed > 0) {
-            console.log(`✅ Fixed ${accountFixed} transactions in account "${account.name}"`);
-          }
+            
+            // If we fixed any transactions, we need to replace all transactions
+            if (accountFixed > 0) {
+              // Delete old transactions for this account
+              localStorageManager.deleteTransactionsByAccount(account.id);
+              // Add the fixed transactions back
+              localStorageManager.addTransactions(fixedTransactions);
+              console.log(`✅ Fixed ${accountFixed} transactions in account "${account.name}"`);
+            }
           
         } catch (error) {
           const errorMsg = `Failed to process account ${account.id}: ${error instanceof Error ? error.message : 'Unknown error'}`;

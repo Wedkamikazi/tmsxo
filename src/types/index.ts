@@ -209,4 +209,335 @@ export interface CollectionType {
   color: string;
   isSystemType: boolean;
   createdDate: string;
+}
+
+// =============================================
+// ENHANCED CASH MANAGEMENT WORKFLOW TYPES
+// =============================================
+
+// Credit Transaction Types
+export interface CreditTransaction {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  reference: string;
+  accountId: string;
+  accountName: string;
+  extractionDate: string;
+  categoryType: 'customer_payment' | 'refund' | 'interest' | 'investment_maturity' | 'intercompany_in' | 'other';
+  reconciliationStatus: 'pending' | 'auto_matched' | 'manually_matched' | 'unknown_collection' | 'confirmed';
+  confidenceRatio?: number;
+  arAgingMatch?: ARAgingEntry;
+  forecastMatch?: ForecastedCollection;
+  verificationDate?: string;
+  verifiedBy?: string;
+  observations?: string;
+}
+
+// Debit Transaction Types
+export interface DebitTransaction {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  reference: string;
+  accountId: string;
+  accountName: string;
+  extractionDate: string;
+  categoryType: 'vendor_payment' | 'hr_payment' | 'fee' | 'tax' | 'intercompany_out' | 'time_deposit' | 'other';
+  reconciliationStatus: 'pending' | 'auto_matched' | 'manually_matched' | 'confirmed';
+  confidenceRatio?: number;
+  apAgingMatch?: APAgingEntry;
+  forecastMatch?: ForecastedPayment;
+  verificationDate?: string;
+  verifiedBy?: string;
+  observations?: string;
+}
+
+// HR Payment Types
+export interface HRPayment {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  date: string;
+  amount: number;
+  paymentType: 'salary' | 'bonus' | 'overtime' | 'reimbursement' | 'final_settlement';
+  reference: string;
+  accountId: string;
+  reconciliationStatus: 'pending' | 'auto_matched' | 'manually_matched' | 'confirmed';
+  confidenceRatio?: number;
+  payrollMatch?: PayrollEntry;
+  verificationDate?: string;
+  verifiedBy?: string;
+  observations?: string;
+}
+
+// Intercompany Transfer Types
+export interface IntercompanyTransfer {
+  id: string;
+  date: string;
+  amount: number;
+  direction: 'inbound' | 'outbound';
+  counterpartyEntity: string;
+  purpose: string;
+  reference: string;
+  accountId: string;
+  reconciliationStatus: 'pending' | 'auto_matched' | 'manually_matched' | 'confirmed';
+  confidenceRatio?: number;
+  intercompanyMatch?: IntercompanyRecord;
+  cashForecastMatch?: CashForecastEntry;
+  verificationDate?: string;
+  verifiedBy?: string;
+  observations?: string;
+}
+
+// Time Deposit (Investment) Types
+export interface TimeDeposit {
+  id: string;
+  accountId: string;
+  principalAmount: number;
+  interestRate: number;
+  placementDate: string;
+  maturityDate: string;
+  bankName: string;
+  depositNumber: string;
+  status: 'active' | 'matured' | 'cancelled';
+  maturedAmount?: number;
+  actualMaturityDate?: string;
+  autoRollover: boolean;
+  reconciliationStatus?: 'pending' | 'matched' | 'confirmed';
+  placementReference?: string;
+  maturityReference?: string;
+  observations?: string;
+}
+
+// Supporting Entity Types
+export interface ARAgingEntry {
+  id: string;
+  customerId: string;
+  customerName: string;
+  invoiceNumber: string;
+  dueDate: string;
+  amount: number;
+  agingDays: number;
+  status: 'pending' | 'overdue' | 'collected';
+}
+
+export interface APAgingEntry {
+  id: string;
+  vendorId: string;
+  vendorName: string;
+  invoiceNumber: string;
+  dueDate: string;
+  amount: number;
+  agingDays: number;
+  status: 'pending' | 'overdue' | 'paid';
+}
+
+export interface PayrollEntry {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  payPeriod: string;
+  grossAmount: number;
+  netAmount: number;
+  payDate: string;
+  status: 'pending' | 'paid';
+}
+
+export interface IntercompanyRecord {
+  id: string;
+  counterpartyEntity: string;
+  amount: number;
+  dueDate: string;
+  purpose: string;
+  status: 'pending' | 'transferred';
+}
+
+export interface ForecastedCollection {
+  id: string;
+  customerId: string;
+  expectedDate: string;
+  amount: number;
+  confidence: 'high' | 'medium' | 'low';
+  notes?: string;
+}
+
+export interface ForecastedPayment {
+  id: string;
+  vendorId: string;
+  expectedDate: string;
+  amount: number;
+  confidence: 'high' | 'medium' | 'low';
+  notes?: string;
+}
+
+export interface CashForecastEntry {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  type: 'inflow' | 'outflow';
+  confidence: 'high' | 'medium' | 'low';
+  category: string;
+}
+
+// Daily Cash Management Table Types
+export interface DailyCashEntry {
+  id: string;
+  date: string;
+  bankName: string;
+  accountNumber: string;
+  currency: string;
+  openingBalance: number;
+  cashIn: number; // AR + Other credits
+  cashOut: number; // AP + HR + Other debits
+  intercoIn: number;
+  intercoOut: number;
+  timeDepositOut: number;
+  timeDepositIn: number; // Matured deposits (principal + profit)
+  closingBalanceActual: number;
+  closingBalanceProjected: number;
+  discrepancy: number;
+  notes?: string;
+  observations?: string;
+  isVerified: boolean;
+  verifiedDate?: string;
+  verifiedBy?: string;
+}
+
+// Reconciliation Types
+export interface ReconciliationMatch {
+  id: string;
+  transactionId: string;
+  matchedEntityId: string;
+  matchedEntityType: 'ar_aging' | 'ap_aging' | 'payroll' | 'intercompany' | 'forecast';
+  matchType: 'auto' | 'manual';
+  confidenceScore: number;
+  matchDate: string;
+  verifiedDate?: string;
+  verifiedBy?: string;
+  notes?: string;
+}
+
+// Investment Logic Types
+export interface InvestmentSuggestion {
+  id: string;
+  date: string;
+  accountId: string;
+  suggestedAmount: number;
+  reasoning: string;
+  considerationsFactored: string[];
+  riskLevel: 'conservative' | 'moderate' | 'aggressive';
+  suggestedTerm: number; // days
+  projectedReturn: number;
+  liquidity: {
+    availableAfterInvestment: number;
+    upcomingObligations: ObligationEntry[];
+    bufferAmount: number;
+  };
+  weekendConsiderations?: {
+    isSaudiWeekend: boolean;
+    adjustedMaturityDate?: string;
+    alternativeSuggestion?: string;
+  };
+}
+
+export interface ObligationEntry {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  type: 'payroll' | 'vendor_payment' | 'tax' | 'loan_payment' | 'other';
+  criticality: 'critical' | 'important' | 'routine';
+}
+
+// Audit and Verification Types
+export interface AuditLogEntry {
+  id: string;
+  timestamp: string;
+  userId: string;
+  action: string;
+  entityType: 'credit' | 'debit' | 'hr' | 'intercompany' | 'investment' | 'daily_cash';
+  entityId: string;
+  oldValues?: Record<string, any>;
+  newValues?: Record<string, any>;
+  notes?: string;
+  ipAddress?: string;
+}
+
+export interface DiscrepancyAlert {
+  id: string;
+  date: string;
+  accountId: string;
+  type: 'balance_mismatch' | 'unmatched_transaction' | 'missing_maturity' | 'liquidity_shortfall';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  description: string;
+  amount?: number;
+  status: 'open' | 'investigating' | 'resolved' | 'false_positive';
+  assignedTo?: string;
+  resolvedDate?: string;
+  resolution?: string;
+}
+
+// Dashboard and Analytics Types
+export interface CashFlowAnalytics {
+  accountId: string;
+  period: string;
+  totalInflows: number;
+  totalOutflows: number;
+  netCashFlow: number;
+  averageDailyBalance: number;
+  peakBalance: number;
+  lowBalance: number;
+  investmentUtilization: number;
+  reconciliationAccuracy: number;
+  discrepancyCount: number;
+  trends: {
+    inflowTrend: 'increasing' | 'decreasing' | 'stable';
+    outflowTrend: 'increasing' | 'decreasing' | 'stable';
+    balanceTrend: 'increasing' | 'decreasing' | 'stable';
+  };
+}
+
+// Weekend and Holiday Awareness Types
+export interface BusinessCalendar {
+  id: string;
+  date: string;
+  country: string;
+  type: 'weekday' | 'weekend' | 'holiday';
+  name?: string; // Holiday name
+  bankingDay: boolean;
+  settlementDay: boolean;
+}
+
+// Configuration Types
+export interface CashManagementConfig {
+  minimumBufferAmount: number;
+  investmentThresholds: {
+    minimum: number;
+    recommended: number;
+    maximum: number;
+  };
+  reconciliationTolerances: {
+    amount: number;
+    percentage: number;
+  };
+  alertThresholds: {
+    discrepancy: number;
+    liquidity: number;
+    unmatchedCount: number;
+  };
+  businessRules: {
+    autoInvestEnabled: boolean;
+    weekendMaturityAvoidance: boolean;
+    payrollDayProtection: boolean;
+    minimumLiquidityDays: number;
+  };
+  notifications: {
+    emailEnabled: boolean;
+    smsEnabled: boolean;
+    dashboardAlerts: boolean;
+  };
 } 

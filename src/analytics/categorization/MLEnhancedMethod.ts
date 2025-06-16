@@ -5,7 +5,7 @@ import { Transaction, TransactionCategory } from '../../types';
 import { CategorizationStrategy, UnifiedCategorizationResult } from './index';
 import { MLEnhancedStrategy, MLEnhancedPerformance, LearningDataPoint } from './MLEnhancedTypes';
 import { enhancedMLOrchestrator } from '../enhancedMLOrchestrator';
-import { localStorageManager } from '../';
+import { localStorageManager } from '../../data/storage/LocalStorageManager';
 import { eventBus } from '../../core/orchestration/EventBus';
 import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
 

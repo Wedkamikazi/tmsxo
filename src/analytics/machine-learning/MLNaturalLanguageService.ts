@@ -1,6 +1,6 @@
 import * as tf from '@tensorflow/tfjs';
-import { Transaction } from '../../shared/types';
-import { localStorageManager } from '../../data/storage/LocalStorageManager';
+import { Transaction } from '@/shared/types';
+import { localStorageManager } from '@/data/storage/LocalStorageManager';
 
 // ADVANCED NLP SERVICE FOR TRANSACTION ANALYSIS
 // USES TENSORFLOW.JS FOR NATURAL LANGUAGE PROCESSING

@@ -271,7 +271,7 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
           <div className="stat-card">
             <div className="stat-icon">💰</div>
             <div className="stat-content">
-              <div className="stat-value">{formatCurrency(stats.avgDailyBalance)}</div>
+              <div className="stat-value">{formatCurrency(stats.averageBalance)}</div>
               <div className="stat-label">Avg Daily Balance</div>
             </div>
           </div>

@@ -4,7 +4,7 @@ import { initializeSystemSafety, shouldReinitializeServices } from '@/core';
 import './ui/styles/globals.css';
 
 // Import DataHub conditionally only for full initialization
-const LazyDataHub = React.lazy(() => import('./ui/pages/data/DataHub').then(module => ({ default: module.DataHub })));
+const LazyDataHub = React.lazy(() => import('@/ui').then(module => ({ default: module.DataHub })));
 
 function App(): React.ReactElement {
   // Check if we can use instant refresh

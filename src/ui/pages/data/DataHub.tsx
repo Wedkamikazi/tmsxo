@@ -105,13 +105,13 @@ export const DataHub: React.FC = () => {
     // Dynamically load services only when necessary
     const loadServices = async () => {
       try {
-        const [eventBusModule, unifiedDataServiceModule] = await Promise.all([
-          import('../../../core/orchestration/EventBus'),
-          import('../../../data/storage/UnifiedDataService')
+        const [coreModule, dataModule] = await Promise.all([
+          import('@/core'),
+          import('@/data')
         ]);
         
-        setEventBus(eventBusModule.eventBus);
-        setUnifiedDataService(unifiedDataServiceModule.unifiedDataService);
+        setEventBus(coreModule.eventBus);
+        setUnifiedDataService(dataModule.unifiedDataService);
         setServicesLoaded(true);
         markServicesInitialized(); // Save that services are loaded
         console.log('✅ Services loaded and cached for future INSTANT refreshes (NO LOADING)');

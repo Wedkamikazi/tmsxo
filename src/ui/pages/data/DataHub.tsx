@@ -97,8 +97,8 @@ export const DataHub: React.FC = () => {
     const loadServices = async () => {
       try {
         const [eventBusModule, unifiedDataServiceModule] = await Promise.all([
-          import('../services/eventBus'),
-          import('../services/unifiedDataService')
+          import('../../../core/orchestration/EventBus'),
+          import('../../../data/storage/UnifiedDataService')
         ]);
         
         setEventBus(eventBusModule.eventBus);

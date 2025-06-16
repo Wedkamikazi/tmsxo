@@ -2,7 +2,7 @@
 // Central orchestrator for all categorization strategies
 // Implements fallback chain, performance monitoring, and unified API
 
-import { Transaction } from '../shared/types';
+import { Transaction } from '../../../shared/types';
 import { 
   UnifiedCategorizationResult,
   StrategyRegistry,

@@ -3,11 +3,11 @@
 
 import { Transaction, TransactionCategory } from '../../types';
 import { CategorizationStrategy, UnifiedCategorizationResult } from './index';
-import { MLEnhancedStrategy, MLEnhancedPerformance, LearningDataPoint } from './mlEnhancedTypes';
+import { MLEnhancedStrategy, MLEnhancedPerformance, LearningDataPoint } from './MLEnhancedTypes';
 import { enhancedMLOrchestrator } from '../enhancedMLOrchestrator';
-import { localStorageManager } from '../localStorageManager';
+import { localStorageManager } from '../';
 import { eventBus } from '../eventBus';
-import { systemIntegrityService } from '../systemIntegrityService';
+import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
 
 export class MLEnhancedMethod implements CategorizationStrategy {
   name = 'ml-enhanced';

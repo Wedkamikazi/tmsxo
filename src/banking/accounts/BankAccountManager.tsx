@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BankAccount } from '../shared/types';
+import { BankAccount } from '../../../shared/types';
 import { unifiedDataService } from '../data/storage/UnifiedDataService';
 import { unifiedBalanceService } from '../banking/accounts/UnifiedBalanceService';
 import { 
@@ -8,8 +8,8 @@ import {
   shouldComponentUseCache,
   setComponentState,
   getComponentState 
-} from '../core/performance/StateManager';
-import './.css';
+} from '../../../core/performance/StateManager';
+import './DataHub.css';
 
 interface BankAccountManagerProps {
   onAccountsUpdated?: () => void;

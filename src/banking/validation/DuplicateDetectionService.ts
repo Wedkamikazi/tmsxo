@@ -1,4 +1,4 @@
-import { Transaction } from '../shared/types';
+import { Transaction } from '../../../shared/types';
 import { StoredTransaction } from './unifiedDataService';
 
 export interface DuplicateMatch {

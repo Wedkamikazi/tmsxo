@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { unifiedDataService, type StoredTransaction } from '../data/storage/UnifiedDataService';
-import { BankAccount } from '../shared/types';
+import { BankAccount } from '../../../shared/types';
 import { TransactionCategorization } from './TransactionCategorization';
 import { 
   registerGlobalRefresh, 
@@ -8,8 +8,8 @@ import {
   shouldComponentUseCache,
   setComponentState,
   getComponentState 
-} from '../core/performance/StateManager';
-import './.css';
+} from '../../../core/performance/StateManager';
+import './DataHub.css';
 
 interface TransactionsProps {
   onTransactionUpdate?: (transactions: StoredTransaction[]) => void;

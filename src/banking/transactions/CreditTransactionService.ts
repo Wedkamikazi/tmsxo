@@ -1,7 +1,7 @@
 import { 
   CreditTransactionView, 
   CollectionType
-} from '../shared/types';
+} from '../../../shared/types';
 import { unifiedDataService } from './unifiedDataService';
 
 

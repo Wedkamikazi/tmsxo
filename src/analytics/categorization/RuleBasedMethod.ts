@@ -3,7 +3,7 @@
 
 import { Transaction, CategorizationRule, TransactionCategory } from '../../types';
 import { CategorizationStrategy, UnifiedCategorizationResult } from './index';
-import { localStorageManager } from '../localStorageManager';
+import { localStorageManager } from '../';
 import { eventBus } from '../eventBus';
 
 export class RuleBasedMethod implements CategorizationStrategy {

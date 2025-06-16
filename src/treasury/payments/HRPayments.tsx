@@ -2,11 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { 
   HRPayment, 
   PayrollEntry
-} from '../shared/types';
+} from '../../../shared/types';
 import { hrPaymentManagementService } from '../treasury/payments/HRPaymentManagementService';
 import { eventBus } from '../core/orchestration/EventBus';
-import { ErrorBoundary } from './ErrorBoundary';
-import './.css';
+import { ErrorBoundary } from '../../components/common/ErrorBoundary';
+import './DataHub.css';
 
 interface HRPaymentsProps {
   dataRefreshTrigger: number;

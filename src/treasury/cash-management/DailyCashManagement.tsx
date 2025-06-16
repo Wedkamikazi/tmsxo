@@ -16,11 +16,11 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { DailyCashEntry } from '../shared/types';
+import { DailyCashEntry } from '../../../shared/types';
 import { dailyCashManagementService } from '../treasury/cash-management/DailyCashManagementService';
 import { eventBus } from '../core/orchestration/EventBus';
-import { ErrorBoundary } from './ErrorBoundary';
-import './.css';
+import { ErrorBoundary } from '../../components/common/ErrorBoundary';
+import './DataHub.css';
 
 interface DailyCashManagementProps {
   dataRefreshTrigger?: number;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { unifiedDataService } from '../data/storage/UnifiedDataService';
-import { UploadedFile } from '../shared/types';
-import './.css';
+import { UploadedFile } from '../../../shared/types';
+import './DataHub.css';
 
 interface FileManagerProps {
   onFileDeleted?: (fileId: string) => void;

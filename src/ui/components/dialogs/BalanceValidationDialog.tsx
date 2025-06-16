@@ -1,6 +1,6 @@
 import React from 'react';
 import { BalanceValidationResult } from '../banking/accounts/UnifiedBalanceService';
-import './.css';
+import './DataHub.css';
 
 interface BalanceValidationDialogProps {
   isOpen: boolean;

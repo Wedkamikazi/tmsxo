@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { isDebugMode, enableDebugMode, disableDebugMode } from '../shared/utils/debugging/DebugMode';
 import { systemSafetyManager, initializeSystemSafety } from '../core/safety/SystemSafetyManager';
 import { storageQuotaManager } from '../data/storage/StorageQuotaManager';
-import { shouldReinitializeServices } from '../core/performance/StateManager';
+import { shouldReinitializeServices } from '../../../core/performance/StateManager';
 // import { serviceOrchestrator, SystemStatus } from '../core/orchestration/ServiceOrchestrator';
 
 interface SystemInitializerProps {
@@ -59,8 +59,8 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
         
         // Import other services for testing (parallel imports)
         const [unifiedDataServiceModule, eventBusModule] = await Promise.all([
-          import('../services/unifiedDataService'),
-          import('../services/eventBus')
+          import('../../../data/storage/UnifiedDataService'),
+          import('../../../core/orchestration/EventBus')
         ]);
         
         (window as any).unifiedDataService = unifiedDataServiceModule.unifiedDataService;

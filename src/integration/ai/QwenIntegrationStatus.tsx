@@ -1,7 +1,7 @@
 import React from 'react';
 import { unifiedCategorizationService } from '../analytics/categorization/UnifiedCategorizationService';
 import { TensorFlowMethod } from '../services/categorization/tensorFlowMethod';
-import './.css';
+import './DataHub.css';
 
 const QwenIntegrationStatus: React.FC = () => {
   const [status, setStatus] = React.useState({

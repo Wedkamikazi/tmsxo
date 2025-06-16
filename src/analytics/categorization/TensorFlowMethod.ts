@@ -10,10 +10,10 @@ import {
   TrainingDataPoint,
   TensorFlowModelStatus,
   FeatureConfig
-} from './tensorFlowTypes';
-import { localStorageManager } from '../localStorageManager';
-import { cleanupManager } from '../cleanupManager';
-import { systemIntegrityService } from '../systemIntegrityService';
+} from './TensorFlowTypes';
+import { localStorageManager } from '../';
+import { cleanupManager } from '../../data/maintenance/CleanupManager';
+import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
 import { isDebugMode as checkDebugMode } from '../../shared/utils/debugging/DebugMode';
 
 export class TensorFlowMethod implements CategorizationStrategy {

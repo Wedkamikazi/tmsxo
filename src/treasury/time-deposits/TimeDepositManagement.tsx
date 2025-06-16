@@ -72,7 +72,7 @@ export const TimeDepositManagement: React.FC<TimeDepositManagementProps> = ({ da
       };
 
       // Import time deposit service dynamically
-      const { timeDepositService } = await import('../services/timeDepositService');
+      const { timeDepositService } = await import('./TimeDepositService');
 
       // Load data in parallel
       const [deposits, summaryData] = await Promise.all([

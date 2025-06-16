@@ -188,30 +188,23 @@ export const DailyCashManagement: React.FC<DailyCashManagementProps> = ({ dataRe
   };
 
   const handleVerifyDay = async (entry: DailyCashEntry) => {
-    setSelectedEntry(entry);
-    setVerificationNotes('');
-    setShowVerificationModal(true);
-  };
-
-  const handleConfirmVerification = async () => {
-    if (!selectedEntry) return;
-
     try {
-      await dailyCashManagementService.markDayAsVerified(
-        selectedEntry.date,
-        selectedEntry.accountNumber,
-        'Current User', // In real app, get from auth context
-        verificationNotes
-      );
+      setLoading(true);
       
-      setShowVerificationModal(false);
-      setSelectedEntry(null);
-      setVerificationNotes('');
+      await dailyCashManagementService.markEntryAsVerified(entry.id, {
+        verifiedBy: 'Current User', // In real app, get from auth context
+        verifiedDate: new Date().toISOString(),
+        notes: 'Manual verification'
+      });
+      
+      // Refresh data to show updated verification status
       await loadDailyCashData();
       
     } catch (error) {
-      console.error('Failed to verify day:', error);
-      setError('Failed to verify day');
+      console.error('Error verifying daily cash entry:', error);
+      setError('Failed to verify entry. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -220,10 +213,11 @@ export const DailyCashManagement: React.FC<DailyCashManagementProps> = ({ dataRe
   // =============================================
 
   const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('en-SA', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'SAR',
-      minimumFractionDigits: 2
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(amount);
   };
 

@@ -1111,6 +1111,9 @@ export const TimeDepositManagement: React.FC<TimeDepositManagementProps> = ({ da
           </div>
         </div>
 
+        {/* Filter Section */}
+        {renderFilterSection()}
+
         {/* Summary Cards */}
         {renderSummaryCards()}
 

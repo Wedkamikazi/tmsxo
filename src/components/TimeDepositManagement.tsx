@@ -178,6 +178,259 @@ export const TimeDepositManagement: React.FC<TimeDepositManagementProps> = ({ da
   };
 
   // =============================================
+  // FILTER FUNCTIONS
+  // =============================================
+
+  const handleFilterChange = (key: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      dateFrom: '',
+      dateTo: '',
+      accountId: '',
+      bankName: '',
+      status: 'all',
+      minAmount: '',
+      maxAmount: ''
+    });
+  };
+
+  const hasActiveFilters = () => {
+    return filters.dateFrom || filters.dateTo || filters.accountId || 
+           filters.bankName || filters.status !== 'all' || 
+           filters.minAmount || filters.maxAmount;
+  };
+
+  // =============================================
+  // RENDER FILTER SECTION
+  // =============================================
+
+  const renderFilterSection = () => (
+    <div className="time-deposit-filters">
+      <div className="filters-header">
+        <h3>
+          <i className="fas fa-filter"></i>
+          Filters
+        </h3>
+        {hasActiveFilters() && (
+          <button className="clear-filters-btn" onClick={clearFilters}>
+            <i className="fas fa-times"></i>
+            Clear All
+          </button>
+        )}
+      </div>
+      
+      <div className="filters-grid">
+        {/* Date Range Filters */}
+        <div className="filter-group">
+          <label className="filter-label">Date Range</label>
+          <div className="date-range-inputs">
+            <input
+              type="date"
+              value={filters.dateFrom}
+              onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+              className="filter-input date-input"
+              placeholder="From Date"
+            />
+            <span className="date-separator">to</span>
+            <input
+              type="date"
+              value={filters.dateTo}
+              onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+              className="filter-input date-input"
+              placeholder="To Date"
+            />
+          </div>
+        </div>
+
+        {/* Account Filter */}
+        <div className="filter-group">
+          <label className="filter-label">Account</label>
+          <select
+            value={filters.accountId}
+            onChange={(e) => handleFilterChange('accountId', e.target.value)}
+            className="filter-select"
+          >
+            <option value="">All Accounts</option>
+            <option value="1001">Main Operating Account (1001)</option>
+            <option value="1002">Investment Account (1002)</option>
+            <option value="1003">Reserve Account (1003)</option>
+          </select>
+        </div>
+
+        {/* Bank Filter */}
+        <div className="filter-group">
+          <label className="filter-label">Bank</label>
+          <select
+            value={filters.bankName}
+            onChange={(e) => handleFilterChange('bankName', e.target.value)}
+            className="filter-select"
+          >
+            <option value="">All Banks</option>
+            <option value="Saudi National Bank">Saudi National Bank</option>
+            <option value="Al Rajhi Bank">Al Rajhi Bank</option>
+            <option value="Riyad Bank">Riyad Bank</option>
+            <option value="SABB">SABB</option>
+            <option value="Banque Saudi Fransi">Banque Saudi Fransi</option>
+          </select>
+        </div>
+
+        {/* Status Filter */}
+        <div className="filter-group">
+          <label className="filter-label">Status</label>
+          <select
+            value={filters.status}
+            onChange={(e) => handleFilterChange('status', e.target.value as any)}
+            className="filter-select"
+          >
+            <option value="all">All Statuses</option>
+            <option value="active">Active Only</option>
+            <option value="matured">Matured Only</option>
+            <option value="cancelled">Cancelled Only</option>
+          </select>
+        </div>
+
+        {/* Amount Range Filters */}
+        <div className="filter-group">
+          <label className="filter-label">Amount Range (SAR)</label>
+          <div className="amount-range-inputs">
+            <input
+              type="number"
+              value={filters.minAmount}
+              onChange={(e) => handleFilterChange('minAmount', e.target.value)}
+              className="filter-input amount-input"
+              placeholder="Min Amount"
+              min="0"
+              step="1000"
+            />
+            <span className="amount-separator">to</span>
+            <input
+              type="number"
+              value={filters.maxAmount}
+              onChange={(e) => handleFilterChange('maxAmount', e.target.value)}
+              className="filter-input amount-input"
+              placeholder="Max Amount"
+              min="0"
+              step="1000"
+            />
+          </div>
+        </div>
+
+        {/* Quick Filters */}
+        <div className="filter-group">
+          <label className="filter-label">Quick Filters</label>
+          <div className="quick-filters">
+            <button 
+              className={`quick-filter-btn ${filters.status === 'active' ? 'active' : ''}`}
+              onClick={() => handleFilterChange('status', filters.status === 'active' ? 'all' : 'active')}
+            >
+              <i className="fas fa-clock"></i>
+              Active Only
+            </button>
+            <button 
+              className={`quick-filter-btn ${filters.minAmount === '1000000' ? 'active' : ''}`}
+              onClick={() => handleFilterChange('minAmount', filters.minAmount === '1000000' ? '' : '1000000')}
+            >
+              <i className="fas fa-coins"></i>
+              1M+ SAR
+            </button>
+            <button 
+              className={`quick-filter-btn ${getDaysToMaturity(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]) <= 7 ? 'active' : ''}`}
+              onClick={() => {
+                const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                handleFilterChange('dateTo', filters.dateTo === nextWeek ? '' : nextWeek);
+              }}
+            >
+              <i className="fas fa-exclamation-triangle"></i>
+              Due Soon
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter Summary */}
+      {hasActiveFilters() && (
+        <div className="filter-summary">
+          <div className="filter-summary-content">
+            <span className="filter-summary-label">
+              <i className="fas fa-info-circle"></i>
+              Active Filters:
+            </span>
+            <div className="active-filters-list">
+              {filters.dateFrom && (
+                <span className="filter-tag">
+                  From: {formatDate(filters.dateFrom)}
+                  <button onClick={() => handleFilterChange('dateFrom', '')}>
+                    <i className="fas fa-times"></i>
+                  </button>
+                </span>
+              )}
+              {filters.dateTo && (
+                <span className="filter-tag">
+                  To: {formatDate(filters.dateTo)}
+                  <button onClick={() => handleFilterChange('dateTo', '')}>
+                    <i className="fas fa-times"></i>
+                  </button>
+                </span>
+              )}
+              {filters.accountId && (
+                <span className="filter-tag">
+                  Account: {filters.accountId}
+                  <button onClick={() => handleFilterChange('accountId', '')}>
+                    <i className="fas fa-times"></i>
+                  </button>
+                </span>
+              )}
+              {filters.bankName && (
+                <span className="filter-tag">
+                  Bank: {filters.bankName}
+                  <button onClick={() => handleFilterChange('bankName', '')}>
+                    <i className="fas fa-times"></i>
+                  </button>
+                </span>
+              )}
+              {filters.status !== 'all' && (
+                <span className="filter-tag">
+                  Status: {filters.status}
+                  <button onClick={() => handleFilterChange('status', 'all')}>
+                    <i className="fas fa-times"></i>
+                  </button>
+                </span>
+              )}
+              {filters.minAmount && (
+                <span className="filter-tag">
+                  Min: {formatCurrency(parseFloat(filters.minAmount))}
+                  <button onClick={() => handleFilterChange('minAmount', '')}>
+                    <i className="fas fa-times"></i>
+                  </button>
+                </span>
+              )}
+              {filters.maxAmount && (
+                <span className="filter-tag">
+                  Max: {formatCurrency(parseFloat(filters.maxAmount))}
+                  <button onClick={() => handleFilterChange('maxAmount', '')}>
+                    <i className="fas fa-times"></i>
+                  </button>
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="filter-results-count">
+            <span className="results-count">
+              {timeDeposits.length} result{timeDeposits.length !== 1 ? 's' : ''} found
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // =============================================
   // RENDER SUMMARY CARDS
   // =============================================
 

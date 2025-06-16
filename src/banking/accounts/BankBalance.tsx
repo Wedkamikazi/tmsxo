@@ -71,14 +71,14 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   
   // Filtering state
-  const [filters, setFilters] = useState<BankBalanceFilters>({
+  const [filters, setFilters] = useState<BalanceFilters>({
     accountId: '',
     dateFrom: '',
     dateTo: '',
-    balanceMin: '',
-    balanceMax: '',
-    movementMin: '',
-    movementMax: ''
+    balanceFrom: '',
+    balanceTo: '',
+    movementFrom: '',
+    movementTo: ''
   });
 
   // Load data

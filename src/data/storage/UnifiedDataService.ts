@@ -1,9 +1,9 @@
 // Architectural consistency imports - keep for future use
 import { BankAccount, UploadedFile } from '../../../shared/types';
-import { eventBus } from './EventBus';
-import { localStorageManager, StoredTransaction as LSMStoredTransaction } from './localStorageManager';
+import { eventBus } from '../../core/orchestration/EventBus';
+import { localStorageManager, StoredTransaction as LSMStoredTransaction } from './LocalStorageManager';
 import { systemIntegrityService } from '../integrity/SystemIntegrityService';
-import { storageQuotaManager } from './storageQuotaManager';
+import { storageQuotaManager } from './StorageQuotaManager';
 
 
 

@@ -704,7 +704,7 @@ class DailyCashManagementService {
   private async getAccountsForGeneration(accountIds?: string[]): Promise<any[]> {
     try {
       // Import here to avoid circular dependencies
-      const { unifiedDataService } = await import('./unifiedDataService');
+      const { unifiedDataService } = await import('../../data/storage/UnifiedDataService');
       const allAccounts = unifiedDataService.getAllAccounts();
       
       if (accountIds && accountIds.length > 0) {

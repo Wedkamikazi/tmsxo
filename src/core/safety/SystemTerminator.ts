@@ -4,12 +4,12 @@
  * Ensures clean termination of the entire treasury management system
  */
 
-import { cleanupManager } from '../data/maintenance/CleanupManager';
-import { systemSafetyManager } from './systemSafetyManager';
-import { localOllamaIntegration } from '../integration/ai/LocalOllamaIntegration';
-import { enhancedMLOrchestrator } from '../analytics/machine-learning/EnhancedMLOrchestrator';
-import { performanceManager } from '../core/performance/PerformanceManager';
-import { serviceOrchestrator } from '../core/orchestration/ServiceOrchestrator';
+import { cleanupManager } from '../../data/maintenance/CleanupManager';
+import { systemSafetyManager } from './SystemSafetyManager';
+import { localOllamaIntegration } from '../../integration/ai/LocalOllamaIntegration';
+import { enhancedMLOrchestrator } from '../../analytics/ml/EnhancedMLOrchestrator';
+import { performanceManager } from '../performance/PerformanceManager';
+import { serviceOrchestrator } from '../orchestration/ServiceOrchestrator';
 
 export interface TerminationReport {
   timestamp: string;

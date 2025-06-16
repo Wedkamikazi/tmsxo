@@ -15,11 +15,11 @@ $processesToKill = @('node', 'npm', 'ollama', 'react-scripts')
 # List of ports to free up
 $portsToFree = @(3000, 3001, 11434)
 
-function Kill-ProcessesByName {
+function Stop-ProcessesByName {
     param([string]$ProcessName)
-    
+
     Write-Host "🛑 Terminating $ProcessName..." -ForegroundColor Yellow
-    
+
     try {
         $processes = Get-Process -Name $ProcessName -ErrorAction SilentlyContinue
         if ($processes) {
@@ -34,7 +34,7 @@ function Kill-ProcessesByName {
     }
 }
 
-function Kill-ProcessesByPort {
+function Stop-ProcessesByPort {
     param([int]$Port)
     
     Write-Host "🛑 Freeing port $Port..." -ForegroundColor Yellow
@@ -76,13 +76,13 @@ function Kill-ProcessesByPort {
 try {
     Write-Host "STEP 1: Terminating processes by name..." -ForegroundColor Cyan
     foreach ($processName in $processesToKill) {
-        Kill-ProcessesByName -ProcessName $processName
+        Stop-ProcessesByName -ProcessName $processName
     }
-    
+
     Write-Host ""
     Write-Host "STEP 2: Freeing up ports..." -ForegroundColor Cyan
     foreach ($port in $portsToFree) {
-        Kill-ProcessesByPort -Port $port
+        Stop-ProcessesByPort -Port $port
     }
     
     Write-Host ""

@@ -458,6 +458,24 @@ export const DataHub: React.FC = () => {
       description: 'Employee payment processing and payroll reconciliation'
     },
     {
+      id: 'cashManagement' as const,
+      label: 'Cash Management',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 2v6" />
+          <path d="M12 16v6" />
+          <path d="M4.93 4.93l4.24 4.24" />
+          <path d="M14.83 14.83l4.24 4.24" />
+          <path d="M2 12h6" />
+          <path d="M16 12h6" />
+          <path d="M4.93 19.07l4.24-4.24" />
+          <path d="M14.83 9.17l4.24-4.24" />
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+        </svg>
+      ),
+      description: 'Daily cash management with intercompany transfers and time deposits'
+    },
+    {
       id: 'bankBalance' as const,
       label: 'Bank Balance',
       icon: (

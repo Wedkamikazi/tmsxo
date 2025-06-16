@@ -13,7 +13,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { TimeDeposit, InvestmentSuggestion } from '../../../shared/types';
 import { eventBus } from '../core/orchestration/EventBus';
 import { ErrorBoundary } from '../../components/common/ErrorBoundary';
-import './DataHub.css';
+import './TimeDepositManagement.css';
 
 interface TimeDepositManagementProps {
   dataRefreshTrigger?: number;

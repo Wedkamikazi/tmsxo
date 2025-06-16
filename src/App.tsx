@@ -4,7 +4,7 @@ import { SystemInitializer } from './ui/pages/admin/SystemInitializer';
 import { initializeSystemSafety } from './core/safety/SystemSafetyManager';
 import { shouldReinitializeServices } from './core/performance/StateManager';
 import { DataHub } from './ui/pages/data/DataHub'; // Direct import for instant refresh
-import './ui/styles/globals.css';
+import './';
 
 // Import DataHub conditionally only for full initialization
 const LazyDataHub = React.lazy(() => import('./ui/pages/data/DataHub').then(module => ({ default: module.DataHub })));

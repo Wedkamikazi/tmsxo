@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import './DataHub.css';
+import './FileUpload.css';
 
 interface FileUploadProps {
   onFilesSelected: (files: File[]) => void;

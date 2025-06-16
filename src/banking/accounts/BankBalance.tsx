@@ -14,7 +14,7 @@ import {
   setComponentState,
   getComponentState 
 } from '../../../core/performance/StateManager';
-import './DataHub.css';
+import './BankBalance.css';
 
 interface BankBalanceProps {
   refreshTrigger?: number;

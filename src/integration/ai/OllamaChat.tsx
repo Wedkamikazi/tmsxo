@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { localOllamaIntegration } from '../integration/ai/LocalOllamaIntegration';
 import { localStorageManager } from '../data/storage/LocalStorageManager';
-import './DataHub.css';
+import './OllamaChat.css';
 
 interface ChatMessage {
   id: string;

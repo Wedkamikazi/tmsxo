@@ -9,7 +9,7 @@ import {
   setComponentState,
   getComponentState 
 } from '../../../core/performance/StateManager';
-import './DataHub.css';
+import './BankAccountManager.css';
 
 interface BankAccountManagerProps {
   onAccountsUpdated?: () => void;

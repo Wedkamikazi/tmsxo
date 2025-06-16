@@ -8,7 +8,7 @@ import { mlNaturalLanguageService, NLPAnalysisResult } from '../analytics/machin
 import { unifiedDataService } from '../data/storage/UnifiedDataService';
 import { Transaction } from '../../../shared/types';
 import * as tf from '@tensorflow/tfjs';
-import './DataHub.css';
+import './MLIntegrationDashboard.css';
 
 interface MLSystemStatus {
   categorization: any;

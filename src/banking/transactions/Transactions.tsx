@@ -9,7 +9,7 @@ import {
   setComponentState,
   getComponentState 
 } from '../../../core/performance/StateManager';
-import './DataHub.css';
+import './Transactions.css';
 
 interface TransactionsProps {
   onTransactionUpdate?: (transactions: StoredTransaction[]) => void;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './DataHub.css';
+import './OllamaControlWidget.css';
 
 interface OllamaStatus {
   isRunning: boolean;

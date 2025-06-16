@@ -6,7 +6,7 @@ import {
 import { hrPaymentManagementService } from '../treasury/payments/HRPaymentManagementService';
 import { eventBus } from '../core/orchestration/EventBus';
 import { ErrorBoundary } from '../../components/common/ErrorBoundary';
-import './DataHub.css';
+import './HRPayments.css';
 
 interface HRPaymentsProps {
   dataRefreshTrigger: number;

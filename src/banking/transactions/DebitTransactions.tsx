@@ -14,7 +14,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { DebitTransaction, APAgingEntry, ForecastedPayment } from '../../../shared/types';
 import { debitTransactionManagementService } from '../banking/transactions/DebitTransactionManagementService';
 import { ErrorBoundary } from '../../components/common/ErrorBoundary';
-import './DataHub.css';
+import './DebitTransactions.css';
 
 interface DebitTransactionsProps {
   dataRefreshTrigger?: number;

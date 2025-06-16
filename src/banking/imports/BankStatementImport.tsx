@@ -5,7 +5,7 @@ import { importProcessingService } from '../banking/imports/ImportProcessingServ
 import { unifiedDataService, type StoredTransaction } from '../data/storage/UnifiedDataService';
 import { BalanceValidationResult } from '../banking/accounts/UnifiedBalanceService';
 import { BalanceValidationDialog } from './BalanceValidationDialog';
-import './DataHub.css';
+import './BankStatementImport.css';
 
 interface BankStatementImportProps {
   onImportComplete?: (transactions: Transaction[], bankAccount: BankAccount) => void;

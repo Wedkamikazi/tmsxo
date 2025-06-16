@@ -7,7 +7,7 @@ import { unifiedCategorizationService } from '../analytics/categorization/Unifie
 import { categorizationService } from '../analytics/categorization/CategorizationService'; // Keep for category management only
 import { enhancedMLOrchestrator } from '../analytics/machine-learning/EnhancedMLOrchestrator';
 import { localOllamaIntegration } from '../integration/ai/LocalOllamaIntegration';
-import './DataHub.css';
+import './TransactionCategorization.css';
 
 interface TransactionCategorizationProps {
   refreshTrigger?: number;

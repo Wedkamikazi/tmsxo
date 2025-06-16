@@ -2,7 +2,7 @@
 // Extracted from mlCategorizationService.ts - implements TensorFlow-based transaction categorization
 
 import * as tf from '@tensorflow/tfjs';
-import { Transaction } from '../../types';
+import { Transaction } from '../../shared/types';
 import { CategorizationStrategy, UnifiedCategorizationResult } from './index';
 import { 
   TensorFlowModelConfig, 

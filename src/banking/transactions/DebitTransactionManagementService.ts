@@ -17,9 +17,9 @@ import {
   ReconciliationMatch,
   AuditLogEntry,
   Transaction 
-} from '../../shared/types';
-import { eventBus } from '../../core/orchestration/EventBus';
-import { unifiedCategorizationService } from '../../analytics/categorization/UnifiedCategorizationService';
+} from '@/shared/types';
+import { eventBus } from '@/core/orchestration/EventBus';
+import { unifiedCategorizationService } from '@/analytics/categorization/UnifiedCategorizationService';
 
 // =============================================
 // DEBIT TRANSACTION MANAGEMENT SERVICE

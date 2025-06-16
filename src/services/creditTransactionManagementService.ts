@@ -462,8 +462,9 @@ class CreditTransactionManagementService {
 
   private async getARAgings(): Promise<ARAgingEntry[]> {
     try {
-      const arAgings = await coreDataService.getData<ARAgingEntry[]>(this.AR_AGING_KEY);
-      return arAgings || [];
+      const item = localStorage.getItem(this.AR_AGING_KEY);
+      if (!item) return [];
+      return JSON.parse(item) as ARAgingEntry[];
     } catch (error) {
       console.error('Failed to get AR agings:', error);
       return [];

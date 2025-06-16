@@ -311,8 +311,8 @@ export const DebitTransactions: React.FC<DebitTransactionsProps> = ({ dataRefres
                         )}
                         {transaction.forecastMatch && (
                           <div className="matched-entity">
-                            <strong>{transaction.forecastMatch.vendorName}</strong>
-                            <small>{transaction.forecastMatch.description}</small>
+                            <strong>Vendor ID: {transaction.forecastMatch.vendorId}</strong>
+                            <small>{transaction.forecastMatch.notes || 'No additional notes'}</small>
                           </div>
                         )}
                         {!transaction.apAgingMatch && !transaction.forecastMatch && (

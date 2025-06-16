@@ -303,9 +303,17 @@ class CSVProcessingService {
   }
 
   private formatDate(dateString: string): string {
+    // Handle empty or null dates
+    if (!dateString || dateString.trim() === '') {
+      console.warn(`Empty date string provided to formatDate`);
+      return new Date().toISOString().split('T')[0]; // Return today's date as fallback
+    }
+    
+    const trimmedDate = dateString.trim();
+    
     // Handle slash-separated dates
-    if (dateString.includes('/')) {
-      const parts = dateString.split('/');
+    if (trimmedDate.includes('/')) {
+      const parts = trimmedDate.split('/');
       if (parts.length === 3) {
         const part1 = parseInt(parts[0]);
         const part2 = parseInt(parts[1]);
@@ -313,8 +321,8 @@ class CSVProcessingService {
         
         // Log for debugging
         if (isNaN(part1) || isNaN(part2) || isNaN(year)) {
-          console.warn(`Invalid date parts in formatDate: "${dateString}" -> [${part1}, ${part2}, ${year}]`);
-          return dateString; // Return original if parsing fails
+          console.warn(`Invalid date parts in formatDate: "${trimmedDate}" -> [${part1}, ${part2}, ${year}]`);
+          return new Date().toISOString().split('T')[0]; // Return today's date as fallback
         }
         
         let month: number, day: number;
@@ -342,27 +350,55 @@ class CSVProcessingService {
           // Convert to YYYY-MM-DD format
           const monthStr = month.toString().padStart(2, '0');
           const dayStr = day.toString().padStart(2, '0');
-          return `${year}-${monthStr}-${dayStr}`;
+          const formattedDate = `${year}-${monthStr}-${dayStr}`;
+          
+          // Validate the final date
+          const testDate = new Date(formattedDate);
+          if (testDate.getFullYear() === year && testDate.getMonth() === month - 1 && testDate.getDate() === day) {
+            return formattedDate;
+          } else {
+            console.warn(`Invalid date created: "${trimmedDate}" -> "${formattedDate}"`);
+            return new Date().toISOString().split('T')[0]; // Return today's date as fallback
+          }
+        } else {
+          console.warn(`Date parts out of range: "${trimmedDate}" -> day=${day}, month=${month}, year=${year}`);
+          return new Date().toISOString().split('T')[0]; // Return today's date as fallback
         }
       }
     }
     
     // Handle MMDDYYYY format (no separators)
-    if (dateString.length === 8 && /^\d{8}$/.test(dateString)) {
-      const month = parseInt(dateString.substring(0, 2));
-      const day = parseInt(dateString.substring(2, 4));
-      const year = parseInt(dateString.substring(4, 8));
+    if (trimmedDate.length === 8 && /^\d{8}$/.test(trimmedDate)) {
+      const month = parseInt(trimmedDate.substring(0, 2));
+      const day = parseInt(trimmedDate.substring(2, 4));
+      const year = parseInt(trimmedDate.substring(4, 8));
       
       if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900) {
         const monthStr = month.toString().padStart(2, '0');
         const dayStr = day.toString().padStart(2, '0');
-        return `${year}-${monthStr}-${dayStr}`;
+        const formattedDate = `${year}-${monthStr}-${dayStr}`;
+        
+        // Validate the final date
+        const testDate = new Date(formattedDate);
+        if (testDate.getFullYear() === year && testDate.getMonth() === month - 1 && testDate.getDate() === day) {
+          return formattedDate;
+        }
       }
     }
     
     // Fallback to original logic
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+    try {
+      const date = new Date(trimmedDate);
+      if (date instanceof Date && !isNaN(date.getTime())) {
+        return date.toISOString().split('T')[0];
+      } else {
+        console.warn(`Failed to parse date with fallback logic: "${trimmedDate}"`);
+        return new Date().toISOString().split('T')[0]; // Return today's date as fallback
+      }
+    } catch (error) {
+      console.error(`Error parsing date "${trimmedDate}":`, error);
+      return new Date().toISOString().split('T')[0]; // Return today's date as fallback
+    }
   }
 
   // Helper method to create a sortable datetime from Post date and Time

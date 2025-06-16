@@ -4,7 +4,7 @@ import { ImportSummary, BankAccount, Transaction } from '../../shared/types';
 import { importProcessingService } from '../banking/imports/ImportProcessingService';
 import { unifiedDataService, type StoredTransaction } from '../data/storage/UnifiedDataService';
 import { BalanceValidationResult } from '../banking/accounts/UnifiedBalanceService';
-import { BalanceValidationDialog } from './BalanceValidationDialog';
+import { BalanceValidationDialog } from '../../ui/components/dialogs/BalanceValidationDialog';
 import './BankStatementImport.css';
 
 interface BankStatementImportProps {

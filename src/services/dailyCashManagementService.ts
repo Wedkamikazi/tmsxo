@@ -205,6 +205,202 @@ class DailyCashManagementService {
   }
 
   // =============================================
+  // DAILY ENTRY GENERATION LOGIC
+  // =============================================
+
+  /**
+   * Generate daily cash entries for a specified date range and accounts
+   * Creates one entry per account per day
+   */
+  async generateDailyCashEntries(
+    dateFrom: string, 
+    dateTo: string, 
+    accountIds?: string[]
+  ): Promise<DailyCashEntry[]> {
+    try {
+      const accounts = await this.getAccountsForGeneration(accountIds);
+      const dateRange = this.generateDateRange(dateFrom, dateTo);
+      const newEntries: DailyCashEntry[] = [];
+
+      for (const account of accounts) {
+        for (const date of dateRange) {
+          // Check if entry already exists
+          const existingEntry = await this.getDailyCashEntryByDateAndAccount(date, account.accountNumber);
+          
+          if (!existingEntry) {
+            // Create new daily cash entry
+            const entry = await this.createDailyCashEntry(date, account);
+            newEntries.push(entry);
+          }
+        }
+      }
+
+      // Store new entries
+      if (newEntries.length > 0) {
+        await this.storeDailyCashEntries(newEntries);
+        
+        // Emit event for UI updates
+        eventBus.emit('DAILY_CASH_ENTRIES_GENERATED', {
+          count: newEntries.length,
+          dateRange: { from: dateFrom, to: dateTo },
+          accounts: accounts.length
+        });
+      }
+
+      return newEntries;
+    } catch (error) {
+      console.error('Failed to generate daily cash entries:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a single daily cash entry for a specific date and account
+   */
+  private async createDailyCashEntry(date: string, account: any): Promise<DailyCashEntry> {
+    const entryId = `${account.accountNumber}_${date}`;
+    
+    const entry: DailyCashEntry = {
+      id: entryId,
+      date: date,
+      bankName: account.bankName || 'Unknown Bank',
+      accountNumber: account.accountNumber,
+      currency: account.currency || 'SAR',
+      openingBalance: 0, // Will be calculated in balance calculation logic
+      cashIn: 0, // Will be aggregated from credit transactions
+      cashOut: 0, // Will be aggregated from debit/HR transactions
+      intercoIn: 0, // Will be added when intercompany is implemented
+      intercoOut: 0, // Will be added when intercompany is implemented
+      timeDepositOut: 0, // Will be added when time deposits are implemented
+      timeDepositIn: 0, // Will be added when time deposits are implemented
+      closingBalanceActual: 0, // Will be extracted from bank balance data
+      closingBalanceProjected: 0, // Will be calculated: opening + in - out
+      discrepancy: 0, // Will be calculated: actual - projected
+      notes: '',
+      observations: '',
+      isVerified: false,
+      verifiedDate: undefined,
+      verifiedBy: undefined
+    };
+
+    return entry;
+  }
+
+  /**
+   * Generate array of dates between dateFrom and dateTo (inclusive)
+   */
+  private generateDateRange(dateFrom: string, dateTo: string): string[] {
+    const dates: string[] = [];
+    const start = new Date(dateFrom);
+    const end = new Date(dateTo);
+    
+    // Ensure we don't go beyond reasonable limits (max 1 year)
+    const daysDiff = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    if (daysDiff > 365) {
+      throw new Error('Date range cannot exceed 365 days');
+    }
+
+    const current = new Date(start);
+    while (current <= end) {
+      dates.push(current.toISOString().split('T')[0]); // YYYY-MM-DD format
+      current.setDate(current.getDate() + 1);
+    }
+
+    return dates;
+  }
+
+  /**
+   * Get accounts for daily entry generation
+   */
+  private async getAccountsForGeneration(accountIds?: string[]): Promise<any[]> {
+    try {
+      // Import here to avoid circular dependencies
+      const { unifiedDataService } = await import('./unifiedDataService');
+      const allAccounts = unifiedDataService.getAllAccounts();
+      
+      if (accountIds && accountIds.length > 0) {
+        return allAccounts.filter(account => accountIds.includes(account.id));
+      }
+      
+      return allAccounts;
+    } catch (error) {
+      console.error('Failed to get accounts for generation:', error);
+      // Return default account structure if service unavailable
+      return [{
+        id: 'default_account',
+        accountNumber: '1001',
+        bankName: 'Default Bank',
+        currency: 'SAR'
+      }];
+    }
+  }
+
+  /**
+   * Regenerate daily cash entries for existing date/account combinations
+   * Useful for recalculating after transaction data changes
+   */
+  async regenerateDailyCashEntries(
+    dateFrom?: string, 
+    dateTo?: string, 
+    accountIds?: string[]
+  ): Promise<DailyCashEntry[]> {
+    try {
+      let existingEntries = await this.getAllDailyCashEntries();
+      
+      // Filter by date range if provided
+      if (dateFrom) {
+        existingEntries = existingEntries.filter(entry => entry.date >= dateFrom);
+      }
+      if (dateTo) {
+        existingEntries = existingEntries.filter(entry => entry.date <= dateTo);
+      }
+      
+      // Filter by accounts if provided
+      if (accountIds && accountIds.length > 0) {
+        existingEntries = existingEntries.filter(entry => 
+          accountIds.includes(entry.accountNumber)
+        );
+      }
+
+      const regeneratedEntries: DailyCashEntry[] = [];
+      
+      for (const existingEntry of existingEntries) {
+        // Get account details
+        const accounts = await this.getAccountsForGeneration([existingEntry.accountNumber]);
+        const account = accounts[0];
+        
+        if (account) {
+          // Create new entry with fresh data but preserve verification status
+          const newEntry = await this.createDailyCashEntry(existingEntry.date, account);
+          
+          // Preserve verification data if it exists
+          newEntry.isVerified = existingEntry.isVerified;
+          newEntry.verifiedDate = existingEntry.verifiedDate;
+          newEntry.verifiedBy = existingEntry.verifiedBy;
+          newEntry.observations = existingEntry.observations;
+          newEntry.notes = existingEntry.notes;
+          
+          regeneratedEntries.push(newEntry);
+        }
+      }
+
+      // Store regenerated entries
+      if (regeneratedEntries.length > 0) {
+        await this.storeDailyCashEntries(regeneratedEntries);
+        
+        eventBus.emit('DAILY_CASH_ENTRIES_REGENERATED', {
+          count: regeneratedEntries.length
+        });
+      }
+
+      return regeneratedEntries;
+    } catch (error) {
+      console.error('Failed to regenerate daily cash entries:', error);
+      throw error;
+    }
+  }
+
+  // =============================================
   // PUBLIC API FOR UI COMPONENTS
   // =============================================
 

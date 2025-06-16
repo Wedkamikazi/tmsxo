@@ -413,6 +413,7 @@ class CSVProcessingService {
   }
 
   // Helper method to create a sortable datetime from Post date and Time
+  // Uses Post Date (when transaction was actually posted) for accurate chronological sorting
   private createSortableDateTime(postDate: string, time: string): Date {
     const formattedDate = this.formatDate(postDate);
     

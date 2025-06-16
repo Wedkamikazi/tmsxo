@@ -351,7 +351,7 @@ class DailyCashManagementService {
     try {
       // Test credit transaction service
       try {
-        const { creditTransactionManagementService } = await import('./creditTransactionManagementService');
+        const { creditTransactionManagementService } = await import('../../banking/transactions/CreditTransactionManagementService');
         await creditTransactionManagementService.getAllCreditTransactions();
         status.creditTransactionService = true;
       } catch (error) {

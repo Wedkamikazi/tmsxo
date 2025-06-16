@@ -161,24 +161,27 @@ class UnifiedBalanceService {
       sortedDates.forEach(date => {
         const dayTransactions = transactionsByDate.get(date)!;
         
-        // Sort transactions by postDateTime to get the last one of the day
+        // Sort transactions by postDateTime to get the most recent one of the day
         const sortedDayTransactions = dayTransactions.sort((a, b) => 
           new Date(b.postDateTime).getTime() - new Date(a.postDateTime).getTime()
         );
 
-        const lastTransaction = sortedDayTransactions[0]; // Most recent transaction of the day
+        const mostRecentTransaction = sortedDayTransactions[0]; // Most recent transaction of the day
+        const oldestTransaction = sortedDayTransactions[sortedDayTransactions.length - 1]; // Oldest transaction of the day
+
+        // The closing balance comes from the MOST RECENT transaction of the day
+        // This is the actual balance after all transactions for that day
+        const closingBalance = mostRecentTransaction.balance;
 
         // Determine opening balance for the day
         let openingBalance: number;
         if (previousClosingBalance !== null) {
           openingBalance = previousClosingBalance;
         } else {
-          // For the first day, calculate opening balance from first transaction
-          const totalDayMovement = this.calculateDayMovement(dayTransactions);
-          openingBalance = lastTransaction.balance - totalDayMovement;
+          // For the first day, use the oldest transaction's balance and subtract its impact
+          const transactionImpact = (oldestTransaction.creditAmount || 0) - (oldestTransaction.debitAmount || 0);
+          openingBalance = oldestTransaction.balance - transactionImpact;
         }
-
-        const closingBalance = lastTransaction.balance;
         const dailyMovement = closingBalance - openingBalance;
 
         dailyBalances.push({

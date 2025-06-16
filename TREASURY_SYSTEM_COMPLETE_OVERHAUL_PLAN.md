@@ -399,15 +399,19 @@ interface RiskManagementService {
 - [ ] Risk limit alerts and breaches
 
 #### **Job 2.1.5: Investment Management System**
+
 **Duration**: 4 days
 **Priority**: HIGH
+
 **Files to Create**:
+
 - `src/investments/investmentManager.ts`
 - `src/investments/portfolioAnalyzer.ts`
 - `src/investments/maturityLadder.ts`
 - `src/components/InvestmentPortfolio.tsx`
 
 **Implementation Details**:
+
 ```typescript
 // Advanced investment management
 interface InvestmentManager {
@@ -420,6 +424,7 @@ interface InvestmentManager {
 ```
 
 **Acceptance Criteria**:
+
 - [ ] Investment creation and tracking
 - [ ] Portfolio performance analysis
 - [ ] Yield calculations and projections
@@ -430,15 +435,19 @@ interface InvestmentManager {
 ### **2.2 COMPLIANCE AND AUDIT SYSTEM**
 
 #### **Job 2.2.1: Comprehensive Audit Trail System**
+
 **Duration**: 4 days
 **Priority**: CRITICAL
+
 **Files to Create**:
+
 - `src/audit/auditLogger.ts`
 - `src/audit/auditTrailManager.ts`
 - `src/audit/complianceReporter.ts`
 - `src/components/AuditTrailViewer.tsx`
 
 **Implementation Details**:
+
 ```typescript
 // Complete audit trail system
 interface AuditTrailSystem {
@@ -451,6 +460,7 @@ interface AuditTrailSystem {
 ```
 
 **Acceptance Criteria**:
+
 - [ ] Complete transaction audit logging
 - [ ] User action tracking
 - [ ] System event logging

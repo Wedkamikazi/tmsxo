@@ -5,7 +5,6 @@ import { Transaction, TransactionCategory, TransactionCategorization as Transact
 import { unifiedDataService, type StoredTransaction } from '@/data/storage/UnifiedDataService';
 import { unifiedCategorizationService } from './UnifiedCategorizationService';
 import { categorizationService } from './CategorizationService'; // Keep for category management only
-import { mlCategorizationService } from '../machine-learning/MLCategorizationService';
 import { enhancedMLOrchestrator } from '../machine-learning/EnhancedMLOrchestrator';
 import { localOllamaIntegration } from '@/integration/ai/LocalOllamaIntegration';
 import './TransactionCategorization.css';

@@ -13,7 +13,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { CreditTransaction, ARAgingEntry, ForecastedCollection } from '../../shared/types';
 import { creditTransactionManagementService } from '../banking/transactions/CreditTransactionManagementService';
-import { ErrorBoundary } from '../../components/common/ErrorBoundary';
+import { ErrorBoundary } from '../../ui/components/common/ErrorBoundary';
 import './CreditTransactions.css';
 
 interface CreditTransactionsProps {

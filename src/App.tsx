@@ -1,9 +1,6 @@
 import React from 'react';
-import { ErrorBoundary } from './ui/components/common/ErrorBoundary';
-import { SystemInitializer } from './ui/pages/admin/SystemInitializer';
-import { initializeSystemSafety } from './core/safety/SystemSafetyManager';
-import { shouldReinitializeServices } from './core/performance/StateManager';
-import { DataHub } from './ui/pages/data/DataHub'; // Direct import for instant refresh
+import { ErrorBoundary, SystemInitializer, DataHub } from '@/ui';
+import { initializeSystemSafety, shouldReinitializeServices } from '@/core';
 import './ui/styles/globals.css';
 
 // Import DataHub conditionally only for full initialization

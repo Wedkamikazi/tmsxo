@@ -361,12 +361,12 @@ class IntercompanyTransferService {
     try {
       // Pattern matching for common entity names
       const entityPatterns = [
-        /subsidiary\s+([a-z\s\-]+)/i,
-        /sister\s+company\s+([a-z\s\-]+)/i,
-        /branch\s+([a-z\s\-]+)/i,
+        /subsidiary\s+([a-z\s-]+)/i,
+        /sister\s+company\s+([a-z\s-]+)/i,
+        /branch\s+([a-z\s-]+)/i,
         /([a-z\s]+)\s+branch/i,
-        /to\s+([a-z\s\-]+)/i,
-        /from\s+([a-z\s\-]+)/i
+        /to\s+([a-z\s-]+)/i,
+        /from\s+([a-z\s-]+)/i
       ];
 
       for (const pattern of entityPatterns) {

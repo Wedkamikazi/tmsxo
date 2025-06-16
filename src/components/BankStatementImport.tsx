@@ -146,13 +146,42 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
 
     // Store transactions using unified data service
     const allTransactions = importSummaries.flatMap(summary => summary.transactions);
-    const storedTransactions: StoredTransaction[] = allTransactions.map((tx, index) => ({
-      ...tx,
-      accountId: selectedBankAccount.id,
-      importDate: new Date().toISOString(),
-      fileId: uploadedFileIds[Math.floor(index / importSummaries[0].totalTransactions)] || undefined,
-      postDateTime: `${tx.date}T${tx.time || '00:00'}:00`
-    }));
+    const storedTransactions: StoredTransaction[] = allTransactions.map((tx, index) => {
+      // Ensure we use the postDate instead of potentially malformed date field
+      const dateToUse = tx.postDate || tx.date;
+      
+      // Create proper postDateTime using the post date from bank statement
+      let postDateTime: string;
+      if (dateToUse && dateToUse !== 'Invalid Date' && !dateToUse.includes('Invalid')) {
+        // If the date is in YYYY-MM-DD format, use it directly
+        if (dateToUse.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          postDateTime = `${dateToUse}T${tx.time || '00:00'}:00`;
+        } else {
+          // Convert other date formats to YYYY-MM-DD first
+          const date = new Date(dateToUse);
+          if (!isNaN(date.getTime())) {
+            const formattedDate = date.toISOString().split('T')[0];
+            postDateTime = `${formattedDate}T${tx.time || '00:00'}:00`;
+          } else {
+            // Fallback to current date if all else fails
+            const fallbackDate = new Date().toISOString().split('T')[0];
+            postDateTime = `${fallbackDate}T${tx.time || '00:00'}:00`;
+          }
+        }
+      } else {
+        // Fallback to current date if date is invalid
+        const fallbackDate = new Date().toISOString().split('T')[0];
+        postDateTime = `${fallbackDate}T${tx.time || '00:00'}:00`;
+      }
+      
+      return {
+        ...tx,
+        accountId: selectedBankAccount.id,
+        importDate: new Date().toISOString(),
+        fileId: uploadedFileIds[Math.floor(index / importSummaries[0].totalTransactions)] || undefined,
+        postDateTime
+      };
+    });
     unifiedDataService.addTransactions(storedTransactions);
 
     // Update account balance to the most recent transaction balance (Post date + Time based)

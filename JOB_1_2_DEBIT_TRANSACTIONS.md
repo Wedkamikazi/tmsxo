@@ -147,7 +147,7 @@ await confirmTransaction(transactionId, verifiedBy, observations);
 
 ## 📋 **NEXT STEP AFTER COMPLETION**
 
-**Job 1.3: HR Payments Processing**
+### Job 1.3: HR Payments Processing
 
 - Specialized handling for employee payments
 - Integration with payroll systems

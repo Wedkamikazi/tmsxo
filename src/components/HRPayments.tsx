@@ -61,7 +61,7 @@ export const HRPayments: React.FC<HRPaymentsProps> = ({ dataRefreshTrigger }) =>
     } finally {
       setIsLoading(false);
     }
-  }, [filterStatus, filterPaymentType, filterEmployee, dataRefreshTrigger]);
+  }, [filterStatus, filterPaymentType, filterEmployee]);
 
   useEffect(() => {
     loadHRPayments();

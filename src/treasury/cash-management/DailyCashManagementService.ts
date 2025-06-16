@@ -891,7 +891,7 @@ class DailyCashManagementService {
 
       // Get debit transactions
       try {
-        const { debitTransactionManagementService } = await import('./debitTransactionManagementService');
+        const { debitTransactionManagementService } = await import('../../banking/transactions/DebitTransactionManagementService');
         const debitTransactions = await debitTransactionManagementService.getAllDebitTransactions();
         
         const dayDebits = debitTransactions.filter(transaction => 

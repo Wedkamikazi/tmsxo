@@ -55,7 +55,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
       cleanup.cleanup();
       eventCleanup.cleanup();
     };
-  }, []);
+  }, [cleanup, eventCleanup]);
 
   // State management
   const [transactions, setTransactions] = useState<StoredTransaction[]>([]);
@@ -173,7 +173,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
     return () => {
       timerCleanup.clearInterval('status-check');
     };
-  }, [loadData, refreshTrigger, checkServiceStatus]);
+  }, [loadData, refreshTrigger, checkServiceStatus, timerCleanup]);
 
   // Get categorization data for a transaction
   const getTransactionCategorization = useCallback((transactionId: string): TransactionCategorizationData | undefined => {

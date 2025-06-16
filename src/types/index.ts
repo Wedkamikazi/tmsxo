@@ -82,6 +82,18 @@ export interface Transaction {
   categorization?: TransactionCategorization;
 }
 
+// Extended transaction type for storage with additional metadata
+export interface StoredTransaction extends Transaction {
+  accountId: string;
+  accountName: string;
+  importDate: string;
+  fileId?: string;
+  postDateTime: string;
+  reconciliation?: any;
+  categoryId?: string;
+  manualCategoryId?: string;
+}
+
 // ML Configuration Types
 export interface MLCategorizationConfig {
   modelName: string;

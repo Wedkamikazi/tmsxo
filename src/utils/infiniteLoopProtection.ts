@@ -1,3 +1,5 @@
+import React from 'react';
+
 /**
  * COMPREHENSIVE INFINITE LOOP PROTECTION SYSTEM
  * Monitors React components for infinite re-render loops

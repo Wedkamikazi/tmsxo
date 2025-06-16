@@ -534,7 +534,7 @@ Provide detailed analysis in JSON format.`;
   private loadPerformanceHistory(): void {
     try {
       const saved = localStorageManager.getItem('ollama-performance-history');
-      if (saved) {
+      if (saved && typeof saved === 'object' && saved !== null) {
         this.healthStatus.performance = { ...this.healthStatus.performance, ...saved };
       }
     } catch (error) {

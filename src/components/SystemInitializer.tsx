@@ -3,6 +3,7 @@ import { isDebugMode, enableDebugMode, disableDebugMode } from '../utils/debugMo
 import { systemSafetyManager, initializeSystemSafety } from '../utils/systemSafetyManager';
 import { storageQuotaManager } from '../services/storageQuotaManager';
 import { shouldReinitializeServices } from '../utils/stateManager';
+import { testSingletonIntegration } from '../utils/testSingletonIntegration';
 // import { serviceOrchestrator, SystemStatus } from '../services/serviceOrchestrator';
 
 interface SystemInitializerProps {
@@ -43,6 +44,18 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
       await initializeSystemSafety();
       setSafetyStatus('✅ Safety system active - No duplicates allowed');
       
+      // STEP 1.5: Test Singleton Manager
+      setInitializationStatus('🧪 Testing singleton manager...');
+      try {
+        const testResults = await testSingletonIntegration();
+        const passed = testResults.filter(r => r.status === 'PASS').length;
+        console.log(`✅ Singleton Manager: ${passed}/${testResults.length} tests passed`);
+        setInitializationStatus(`✅ Singleton manager tested (${passed}/${testResults.length})`);
+      } catch (error) {
+        console.error('❌ Singleton manager test failed:', error);
+        setInitializationStatus('⚠️ Singleton manager test failed, continuing...');
+      }
+      
       // STEP 2: Register Treasury System process (allow duplicates in dev mode)
       const canStartTreasury = systemSafetyManager.registerProcess('treasury-system', 3000);
       if (canStartTreasury) {
@@ -66,9 +79,14 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
         (window as any).unifiedDataService = unifiedDataServiceModule.unifiedDataService;
         (window as any).eventBus = eventBusModule.eventBus;
         
+        // Make singleton test function available globally
+        (window as any).testSingletonIntegration = testSingletonIntegration;
+        
         console.log('✅ Storage Quota Manager ready and available globally');
         console.log('🧪 Test suite available in browser console');
+        console.log('🔧 Singleton Manager test available as window.testSingletonIntegration()');
         console.log('📋 Open http://localhost:3000/test-quota-management.html for test interface');
+        console.log('🧪 Open http://localhost:3000/test-singleton-manager.html for singleton tests');
       }
 
       // STEP 4: Continue with normal initialization

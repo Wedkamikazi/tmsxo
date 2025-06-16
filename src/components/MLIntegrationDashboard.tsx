@@ -28,6 +28,9 @@ interface ModelPerformanceMetrics {
 }
 
 export const MLIntegrationDashboard: React.FC = () => {
+  // CRITICAL: Infinite loop protection - monitors renders and prevents browser crashes
+  useInfiniteLoopProtection('MLIntegrationDashboard');
+  
   // Initialize cleanup hooks for TensorFlow models and timers
   const tensorFlowCleanup = useTensorFlowCleanup('MLIntegrationDashboard');
   const timerCleanup = useTimerCleanup('MLIntegrationDashboard');

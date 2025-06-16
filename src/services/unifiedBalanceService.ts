@@ -435,7 +435,7 @@ class UnifiedBalanceService {
     try {
       const adjustments = this.getBalanceAdjustments(accountId);
       const balanceHistory = this.getBalanceHistory(accountId);
-      const lastImport = importHistoryService.getLastImportInfo(accountId);
+      const lastImport = importProcessingService.getLastImportInfo(accountId);
       
       // Get current balance from most recent balance or account data
       let currentBalance = 0;

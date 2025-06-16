@@ -494,9 +494,10 @@ class CreditTransactionManagementService {
 
   private async storeReconciliationMatch(match: ReconciliationMatch): Promise<void> {
     try {
-      const existing = await coreDataService.getData<ReconciliationMatch[]>(this.RECONCILIATION_MATCHES_KEY) || [];
+      const item = localStorage.getItem(this.RECONCILIATION_MATCHES_KEY);
+      const existing = item ? JSON.parse(item) as ReconciliationMatch[] : [];
       existing.push(match);
-      await coreDataService.setData(this.RECONCILIATION_MATCHES_KEY, existing);
+      localStorage.setItem(this.RECONCILIATION_MATCHES_KEY, JSON.stringify(existing));
     } catch (error) {
       console.error('Failed to store reconciliation match:', error);
       throw error;

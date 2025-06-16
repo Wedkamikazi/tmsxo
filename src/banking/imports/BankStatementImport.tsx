@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { FileUpload } from '@/ui/components/common/FileUpload';
 import { ImportSummary, BankAccount, Transaction } from '@/shared/types';
 import { importProcessingService } from './ImportProcessingService';

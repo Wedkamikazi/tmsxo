@@ -11,10 +11,10 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { DebitTransaction, APAgingEntry, ForecastedPayment } from '../types';
-import { debitTransactionManagementService } from '../services/debitTransactionManagementService';
+import { DebitTransaction, APAgingEntry, ForecastedPayment } from '../shared/types';
+import { debitTransactionManagementService } from '../banking/transactions/DebitTransactionManagementService';
 import { ErrorBoundary } from './ErrorBoundary';
-import './DebitTransactions.css';
+import './.css';
 
 interface DebitTransactionsProps {
   dataRefreshTrigger?: number;

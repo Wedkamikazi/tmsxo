@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './OllamaControlWidget.css';
+import './.css';
 
 interface OllamaStatus {
   isRunning: boolean;

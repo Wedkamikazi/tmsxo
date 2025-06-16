@@ -6,7 +6,7 @@
  */
 
 import { useEffect, useRef, useCallback, useMemo } from 'react';
-import { cleanupManager } from '../services/cleanupManager';
+import { cleanupManager } from '../data/maintenance/CleanupManager';
 
 interface UseCleanupOptions {
   componentName?: string;

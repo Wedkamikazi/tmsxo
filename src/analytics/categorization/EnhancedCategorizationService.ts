@@ -1,11 +1,11 @@
-import { Transaction, TransactionCategory } from '../types';
+import { Transaction, TransactionCategory } from '../shared/types';
 import { enhancedMLOrchestrator, EnhancedMLResult } from './enhancedMLOrchestrator';
 // import { localOllamaIntegration } from './localOllamaIntegration';
 import { categorizationService } from './categorizationService';
 import { systemIntegrityService } from './systemIntegrityService';
 import { localStorageManager } from './localStorageManager';
-import { eventBus } from './eventBus';
-import { isDebugMode } from '../utils/debugMode';
+import { eventBus } from './EventBus';
+import { isDebugMode } from '../shared/utils/debugging/DebugMode';
 
 // ENHANCED TRANSACTION CATEGORIZATION SERVICE
 // Consolidates all categorization logic and eliminates duplication

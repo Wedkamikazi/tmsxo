@@ -1,6 +1,6 @@
 import { StoredTransaction } from './unifiedDataService';
 import { unifiedDataService } from './unifiedDataService';
-import { BankAccount } from '../types';
+import { BankAccount } from '../shared/types';
 import { importProcessingService } from './importProcessingService';
 import { systemIntegrityService } from './systemIntegrityService';
 

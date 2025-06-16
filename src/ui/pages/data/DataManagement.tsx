@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './DataManagement.css';
+import './.css';
 
 interface StorageInfo {
   bankAccounts: { location: string; filename: string };

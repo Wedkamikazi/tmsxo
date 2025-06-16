@@ -1,7 +1,7 @@
-import { Transaction, BankAccount, UploadedFile, TransactionCategory, TransactionCategorization } from '../types';
+import { Transaction, BankAccount, UploadedFile, TransactionCategory, TransactionCategorization } from '../shared/types';
 import { performanceManager } from './performanceManager';
 import { systemIntegrityService } from './systemIntegrityService';
-import { eventBus } from './eventBus';
+import { eventBus } from './EventBus';
 import { storageQuotaManager } from './storageQuotaManager';
 
 export interface StorageSnapshot {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { stateManager } from '../utils/stateManager';
-import { isDebugMode, enableDebugMode, disableDebugMode } from '../utils/debugMode';
-import './Settings.css';
+import { stateManager } from '../core/performance/StateManager';
+import { isDebugMode, enableDebugMode, disableDebugMode } from '../shared/utils/debugging/DebugMode';
+import './.css';
 
 export const Settings: React.FC = () => {
   const [currentDebugMode, setCurrentDebugMode] = useState(isDebugMode());

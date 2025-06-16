@@ -4,8 +4,8 @@ import {
   ReconciliationMatch,
   AuditLogEntry,
   Transaction 
-} from '../types';
-import { eventBus } from './eventBus';
+} from '../shared/types';
+import { eventBus } from './EventBus';
 import { unifiedCategorizationService } from './unifiedCategorizationService';
 
 /**

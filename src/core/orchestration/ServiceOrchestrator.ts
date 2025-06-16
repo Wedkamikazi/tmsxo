@@ -1,5 +1,5 @@
-import { isDebugMode } from '../utils/debugMode';
-import { eventBus } from './eventBus';
+import { isDebugMode } from '../shared/utils/debugging/DebugMode';
+import { eventBus } from './EventBus';
 import { localStorageManager } from './localStorageManager';
 import { unifiedDataService } from './unifiedDataService';
 import { performanceManager } from './performanceManager';

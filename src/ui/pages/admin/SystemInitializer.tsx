@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { isDebugMode, enableDebugMode, disableDebugMode } from '../utils/debugMode';
-import { systemSafetyManager, initializeSystemSafety } from '../utils/systemSafetyManager';
-import { storageQuotaManager } from '../services/storageQuotaManager';
-import { shouldReinitializeServices } from '../utils/stateManager';
-// import { serviceOrchestrator, SystemStatus } from '../services/serviceOrchestrator';
+import { isDebugMode, enableDebugMode, disableDebugMode } from '../shared/utils/debugging/DebugMode';
+import { systemSafetyManager, initializeSystemSafety } from '../core/safety/SystemSafetyManager';
+import { storageQuotaManager } from '../data/storage/StorageQuotaManager';
+import { shouldReinitializeServices } from '../core/performance/StateManager';
+// import { serviceOrchestrator, SystemStatus } from '../core/orchestration/ServiceOrchestrator';
 
 interface SystemInitializerProps {
   children: React.ReactNode;

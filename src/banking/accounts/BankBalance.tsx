@@ -5,16 +5,16 @@ import {
   type BankBalanceFilters, 
   type BankBalanceStats 
 } from '../services/bankBalanceService';
-import { unifiedDataService } from '../services/unifiedDataService';
-import { BankAccount } from '../types';
+import { unifiedDataService } from '../data/storage/UnifiedDataService';
+import { BankAccount } from '../shared/types';
 import { 
   registerGlobalRefresh, 
   unregisterGlobalRefresh, 
   shouldComponentUseCache,
   setComponentState,
   getComponentState 
-} from '../utils/stateManager';
-import './BankBalance.css';
+} from '../core/performance/StateManager';
+import './.css';
 
 interface BankBalanceProps {
   refreshTrigger?: number;

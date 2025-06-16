@@ -1,6 +1,6 @@
-import { TransactionCategory, CategorizationRule, TransactionCategorization, Transaction } from '../types';
+import { TransactionCategory, CategorizationRule, TransactionCategorization, Transaction } from '../shared/types';
 import { localStorageManager } from './localStorageManager';
-import { eventBus } from './eventBus';
+import { eventBus } from './EventBus';
 
 /**
  * CATEGORIZATION SERVICE

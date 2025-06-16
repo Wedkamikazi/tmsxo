@@ -10,10 +10,10 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { TimeDeposit, InvestmentSuggestion } from '../types';
-import { eventBus } from '../services/eventBus';
+import { TimeDeposit, InvestmentSuggestion } from '../shared/types';
+import { eventBus } from '../core/orchestration/EventBus';
 import { ErrorBoundary } from './ErrorBoundary';
-import './TimeDepositManagement.css';
+import './.css';
 
 interface TimeDepositManagementProps {
   dataRefreshTrigger?: number;

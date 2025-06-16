@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BankAccount } from '../types';
-import { unifiedDataService } from '../services/unifiedDataService';
-import { unifiedBalanceService } from '../services/unifiedBalanceService';
+import { BankAccount } from '../shared/types';
+import { unifiedDataService } from '../data/storage/UnifiedDataService';
+import { unifiedBalanceService } from '../banking/accounts/UnifiedBalanceService';
 import { 
   registerGlobalRefresh, 
   unregisterGlobalRefresh, 
   shouldComponentUseCache,
   setComponentState,
   getComponentState 
-} from '../utils/stateManager';
-import './BankAccountManager.css';
+} from '../core/performance/StateManager';
+import './.css';
 
 interface BankAccountManagerProps {
   onAccountsUpdated?: () => void;

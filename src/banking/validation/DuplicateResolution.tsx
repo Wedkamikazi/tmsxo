@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import type { DuplicateMatch, DuplicateResolution as DuplicateResolutionType, DuplicateAnalysis } from '../services/duplicateDetectionService';
-import './DuplicateResolution.css';
+import type { DuplicateMatch, DuplicateResolution as DuplicateResolutionType, DuplicateAnalysis } from '../banking/validation/DuplicateDetectionService';
+import './.css';
 
 interface DuplicateResolutionProps {
   analysis: DuplicateAnalysis;

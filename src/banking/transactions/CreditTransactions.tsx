@@ -11,10 +11,10 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { CreditTransaction, ARAgingEntry, ForecastedCollection } from '../types';
-import { creditTransactionManagementService } from '../services/creditTransactionManagementService';
+import { CreditTransaction, ARAgingEntry, ForecastedCollection } from '../shared/types';
+import { creditTransactionManagementService } from '../banking/transactions/CreditTransactionManagementService';
 import { ErrorBoundary } from './ErrorBoundary';
-import './CreditTransactions.css';
+import './.css';
 
 interface CreditTransactionsProps {
   dataRefreshTrigger?: number;

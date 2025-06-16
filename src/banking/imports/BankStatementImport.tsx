@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { FileUpload } from './FileUpload';
-import { ImportSummary, BankAccount, Transaction } from '../types';
-import { importProcessingService } from '../services/importProcessingService';
-import { unifiedDataService, type StoredTransaction } from '../services/unifiedDataService';
-import { BalanceValidationResult } from '../services/unifiedBalanceService';
+import { ImportSummary, BankAccount, Transaction } from '../shared/types';
+import { importProcessingService } from '../banking/imports/ImportProcessingService';
+import { unifiedDataService, type StoredTransaction } from '../data/storage/UnifiedDataService';
+import { BalanceValidationResult } from '../banking/accounts/UnifiedBalanceService';
 import { BalanceValidationDialog } from './BalanceValidationDialog';
-import './BankStatementImport.css';
+import './.css';
 
 interface BankStatementImportProps {
   onImportComplete?: (transactions: Transaction[], bankAccount: BankAccount) => void;

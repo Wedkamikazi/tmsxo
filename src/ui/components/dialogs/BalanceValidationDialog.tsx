@@ -1,6 +1,6 @@
 import React from 'react';
-import { BalanceValidationResult } from '../services/unifiedBalanceService';
-import './BalanceValidationDialog.css';
+import { BalanceValidationResult } from '../banking/accounts/UnifiedBalanceService';
+import './.css';
 
 interface BalanceValidationDialogProps {
   isOpen: boolean;

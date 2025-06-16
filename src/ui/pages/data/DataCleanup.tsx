@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './DataCleanup.css';
+import './.css';
 
 interface CleanupReport {
   totalTransactions: number;

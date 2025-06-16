@@ -1,9 +1,9 @@
-import { eventBus, DataEvent } from './eventBus';
+import { eventBus, DataEvent } from './EventBus';
 import { localStorageManager } from './localStorageManager';
 import { unifiedDataService } from './unifiedDataService';
 import { performanceManager } from './performanceManager';
 import { crossTabSyncService } from './crossTabSyncService';
-import { isDebugMode } from '../utils/debugMode';
+import { isDebugMode } from '../shared/utils/debugging/DebugMode';
 
 // SYSTEM INTEGRITY SERVICE - ULTIMATE INTEGRATION ENHANCEMENT
 // Provides centralized error handling, data consistency validation, and system health monitoring

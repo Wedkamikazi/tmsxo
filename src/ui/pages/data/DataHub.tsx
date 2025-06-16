@@ -28,9 +28,9 @@ import {
   unregisterGlobalRefresh,
   clearComponentStates,
   getStateStorageUsage
-} from '../utils/stateManager';
-import { Transaction, BankAccount } from '../types';
-import './DataHub.css';
+} from '../core/performance/StateManager';
+import { Transaction, BankAccount } from '../shared/types';
+import './.css';
 
 // Check for debug mode
 const isDebugMode = typeof window !== 'undefined' && (

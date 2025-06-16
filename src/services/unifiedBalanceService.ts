@@ -176,11 +176,14 @@ class UnifiedBalanceService {
         // Determine opening balance for the day
         let openingBalance: number;
         if (previousClosingBalance !== null) {
+          // Use previous day's closing balance as today's opening balance
           openingBalance = previousClosingBalance;
         } else {
-          // For the first day, use the oldest transaction's balance and subtract its impact
-          const transactionImpact = (oldestTransaction.creditAmount || 0) - (oldestTransaction.debitAmount || 0);
-          openingBalance = oldestTransaction.balance - transactionImpact;
+          // For the first day, calculate opening balance by working backwards from oldest transaction
+          // Opening balance = oldest transaction balance - (credit - debit) of that transaction
+          // This gives us the balance BEFORE the oldest transaction was processed
+          const oldestTransactionImpact = (oldestTransaction.creditAmount || 0) - (oldestTransaction.debitAmount || 0);
+          openingBalance = oldestTransaction.balance - oldestTransactionImpact;
         }
         const dailyMovement = closingBalance - openingBalance;
 

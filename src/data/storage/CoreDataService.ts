@@ -17,7 +17,7 @@
 
 import { Transaction, BankAccount, UploadedFile, TransactionCategory, TransactionCategorization } from '../../../shared/types';
 import { performanceManager } from './performanceManager';
-import { systemIntegrityService } from './systemIntegrityService';
+import { systemIntegrityService } from '../integrity/SystemIntegrityService';
 import { eventBus } from './EventBus';
 
 // ======================

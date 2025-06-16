@@ -277,12 +277,12 @@ class UnifiedBalanceService {
       if (filters.dateTo && balance.date > filters.dateTo) return false;
       
       // Balance range filter
-      if (filters.balanceFrom && balance.closingBalance < parseFloat(filters.balanceFrom)) return false;
-      if (filters.balanceTo && balance.closingBalance > parseFloat(filters.balanceTo)) return false;
+      if (filters.balanceMin && balance.closingBalance < parseFloat(filters.balanceMin)) return false;
+      if (filters.balanceMax && balance.closingBalance > parseFloat(filters.balanceMax)) return false;
       
       // Movement range filter
-      if (filters.movementFrom && Math.abs(balance.dailyMovement) < parseFloat(filters.movementFrom)) return false;
-      if (filters.movementTo && Math.abs(balance.dailyMovement) > parseFloat(filters.movementTo)) return false;
+      if (filters.movementMin && Math.abs(balance.dailyMovement) < parseFloat(filters.movementMin)) return false;
+      if (filters.movementMax && Math.abs(balance.dailyMovement) > parseFloat(filters.movementMax)) return false;
       
       return true;
     });

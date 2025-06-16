@@ -1303,13 +1303,13 @@ class CoreDataService {
 
   private getDefaultCategories(): TransactionCategory[] {
     return [
-      { id: 'cat_groceries', name: 'Groceries', color: '#4CAF50', parentId: null, createdDate: new Date().toISOString(), modifiedDate: new Date().toISOString() },
-      { id: 'cat_utilities', name: 'Utilities', color: '#FF9800', parentId: null, createdDate: new Date().toISOString(), modifiedDate: new Date().toISOString() },
-      { id: 'cat_entertainment', name: 'Entertainment', color: '#9C27B0', parentId: null, createdDate: new Date().toISOString(), modifiedDate: new Date().toISOString() },
-      { id: 'cat_transport', name: 'Transportation', color: '#2196F3', parentId: null, createdDate: new Date().toISOString(), modifiedDate: new Date().toISOString() },
-      { id: 'cat_healthcare', name: 'Healthcare', color: '#F44336', parentId: null, createdDate: new Date().toISOString(), modifiedDate: new Date().toISOString() },
-      { id: 'cat_income', name: 'Income', color: '#8BC34A', parentId: null, createdDate: new Date().toISOString(), modifiedDate: new Date().toISOString() },
-      { id: 'cat_other', name: 'Other', color: '#607D8B', parentId: null, createdDate: new Date().toISOString(), modifiedDate: new Date().toISOString() }
+      { id: 'cat_groceries', name: 'Groceries', description: 'Food and grocery purchases', keywords: ['grocery', 'food', 'supermarket'], color: '#4CAF50', parentCategoryId: undefined, isSystem: true, createdDate: new Date().toISOString(), modifiedDate: new Date().toISOString() },
+      { id: 'cat_utilities', name: 'Utilities', description: 'Utility bills and services', keywords: ['utility', 'electric', 'gas', 'water'], color: '#FF9800', parentCategoryId: undefined, isSystem: true, createdDate: new Date().toISOString(), modifiedDate: new Date().toISOString() },
+      { id: 'cat_entertainment', name: 'Entertainment', description: 'Entertainment and leisure', keywords: ['entertainment', 'movie', 'music'], color: '#9C27B0', parentCategoryId: undefined, isSystem: true, createdDate: new Date().toISOString(), modifiedDate: new Date().toISOString() },
+      { id: 'cat_transport', name: 'Transportation', description: 'Transportation costs', keywords: ['transport', 'gas', 'fuel', 'taxi'], color: '#2196F3', parentCategoryId: undefined, isSystem: true, createdDate: new Date().toISOString(), modifiedDate: new Date().toISOString() },
+      { id: 'cat_healthcare', name: 'Healthcare', description: 'Medical and healthcare', keywords: ['medical', 'doctor', 'pharmacy'], color: '#F44336', parentCategoryId: undefined, isSystem: true, createdDate: new Date().toISOString(), modifiedDate: new Date().toISOString() },
+      { id: 'cat_income', name: 'Income', description: 'Income and earnings', keywords: ['salary', 'income', 'payment'], color: '#8BC34A', parentCategoryId: undefined, isSystem: true, createdDate: new Date().toISOString(), modifiedDate: new Date().toISOString() },
+      { id: 'cat_other', name: 'Other', description: 'Miscellaneous transactions', keywords: ['other', 'misc'], color: '#607D8B', parentCategoryId: undefined, isSystem: true, createdDate: new Date().toISOString(), modifiedDate: new Date().toISOString() }
     ];
   }
 

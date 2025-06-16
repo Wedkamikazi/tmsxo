@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Migration Test - Treasury Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 800px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        .warning { background-color: #fff3cd; border-color: #ffeaa7; }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📅 Date Migration Test Interface</h1>
+        <p>This tool helps test and run the date migration utility to fix invalid postDateTime values in stored transactions.</p>
+        
+        <!-- Analysis Section -->
+        <div class="section info">
+            <h2>📊 Transaction Analysis</h2>
+            <p>Analyze existing transactions to see how many need date format fixes.</p>
+            <button onclick="runAnalysis()">Analyze Transactions</button>
+            <div id="analysis-results"></div>
+        </div>
+        
+        <!-- Migration Section -->
+        <div class="section warning">
+            <h2>🔧 Date Migration</h2>
+            <p><strong>Warning:</strong> This will modify your stored transaction data. Make sure you have a backup!</p>
+            <button onclick="runMigration()" id="migrate-btn">Run Migration</button>
+            <div id="migration-results"></div>
+        </div>
+        
+        <!-- Sample Data Testing -->
+        <div class="section">
+            <h2>🧪 Test Date Formats</h2>
+            <p>Test individual date format conversions:</p>
+            <input type="text" id="test-date" placeholder="Enter date (e.g., 31/12/2024)" style="padding: 8px; margin: 5px;">
+            <button onclick="testDateFormat()">Test Format</button>
+            <div id="test-results"></div>
+        </div>
+        
+        <!-- Console Log -->
+        <div class="section">
+            <h2>📋 Console Log</h2>
+            <div id="console-log" class="log">Waiting for operations...</div>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+    </div>
+
+    <script>
+        let logContainer = document.getElementById('console-log');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            logContainer.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        function clearLog() {
+            logContainer.textContent = 'Log cleared.\n';
+        }
+        
+        // Test if localStorage is accessible
+        function checkLocalStorageAccess() {
+            try {
+                const testKey = 'test';
+                localStorage.setItem(testKey, 'test');
+                localStorage.removeItem(testKey);
+                return true;
+            } catch (e) {
+                log('Error: Cannot access localStorage. Make sure you are on localhost or the same domain.', 'error');
+                return false;
+            }
+        }
+        
+        // Test individual date format
+        function testDateFormat() {
+            const testDate = document.getElementById('test-date').value;
+            if (!testDate) {
+                log('Please enter a date to test', 'warning');
+                return;
+            }
+            
+            try {
+                // Test the date parsing logic
+                const formatted = formatDateManual(testDate);
+                const testPostDateTime = `${testDate}T00:00:00`;
+                const testFormattedDateTime = `${formatted}T00:00:00`;
+                
+                const originalValid = !isNaN(new Date(testPostDateTime).getTime());
+                const formattedValid = !isNaN(new Date(testFormattedDateTime).getTime());
+                
+                const resultsHtml = `
+                    <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                        <strong>Input:</strong> ${testDate}<br>
+                        <strong>Formatted:</strong> ${formatted}<br>
+                        <strong>Original postDateTime:</strong> ${testPostDateTime} (${originalValid ? 'Valid' : 'Invalid'})<br>
+                        <strong>Fixed postDateTime:</strong> ${testFormattedDateTime} (${formattedValid ? 'Valid' : 'Invalid'})<br>
+                        <strong>Result:</strong> ${formattedValid ? '✅ Fixed successfully' : '❌ Still invalid'}
+                    </div>
+                `;
+                document.getElementById('test-results').innerHTML = resultsHtml;
+                
+                log(`Date test: "${testDate}" -> "${formatted}" (${formattedValid ? 'Valid' : 'Invalid'})`, 
+                    formattedValid ? 'success' : 'error');
+                    
+            } catch (error) {
+                log(`Date test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Manual implementation of date formatting for testing
+        function formatDateManual(dateString) {
+            // If already in correct format (YYYY-MM-DD), return as-is
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+                return dateString;
+            }
+            
+            // Handle slash-separated dates (MM/DD/YYYY or DD/MM/YYYY)
+            if (dateString.includes('/')) {
+                const parts = dateString.split('/');
+                if (parts.length === 3) {
+                    const part1 = parseInt(parts[0]);
+                    const part2 = parseInt(parts[1]);
+                    const year = parseInt(parts[2]);
+                    
+                    if (isNaN(part1) || isNaN(part2) || isNaN(year)) {
+                        return dateString; // Return original if parsing fails
+                    }
+                    
+                    let month, day;
+                    
+                    // Determine format
+                    if (part1 > 12) {
+                        // DD/MM/YYYY format
+                        day = part1;
+                        month = part2;
+                    } else if (part2 > 12) {
+                        // MM/DD/YYYY format
+                        month = part1;
+                        day = part2;
+                    } else {
+                        // Ambiguous - assume DD/MM/YYYY (European format)
+                        day = part1;
+                        month = part2;
+                    }
+                    
+                    // Validate the date parts
+                    if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 1900) {
+                        // Convert to YYYY-MM-DD format
+                        const monthStr = month.toString().padStart(2, '0');
+                        const dayStr = day.toString().padStart(2, '0');
+                        return `${year}-${monthStr}-${dayStr}`;
+                    }
+                }
+            }
+            
+            return dateString; // Return original if can't parse
+        }
+        
+        // Run transaction analysis
+        async function runAnalysis() {
+            if (!checkLocalStorageAccess()) return;
+            
+            log('Starting transaction analysis...', 'info');
+            
+            try {
+                // Check if analysis function is available
+                if (typeof window.analyzeTransactionDates === 'function') {
+                    const analysis = window.analyzeTransactionDates();
+                    displayAnalysisResults(analysis);
+                } else {
+                    // Fallback - manual analysis
+                    log('Using fallback analysis method...', 'warning');
+                    const analysis = await manualAnalysis();
+                    displayAnalysisResults(analysis);
+                }
+            } catch (error) {
+                log(`Analysis failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Manual analysis fallback
+        async function manualAnalysis() {
+            let totalTransactions = 0;
+            let invalidTransactions = 0;
+            const sampleInvalidDates = [];
+            
+            try {
+                const transactionsData = localStorage.getItem('treasury_transactions');
+                if (transactionsData) {
+                    const transactions = JSON.parse(transactionsData);
+                    
+                    for (const transaction of transactions) {
+                        totalTransactions++;
+                        
+                        if (transaction.postDateTime) {
+                            const isValid = !isNaN(new Date(transaction.postDateTime).getTime());
+                            if (!isValid) {
+                                invalidTransactions++;
+                                if (sampleInvalidDates.length < 10) {
+                                    sampleInvalidDates.push(transaction.postDateTime);
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                log(`Manual analysis error: ${error.message}`, 'error');
+            }
+            
+            return {
+                totalTransactions,
+                invalidTransactions,
+                sampleInvalidDates
+            };
+        }
+        
+        // Display analysis results
+        function displayAnalysisResults(analysis) {
+            const html = `
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value">${analysis.totalTransactions}</div>
+                        <div class="stat-label">Total Transactions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${analysis.invalidTransactions}</div>
+                        <div class="stat-label">Need Migration</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${analysis.totalTransactions - analysis.invalidTransactions}</div>
+                        <div class="stat-label">Already Valid</div>
+                    </div>
+                </div>
+                ${analysis.sampleInvalidDates.length > 0 ? `
+                    <div style="margin: 10px 0;">
+                        <strong>Sample Invalid Dates:</strong><br>
+                        ${analysis.sampleInvalidDates.map(date => `<code>${date}</code>`).join(', ')}
+                    </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('analysis-results').innerHTML = html;
+            
+            log(`Analysis complete: ${analysis.totalTransactions} total, ${analysis.invalidTransactions} invalid`, 
+                analysis.invalidTransactions > 0 ? 'warning' : 'success');
+        }
+        
+        // Run migration
+        async function runMigration() {
+            if (!checkLocalStorageAccess()) return;
+            
+            if (!confirm('Are you sure you want to run the migration? This will modify your transaction data.')) {
+                log('Migration cancelled by user', 'info');
+                return;
+            }
+            
+            const btn = document.getElementById('migrate-btn');
+            btn.disabled = true;
+            btn.textContent = 'Running Migration...';
+            
+            log('Starting date migration...', 'info');
+            
+            try {
+                // Check if migration function is available
+                if (typeof window.migrateTransactionDates === 'function') {
+                    const result = window.migrateTransactionDates();
+                    displayMigrationResults(result);
+                } else {
+                    log('Migration function not available. Please refresh the page or check console.', 'error');
+                }
+            } catch (error) {
+                log(`Migration failed: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Run Migration';
+            }
+        }
+        
+        // Display migration results
+        function displayMigrationResults(result) {
+            const html = `
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value">${result.totalProcessed}</div>
+                        <div class="stat-label">Processed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${result.totalFixed}</div>
+                        <div class="stat-label">Fixed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${result.errors.length}</div>
+                        <div class="stat-label">Errors</div>
+                    </div>
+                </div>
+                ${result.errors.length > 0 ? `
+                    <div style="margin: 10px 0; padding: 10px; background: #f8d7da; border-radius: 5px;">
+                        <strong>Errors:</strong><br>
+                        ${result.errors.map(error => `<div>• ${error}</div>`).join('')}
+                    </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('migration-results').innerHTML = html;
+            
+            log(`Migration complete: ${result.totalFixed} transactions fixed`, 
+                result.totalFixed > 0 ? 'success' : 'info');
+                
+            if (result.errors.length > 0) {
+                log(`${result.errors.length} errors occurred during migration`, 'warning');
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Date Migration Test Interface loaded', 'info');
+            log('Open the main Treasury app in another tab to load the migration functions', 'info');
+            
+            // Auto-run analysis after a short delay
+            setTimeout(() => {
+                if (checkLocalStorageAccess()) {
+                    runAnalysis();
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

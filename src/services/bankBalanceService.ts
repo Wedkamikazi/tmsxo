@@ -181,7 +181,6 @@ class BankBalanceService {
         
         // MOST RECENT transaction determines the closing balance (not the last/oldest)
         const mostRecentTransaction = transactionsToProcess[0];
-        const oldestTransaction = transactionsToProcess[transactionsToProcess.length - 1];
         const closingBalance = mostRecentTransaction.balance;
         
         // Opening balance is either previous day's closing or calculated from all transactions

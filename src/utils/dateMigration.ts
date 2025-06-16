@@ -151,7 +151,7 @@ export class DateMigrationUtils {
       console.log('🔄 Starting postDateTime migration...');
       
       // Get all accounts
-      const accounts = localStorageManager.getAccounts();
+      const accounts = localStorageManager.getAllAccounts();
       
       for (const account of accounts) {
         try {

@@ -7,7 +7,6 @@ import { cleanupManager } from '@/data/maintenance/CleanupManager';
 import { localStorageManager } from '@/data/storage/LocalStorageManager';
 import { categorizationService } from '../categorization/CategorizationService';
 import { isDebugMode } from '@/shared/utils/debugging/DebugMode';
-import { mlNaturalLanguageService } from './MLNaturalLanguageService';
 
 // ENHANCED ML ORCHESTRATOR
 // Intelligently combines TensorFlow.js models with Ollama for optimal performance

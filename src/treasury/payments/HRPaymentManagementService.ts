@@ -5,7 +5,7 @@ import {
   AuditLogEntry,
   Transaction 
 } from '../../../shared/types';
-import { eventBus } from './EventBus';
+import { eventBus } from '../../core/orchestration/EventBus';
 import { unifiedCategorizationService } from '../../analytics/categorization/UnifiedCategorizationService';
 
 /**

@@ -76,7 +76,6 @@ export const DailyCashManagement: React.FC<DailyCashManagementProps> = ({ dataRe
 
   // UI states
   const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [verificationNotes, setVerificationNotes] = useState('');
 
   // =============================================
   // DATA LOADING

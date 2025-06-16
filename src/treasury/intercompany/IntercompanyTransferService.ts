@@ -17,9 +17,9 @@ import {
   CashForecastEntry,
   AuditLogEntry,
   Transaction
-} from '../../shared/types';
-import { eventBus } from '../../core/orchestration/EventBus';
-import { unifiedCategorizationService } from '../../analytics/categorization/UnifiedCategorizationService';
+} from '@/shared/types';
+import { eventBus } from '@/core/orchestration/EventBus';
+import { unifiedCategorizationService } from '@/analytics/categorization/UnifiedCategorizationService';
 
 // =============================================
 // INTERCOMPANY TRANSFER SERVICE

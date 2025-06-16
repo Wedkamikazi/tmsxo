@@ -12,6 +12,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 import SystemHealthMonitor from './SystemHealthMonitor';
 import OllamaControlWidget from './OllamaControlWidget';
 import { CreditTransactions } from './CreditTransactions';
+import { DebitTransactions } from './DebitTransactions';
 import { 
   stateManager, 
   saveActiveTab, 

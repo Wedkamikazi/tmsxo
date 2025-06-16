@@ -633,8 +633,9 @@ class DebitTransactionManagementService {
           score += 0.1;
         }
 
-        // Apply forecast confidence as a multiplier
-        score *= forecast.confidence;
+        // Apply forecast confidence as a modifier (convert string to numeric)
+        const confidenceMultiplier = forecast.confidence === 'high' ? 1.0 : forecast.confidence === 'medium' ? 0.8 : 0.6;
+        score *= confidenceMultiplier;
 
         if (score > highestScore) {
           highestScore = score;
@@ -642,7 +643,7 @@ class DebitTransactionManagementService {
             confidenceScore: score,
             matchedEntityId: forecast.id,
             forecastEntry: forecast,
-            notes: `Matched based on expected amount, vendor name, and payment date (forecast confidence: ${(forecast.confidence * 100).toFixed(1)}%)`
+            notes: `Matched based on expected amount, vendor ID, and payment date (forecast confidence: ${forecast.confidence})`
           };
         }
       }

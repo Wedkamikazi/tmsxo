@@ -226,6 +226,9 @@ class UnifiedBalanceService {
         highestBalance: 0,
         lowestBalance: 0,
         totalMovement: 0,
+        positiveMovementDays: 0,
+        negativeMovementDays: 0,
+        daysWithDuplicates: 0,
         dateRange: { from: '', to: '' }
       };
     }
@@ -235,6 +238,13 @@ class UnifiedBalanceService {
     const movementValues = balances.map(b => Math.abs(b.dailyMovement));
     const dates = balances.map(b => b.date).sort();
 
+    // Calculate movement direction stats
+    const positiveMovementDays = balances.filter(b => b.dailyMovement > 0).length;
+    const negativeMovementDays = balances.filter(b => b.dailyMovement < 0).length;
+
+    // For now, set daysWithDuplicates to 0 - this can be enhanced later with actual duplicate detection
+    const daysWithDuplicates = 0;
+
     return {
       totalAccounts: uniqueAccounts,
       totalDays: balances.length,
@@ -242,6 +252,9 @@ class UnifiedBalanceService {
       highestBalance: Math.max(...balanceValues),
       lowestBalance: Math.min(...balanceValues),
       totalMovement: movementValues.reduce((sum, val) => sum + val, 0),
+      positiveMovementDays,
+      negativeMovementDays,
+      daysWithDuplicates,
       dateRange: {
         from: dates[0],
         to: dates[dates.length - 1]

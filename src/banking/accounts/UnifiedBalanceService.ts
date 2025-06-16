@@ -31,10 +31,10 @@ export interface BalanceFilters {
   accountId: string;
   dateFrom: string;
   dateTo: string;
-  balanceFrom: string;
-  balanceTo: string;
-  movementFrom: string;
-  movementTo: string;
+  balanceMin: string;
+  balanceMax: string;
+  movementMin: string;
+  movementMax: string;
 }
 
 export interface BalanceStats {

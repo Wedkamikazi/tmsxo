@@ -15,9 +15,9 @@
  * - End-to-end import workflow orchestration
  */
 
-import { coreDataService } from '../../data/storage/CoreDataService';
-import { eventBus } from '../../core/orchestration/EventBus';
-import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
+import { coreDataService } from '@/data/storage/CoreDataService';
+import { eventBus } from '@/core/orchestration/EventBus';
+import { systemIntegrityService } from '@/data/integrity/SystemIntegrityService';
 
 // ======================
 // TYPE DEFINITIONS

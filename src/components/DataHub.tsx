@@ -651,6 +651,12 @@ export const DataHub: React.FC = () => {
             <DailyCashManagement dataRefreshTrigger={dataRefreshTrigger} />
           </ErrorBoundary>
         );
+      case 'timeDeposits':
+        return (
+          <ErrorBoundary componentName="TimeDepositManagement">
+            <TimeDepositManagement dataRefreshTrigger={dataRefreshTrigger} />
+          </ErrorBoundary>
+        );
       case 'bankBalance':
         return (
           <ErrorBoundary componentName="BankBalance">

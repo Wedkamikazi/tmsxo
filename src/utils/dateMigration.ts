@@ -156,7 +156,7 @@ export class DateMigrationUtils {
       for (const account of accounts) {
         try {
           // Get transactions for this account
-          const transactions = localStorageManager.getTransactions(account.id);
+          const transactions = localStorageManager.getTransactionsByAccount(account.id);
           let accountFixed = 0;
           
           for (const transaction of transactions) {

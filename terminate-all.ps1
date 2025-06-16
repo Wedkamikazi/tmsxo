@@ -45,7 +45,7 @@ function Kill-ProcessesByPort {
             $pids = @()
             foreach ($line in $netstatOutput) {
                 $parts = $line.ToString().Trim() -split '\s+'
-                $pid = $parts[-1]
+                $processId = $parts[-1]
                 if ($pid -and $pid -ne '0') {
                     $pids += $pid
                 }

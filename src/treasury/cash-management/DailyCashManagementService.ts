@@ -864,7 +864,7 @@ class DailyCashManagementService {
   private async calculateCashIn(date: string, accountNumber: string): Promise<number> {
     try {
       // Import credit transaction service
-      const { creditTransactionManagementService } = await import('./creditTransactionManagementService');
+      const { creditTransactionManagementService } = await import('../../banking/transactions/CreditTransactionManagementService');
       
       const creditTransactions = await creditTransactionManagementService.getAllCreditTransactions();
       

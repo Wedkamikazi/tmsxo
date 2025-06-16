@@ -969,7 +969,7 @@ class CoreDataService {
 
   restoreSnapshot(timestamp: string): boolean {
     try {
-      const snapshots = this.getStorageData(this.STORAGE_KEYS.snapshots, {});
+      const snapshots = this.getStorageData(this.STORAGE_KEYS.snapshots, {} as Record<string, StorageSnapshot>);
       const snapshot = snapshots[timestamp];
       
       if (!snapshot) return false;

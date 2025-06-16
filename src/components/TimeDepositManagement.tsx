@@ -11,7 +11,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { TimeDeposit, InvestmentSuggestion } from '../types';
-import { timeDepositService } from '../services/timeDepositService';
 import { eventBus } from '../services/eventBus';
 import { ErrorBoundary } from './ErrorBoundary';
 import './TimeDepositManagement.css';

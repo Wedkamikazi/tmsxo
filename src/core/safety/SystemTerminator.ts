@@ -7,7 +7,7 @@
 import { cleanupManager } from '../../data/maintenance/CleanupManager';
 import { systemSafetyManager } from './SystemSafetyManager';
 import { localOllamaIntegration } from '../../integration/ai/LocalOllamaIntegration';
-import { enhancedMLOrchestrator } from '../../analytics/ml/EnhancedMLOrchestrator';
+import { enhancedMLOrchestrator } from '../../analytics/machine-learning/EnhancedMLOrchestrator';
 import { performanceManager } from '../performance/PerformanceManager';
 import { serviceOrchestrator } from '../orchestration/ServiceOrchestrator';
 

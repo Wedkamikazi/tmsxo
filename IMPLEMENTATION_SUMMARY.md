@@ -22,6 +22,7 @@ Successfully implemented and integrated **Intercompany Transfer Service (Job 1.4
 - **Real-time integration** with daily cash management via event system
 
 **🔍 Pattern Recognition:**
+
 ```typescript
 const intercompanyPatterns = [
   'intercompany', 'interco', 'transfer', 'subsidiary', 
@@ -59,6 +60,7 @@ const intercompanyPatterns = [
 - **Investment optimization** with configurable parameters
 
 **💰 Investment Configuration:**
+
 ```typescript
 const CONFIG = {
   minimumBufferAmount: 1000000,     // 1M SAR safety buffer
@@ -78,6 +80,7 @@ const CONFIG = {
 - **Term bonuses**: +0.25% (60 days), +0.5% (90+ days)
 
 **🕌 Saudi Weekend Logic:**
+
 ```typescript
 // Automatically adjusts maturity dates to avoid Friday-Saturday
 private adjustForSaudiWeekend(date: string): string {
@@ -98,6 +101,7 @@ private adjustForSaudiWeekend(date: string): string {
 ### **🔧 Enhanced:** `src/services/dailyCashManagementService.ts`
 
 **✨ New Integration Methods:**
+
 ```typescript
 // Job 1.4 Integration
 private async calculateIntercompanyTransfers(date: string, accountNumber: string): Promise<{
@@ -113,6 +117,7 @@ private async calculateTimeDepositMovements(date: string, accountNumber: string)
 ```
 
 **🧮 Updated Balance Formula:**
+
 ```typescript
 entry.closingBalanceProjected = 
   entry.openingBalance + 
@@ -138,6 +143,7 @@ entry.closingBalanceProjected =
 ### **🔧 Enhanced:** `src/services/eventBus.ts`
 
 **🆕 New Event Types:**
+
 ```typescript
 | 'INTERCOMPANY_TRANSFERS_EXTRACTED'
 | 'INTERCOMPANY_TRANSFER_RECONCILED' 
@@ -178,6 +184,7 @@ The Treasury Management System now provides **unified visibility** across all ca
 6. ✅ Summary statistics generation
 
 **▶️ To Run Test:**
+
 ```bash
 npm start
 # Then in browser console:

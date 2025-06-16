@@ -4,7 +4,7 @@
 import { Transaction, CategorizationRule, TransactionCategory } from '../../types';
 import { CategorizationStrategy, UnifiedCategorizationResult } from './index';
 import { localStorageManager } from '../';
-import { eventBus } from '../eventBus';
+import { eventBus } from '../../core/orchestration/EventBus';
 
 export class RuleBasedMethod implements CategorizationStrategy {
   name = 'rule-based';

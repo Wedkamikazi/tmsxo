@@ -42,6 +42,9 @@ export interface BalanceStats {
   highestBalance: number;
   lowestBalance: number;
   totalMovement: number;
+  positiveMovementDays: number;
+  negativeMovementDays: number;
+  daysWithDuplicates: number;
   dateRange: {
     from: string;
     to: string;

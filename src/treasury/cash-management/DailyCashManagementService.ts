@@ -360,7 +360,7 @@ class DailyCashManagementService {
 
       // Test debit transaction service
       try {
-        const { debitTransactionManagementService } = await import('./debitTransactionManagementService');
+        const { debitTransactionManagementService } = await import('../../banking/transactions/DebitTransactionManagementService');
         await debitTransactionManagementService.getAllDebitTransactions();
         status.debitTransactionService = true;
       } catch (error) {

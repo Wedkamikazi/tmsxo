@@ -1,4 +1,4 @@
-import { systemIntegrityService } from './systemIntegrityService';
+import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
 // import { performanceManager } from './performanceManager';
 import { localStorageManager } from './localStorageManager';
 import { isDebugMode } from '../shared/utils/debugging/DebugMode';

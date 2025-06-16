@@ -762,15 +762,547 @@ class ImportProcessingService {
   }
 
   // ======================
-  // PLACEHOLDER METHODS FOR NEXT MICRO-TASKS
+  // CSV PROCESSING
   // ======================
 
-  // TODO: Micro-Task 2.1.2.3 - CSV Processing Integration  
-  // - parseCSV()
-  // - validateCSVData()
-  // - convertToTransactions()
-  // - generateTemplate()
-  // - processFile()
+  /**
+   * Parse CSV content into rows
+   */
+  parseCSV(csvContent: string): string[][] {
+    try {
+      const rows: string[][] = [];
+      const lines = csvContent.split('\n');
+      
+      let currentRow: string[] = [];
+      let inQuotes = false;
+      let currentField = '';
+      
+      for (const line of lines) {
+        if (line.trim() === '') continue;
+        
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            currentRow.push(currentField.trim());
+            currentField = '';
+          } else {
+            currentField += char;
+          }
+        }
+        
+        if (!inQuotes) {
+          // End of row
+          currentRow.push(currentField.trim());
+          rows.push(currentRow);
+          currentRow = [];
+          currentField = '';
+        } else {
+          // Multi-line field, add newline
+          currentField += '\n';
+        }
+      }
+      
+      // Handle any remaining row
+      if (currentRow.length > 0 || currentField !== '') {
+        currentRow.push(currentField.trim());
+        rows.push(currentRow);
+      }
+      
+      return rows;
+    } catch (error) {
+      systemIntegrityService.logServiceError(
+        'ImportProcessingService',
+        'parseCSV',
+        error instanceof Error ? error : new Error(String(error)),
+        'medium',
+        { contentLength: csvContent.length }
+      );
+      throw new Error('Failed to parse CSV content');
+    }
+  }
+
+  /**
+   * Validate CSV data structure
+   */
+  validateCSVData(rows: string[][]): ValidationResult {
+    const result: ValidationResult = {
+      isValid: true,
+      rowsProcessed: 0,
+      errors: [],
+      warnings: [],
+      invalidRows: []
+    };
+
+    if (rows.length === 0) {
+      result.isValid = false;
+      result.errors.push('CSV file is empty');
+      return result;
+    }
+
+    // Check header row
+    const header = rows[0];
+    const requiredColumns = ['date', 'description', 'amount'];
+    const normalizedHeader = header.map(h => h.toLowerCase().trim());
+    
+    const missingColumns = requiredColumns.filter(col => 
+      !normalizedHeader.some(h => h.includes(col))
+    );
+    
+    if (missingColumns.length > 0) {
+      result.errors.push(`Missing required columns: ${missingColumns.join(', ')}`);
+      result.isValid = false;
+    }
+
+    // Find column indices
+    const dateIndex = normalizedHeader.findIndex(h => h.includes('date'));
+    const descIndex = normalizedHeader.findIndex(h => h.includes('description'));
+    const amountIndex = normalizedHeader.findIndex(h => h.includes('amount'));
+
+    if (result.isValid) {
+      // Validate data rows
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        result.rowsProcessed++;
+        
+        if (row.length < header.length) {
+          result.warnings.push(`Row ${i + 1}: Insufficient columns`);
+        }
+        
+        // Check date format
+        if (dateIndex >= 0 && row[dateIndex]) {
+          const dateStr = row[dateIndex].trim();
+          const parsedDate = new Date(dateStr);
+          if (isNaN(parsedDate.getTime())) {
+            result.errors.push(`Row ${i + 1}: Invalid date format "${dateStr}"`);
+            result.invalidRows.push(i);
+            result.isValid = false;
+          }
+        }
+        
+        // Check description
+        if (descIndex >= 0 && (!row[descIndex] || row[descIndex].trim() === '')) {
+          result.warnings.push(`Row ${i + 1}: Empty description`);
+        }
+        
+        // Check amount
+        if (amountIndex >= 0 && row[amountIndex]) {
+          const amountStr = row[amountIndex].trim().replace(/[,$]/g, '');
+          const amount = parseFloat(amountStr);
+          if (isNaN(amount)) {
+            result.errors.push(`Row ${i + 1}: Invalid amount "${row[amountIndex]}"`);
+            result.invalidRows.push(i);
+            result.isValid = false;
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Process individual CSV row into standardized format
+   */
+  processCSVRow(row: string[], header: string[], rowIndex: number): ProcessedRow {
+    const normalizedHeader = header.map(h => h.toLowerCase().trim());
+    
+    const dateIndex = normalizedHeader.findIndex(h => h.includes('date'));
+    const descIndex = normalizedHeader.findIndex(h => h.includes('description'));
+    const amountIndex = normalizedHeader.findIndex(h => h.includes('amount'));
+    
+    const processed: ProcessedRow = {
+      rowIndex,
+      date: '',
+      description: '',
+      amount: 0,
+      isValid: true,
+      errors: [],
+      warnings: []
+    };
+
+    // Process date
+    if (dateIndex >= 0 && row[dateIndex]) {
+      const dateStr = row[dateIndex].trim();
+      const parsedDate = new Date(dateStr);
+      if (isNaN(parsedDate.getTime())) {
+        processed.errors.push(`Invalid date format: ${dateStr}`);
+        processed.isValid = false;
+      } else {
+        processed.date = parsedDate.toISOString().split('T')[0];
+      }
+    } else {
+      processed.errors.push('Missing date');
+      processed.isValid = false;
+    }
+
+    // Process description
+    if (descIndex >= 0 && row[descIndex]) {
+      processed.description = row[descIndex].trim();
+      if (processed.description === '') {
+        processed.warnings.push('Empty description');
+      }
+    } else {
+      processed.warnings.push('Missing description');
+      processed.description = 'Unknown Transaction';
+    }
+
+    // Process amount
+    if (amountIndex >= 0 && row[amountIndex]) {
+      const amountStr = row[amountIndex].trim().replace(/[,$]/g, '');
+      const amount = parseFloat(amountStr);
+      if (isNaN(amount)) {
+        processed.errors.push(`Invalid amount: ${row[amountIndex]}`);
+        processed.isValid = false;
+      } else {
+        processed.amount = amount;
+      }
+    } else {
+      processed.errors.push('Missing amount');
+      processed.isValid = false;
+    }
+
+    return processed;
+  }
+
+  /**
+   * Convert processed CSV data to transactions
+   */
+  convertToTransactions(rows: string[][], accountId: string, fileId: string): any[] {
+    if (rows.length === 0) return [];
+    
+    const header = rows[0];
+    const transactions: any[] = [];
+    
+    for (let i = 1; i < rows.length; i++) {
+      const processedRow = this.processCSVRow(rows[i], header, i);
+      
+      if (processedRow.isValid) {
+        const transaction = {
+          id: `${fileId}_${i}_${Date.now()}`,
+          accountId,
+          fileId,
+          date: processedRow.date,
+          description: processedRow.description,
+          debitAmount: processedRow.amount < 0 ? Math.abs(processedRow.amount) : 0,
+          creditAmount: processedRow.amount > 0 ? processedRow.amount : 0,
+          balance: 0, // Will be calculated later
+          category: 'Uncategorized',
+          rawAmount: processedRow.amount,
+          isProcessed: false,
+          rowIndex: processedRow.rowIndex
+        };
+        
+        transactions.push(transaction);
+      }
+    }
+    
+    return transactions;
+  }
+
+  /**
+   * Generate CSV template for import
+   */
+  generateCSVTemplate(): string {
+    const template = [
+      ['Date', 'Description', 'Amount', 'Category'],
+      ['2024-01-01', 'Sample Transaction', '-50.00', 'Office Supplies'],
+      ['2024-01-02', 'Income Payment', '1000.00', 'Revenue'],
+      ['2024-01-03', 'Bank Fee', '-5.00', 'Bank Fees']
+    ];
+    
+    return template.map(row => 
+      row.map(cell => `"${cell}"`).join(',')
+    ).join('\n');
+  }
+
+  /**
+   * Process uploaded file end-to-end
+   */
+  async processFile(
+    csvContent: string, 
+    fileName: string, 
+    accountId: string
+  ): Promise<{
+    success: boolean;
+    fileId?: string;
+    transactionCount: number;
+    validationResult: ValidationResult;
+    error?: string;
+  }> {
+    try {
+      // Step 1: Parse CSV
+      const rows = this.parseCSV(csvContent);
+      
+      // Step 2: Validate data
+      const validationResult = this.validateCSVData(rows);
+      
+      if (!validationResult.isValid) {
+        return {
+          success: false,
+          transactionCount: 0,
+          validationResult,
+          error: `Validation failed: ${validationResult.errors.join(', ')}`
+        };
+      }
+      
+      // Step 3: Create file record
+      const fileId = `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const fileRecord = this.addUploadedFile({
+        fileName,
+        accountId,
+        accountName: coreDataService.getAllAccounts().find(a => a.id === accountId)?.name || 'Unknown',
+        transactionCount: validationResult.rowsProcessed,
+        fileSize: csvContent.length,
+        checksum: this.generateChecksum(csvContent)
+      });
+      
+      // Step 4: Convert to transactions
+      const transactions = this.convertToTransactions(rows, accountId, fileRecord.id);
+      
+      // Step 5: Save transactions
+      if (transactions.length > 0) {
+        const saveSuccess = coreDataService.addTransactions(transactions);
+        if (!saveSuccess) {
+          // Cleanup file record on failure
+          coreDataService.deleteFile(fileRecord.id);
+          return {
+            success: false,
+            transactionCount: 0,
+            validationResult,
+            error: 'Failed to save transactions'
+          };
+        }
+      }
+      
+      // Step 6: Update import history
+      const lastTransaction = transactions[transactions.length - 1];
+      if (lastTransaction) {
+        const closingBalance = coreDataService.getAllAccounts()
+          .find(a => a.id === accountId)?.currentBalance || 0;
+        
+        this.updateImportHistory(accountId, lastTransaction.date, closingBalance);
+      }
+      
+      return {
+        success: true,
+        fileId: fileRecord.id,
+        transactionCount: transactions.length,
+        validationResult
+      };
+      
+    } catch (error) {
+      systemIntegrityService.logServiceError(
+        'ImportProcessingService',
+        'processFile',
+        error instanceof Error ? error : new Error(String(error)),
+        'high',
+        { fileName, accountId, contentLength: csvContent.length }
+      );
+      
+      return {
+        success: false,
+        transactionCount: 0,
+        validationResult: {
+          isValid: false,
+          rowsProcessed: 0,
+          errors: [error instanceof Error ? error.message : 'Unknown error'],
+          warnings: [],
+          invalidRows: []
+        },
+        error: error instanceof Error ? error.message : 'Processing failed'
+      };
+    }
+  }
+
+  /**
+   * Generate simple checksum for file content
+   */
+  private generateChecksum(content: string): string {
+    let hash = 0;
+    for (let i = 0; i < content.length; i++) {
+      const char = content.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash).toString(16);
+  }
+
+  /**
+   * Validate import workflow before processing
+   */
+  validateImportWorkflow(
+    csvContent: string, 
+    fileName: string, 
+    accountId: string
+  ): {
+    canProceed: boolean;
+    issues: string[];
+    warnings: string[];
+    historyValidation: ImportHistoryValidation;
+    csvValidation: ValidationResult;
+  } {
+    const issues: string[] = [];
+    const warnings: string[] = [];
+    
+    // Check account exists
+    const account = coreDataService.getAllAccounts().find(a => a.id === accountId);
+    if (!account) {
+      issues.push('Account not found');
+    }
+    
+    // Check file name
+    if (!fileName || fileName.trim() === '') {
+      issues.push('File name is required');
+    }
+    
+    // Check CSV content
+    if (!csvContent || csvContent.trim() === '') {
+      issues.push('CSV content is empty');
+    }
+    
+    // Parse and validate CSV
+    let csvValidation: ValidationResult = {
+      isValid: false,
+      rowsProcessed: 0,
+      errors: ['Content validation not performed'],
+      warnings: [],
+      invalidRows: []
+    };
+    
+    try {
+      if (csvContent && csvContent.trim() !== '') {
+        const rows = this.parseCSV(csvContent);
+        csvValidation = this.validateCSVData(rows);
+        
+        if (!csvValidation.isValid) {
+          issues.push(...csvValidation.errors);
+        }
+        warnings.push(...csvValidation.warnings);
+      }
+    } catch (error) {
+      issues.push('Failed to parse CSV content');
+    }
+    
+    // Validate import history (using current date as placeholder)
+    const today = new Date().toISOString().split('T')[0];
+    const historyValidation = this.validateImportHistory(accountId, today);
+    
+    if (!historyValidation.isValid) {
+      warnings.push(...historyValidation.issues);
+    }
+    
+    return {
+      canProceed: issues.length === 0,
+      issues,
+      warnings,
+      historyValidation,
+      csvValidation
+    };
+  }
+
+  // ======================
+  // SERVICE ORCHESTRATION
+  // ======================
+
+  /**
+   * Execute complete import workflow with comprehensive validation
+   */
+  async executeImportWithValidation(
+    csvContent: string, 
+    fileName: string, 
+    accountId: string
+  ): Promise<{
+    success: boolean;
+    fileId?: string;
+    transactionCount: number;
+    backupKey?: string;
+    validation: ReturnType<typeof this.validateImportWorkflow>;
+    processing?: Awaited<ReturnType<typeof this.processFile>>;
+    error?: string;
+  }> {
+    try {
+      // Step 1: Comprehensive pre-validation
+      const validation = this.validateImportWorkflow(csvContent, fileName, accountId);
+      
+      if (!validation.canProceed) {
+        return {
+          success: false,
+          transactionCount: 0,
+          validation,
+          error: `Validation failed: ${validation.issues.join(', ')}`
+        };
+      }
+      
+      // Step 2: Create backup before processing
+      const account = coreDataService.getAllAccounts().find(a => a.id === accountId);
+      let backupKey = '';
+      
+      if (account) {
+        const currentFiles = this.getFilesByAccount(accountId);
+        if (currentFiles.length > 0) {
+          // Create backup of current state
+          const backupData = {
+            files: currentFiles,
+            transactions: coreDataService.getAllTransactions().filter(t => t.accountId === accountId),
+            account: account,
+            timestamp: new Date().toISOString()
+          };
+          
+          backupKey = `${this.BACKUP_KEY_PREFIX}preimport_${accountId}_${Date.now()}`;
+          localStorage.setItem(backupKey, JSON.stringify(backupData));
+        }
+      }
+      
+      // Step 3: Process the file
+      const processing = await this.processFile(csvContent, fileName, accountId);
+      
+      if (!processing.success) {
+        return {
+          success: false,
+          transactionCount: 0,
+          validation,
+          processing,
+          backupKey: backupKey || undefined,
+          error: processing.error
+        };
+      }
+      
+      // Step 4: Final verification
+      const finalValidation = this.validateImportWorkflow(csvContent, fileName, accountId);
+      
+      return {
+        success: true,
+        fileId: processing.fileId,
+        transactionCount: processing.transactionCount,
+        validation: finalValidation,
+        processing,
+        backupKey: backupKey || undefined
+      };
+      
+    } catch (error) {
+      systemIntegrityService.logServiceError(
+        'ImportProcessingService',
+        'executeImportWithValidation',
+        error instanceof Error ? error : new Error(String(error)),
+        'critical',
+        { fileName, accountId, operation: 'complete_import_workflow' }
+      );
+      
+      return {
+        success: false,
+        transactionCount: 0,
+        validation: this.validateImportWorkflow(csvContent, fileName, accountId),
+        error: error instanceof Error ? error.message : 'Import workflow failed'
+      };
+    }
+  }
+
+  // ======================
+  // PLACEHOLDER METHODS FOR NEXT MICRO-TASKS
+  // ======================
 
   // TODO: Micro-Task 2.1.2.4 - Service Orchestration
   // - processImportWorkflow()

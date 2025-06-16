@@ -112,7 +112,7 @@ export const HRPayments: React.FC<HRPaymentsProps> = ({ dataRefreshTrigger }) =>
   };
 
   const handleConfirmPayment = async (payment: HRPayment) => {
-    const observations = verificationObservations || 'Payment confirmed by user';
+    const observations = 'Payment confirmed by user';
     try {
       setIsLoading(true);
       await hrPaymentManagementService.confirmPayment(

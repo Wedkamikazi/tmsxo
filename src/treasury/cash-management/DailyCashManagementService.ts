@@ -978,7 +978,7 @@ class DailyCashManagementService {
   private async getActualClosingBalance(date: string, accountNumber: string): Promise<number> {
     try {
       // Import unified balance service
-      const { unifiedBalanceService } = await import('./unifiedBalanceService');
+      const { unifiedBalanceService } = await import('../../banking/accounts/UnifiedBalanceService');
       
       const dailyBalances = unifiedBalanceService.getDailyBalances();
       

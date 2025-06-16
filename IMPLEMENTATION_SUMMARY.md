@@ -46,7 +46,7 @@ const intercompanyPatterns = [
 
 ---
 
-## 🏦 **Job 1.5: Time Deposit Service** 
+## 🏦 **Job 1.5: Time Deposit Service**
 
 ### **📁 File Created:** `src/services/timeDepositService.ts`
 
@@ -261,4 +261,4 @@ testServiceIntegration()
 - **Saudi market compliance** with local business rules
 - **Scalable foundation** for advanced treasury management features
 
-**🎯 Status: Production Ready** ✅ 
+**🎯 Status: Production Ready** ✅

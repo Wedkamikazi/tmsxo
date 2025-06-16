@@ -184,15 +184,22 @@ class BankBalanceService {
         const oldestTransaction = transactionsToProcess[transactionsToProcess.length - 1];
         const closingBalance = mostRecentTransaction.balance;
         
-        // Opening balance is either previous day's closing or calculated from oldest transaction
+        // Opening balance is either previous day's closing or calculated from all transactions
         let openingBalance: number;
         if (index === 0) {
-          // For first day, calculate opening balance from oldest transaction
-          // The oldest transaction shows the balance AFTER that transaction was processed
-          // So: Opening Balance = Balance After Transaction - Transaction Impact
-          // Transaction Impact = Credit - Debit (positive for credits, negative for debits)
-          const oldestTransactionImpact = (oldestTransaction.creditAmount || 0) - (oldestTransaction.debitAmount || 0);
-          openingBalance = oldestTransaction.balance - oldestTransactionImpact;
+          // For first day, calculate opening balance by working backwards from all transactions
+          // Since transactions are in reverse chronological order, we need to calculate
+          // the total impact of ALL transactions to get the balance before any transactions
+          
+          // Calculate the total impact of ALL transactions for this day
+          let totalDayImpact = 0;
+          for (const transaction of transactionsToProcess) {
+            const transactionImpact = (transaction.creditAmount || 0) - (transaction.debitAmount || 0);
+            totalDayImpact += transactionImpact;
+          }
+          
+          // Opening balance = Closing balance - Total day impact
+          openingBalance = closingBalance - totalDayImpact;
         } else {
           openingBalance = previousClosingBalance;
         }

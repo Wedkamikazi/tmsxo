@@ -877,8 +877,12 @@ class CoreDataService {
       errors.push({ field: 'id', message: 'Transaction ID is required', severity: 'critical' });
     }
 
-    if (!transaction.amount || transaction.amount === 0) {
-      errors.push({ field: 'amount', message: 'Transaction amount is required and cannot be zero', severity: 'high' });
+    // Check both debit and credit amounts
+    const hasDebitAmount = transaction.debitAmount !== undefined && transaction.debitAmount !== 0;
+    const hasCreditAmount = transaction.creditAmount !== undefined && transaction.creditAmount !== 0;
+    
+    if (!hasDebitAmount && !hasCreditAmount) {
+      errors.push({ field: 'amount', message: 'Transaction must have either debit or credit amount', severity: 'high' });
     }
 
     if (!transaction.description?.trim()) {

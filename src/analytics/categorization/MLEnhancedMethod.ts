@@ -1,13 +1,13 @@
 // ML-ENHANCED CATEGORIZATION METHOD - BASIC STRUCTURE
 // Extracted from enhancedCategorizationService.ts - implements ML-enhanced transaction categorization
 
-import { Transaction, TransactionCategory } from '../../shared/types';
+import { Transaction, TransactionCategory } from '@/shared/types';
 import { CategorizationStrategy, UnifiedCategorizationResult } from './index';
 import { MLEnhancedStrategy, MLEnhancedPerformance, LearningDataPoint } from './MLEnhancedTypes';
 import { enhancedMLOrchestrator } from '../machine-learning/EnhancedMLOrchestrator';
-import { localStorageManager } from '../../data/storage/LocalStorageManager';
-import { eventBus } from '../../core/orchestration/EventBus';
-import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
+import { localStorageManager } from '@/data/storage/LocalStorageManager';
+import { eventBus } from '@/core/orchestration/EventBus';
+import { systemIntegrityService } from '@/data/integrity/SystemIntegrityService';
 
 export class MLEnhancedMethod implements CategorizationStrategy {
   name = 'ml-enhanced';

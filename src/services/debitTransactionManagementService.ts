@@ -675,10 +675,11 @@ class DebitTransactionManagementService {
       const auditEntry: AuditLogEntry = {
         id: `audit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         timestamp: new Date().toISOString(),
+        userId: 'current_user', // In a real app, this would come from authentication
         action,
-        transactionId,
-        details,
-        userId: 'current_user' // In a real app, this would come from authentication
+        entityType: 'debit',
+        entityId: transactionId,
+        newValues: details
       };
 
       const existingLog = this.getStoredData(this.AUDIT_LOG_KEY);

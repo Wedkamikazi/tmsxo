@@ -81,7 +81,7 @@ await confirmTransaction(transactionId, verifiedBy, observations);
 
 ### **Data Flow**
 
-```
+```text
 Bank Import → Extract Credits → AI Categorize → Auto-Reconcile → Manual Review → Confirm → Verified
 ```
 

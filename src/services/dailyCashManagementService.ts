@@ -345,6 +345,8 @@ class DailyCashManagementService {
       creditTransactionService: false,
       debitTransactionService: false,
       hrPaymentService: false,
+      intercompanyTransferService: false,
+      timeDepositService: false,
       unifiedBalanceService: false,
       unifiedDataService: false,
       integrationScore: 0

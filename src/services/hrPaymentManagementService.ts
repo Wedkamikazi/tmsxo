@@ -1,4 +1,12 @@
-import { HRPayment, PayrollEntry, AuditLogEntry } from '../types';
+import { 
+  HRPayment, 
+  PayrollEntry, 
+  ReconciliationMatch,
+  AuditLogEntry,
+  Transaction 
+} from '../types';
+import { eventBus } from './eventBus';
+import { unifiedCategorizationService } from './unifiedCategorizationService';
 
 /**
  * HR Payment Management Service

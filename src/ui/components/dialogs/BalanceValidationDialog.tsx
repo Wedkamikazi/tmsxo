@@ -1,5 +1,5 @@
 import React from 'react';
-import { BalanceValidationResult } from '../banking/accounts/UnifiedBalanceService';
+import { BalanceValidationResult } from '../../../banking/accounts/UnifiedBalanceService';
 import './BalanceValidationDialog.css';
 
 interface BalanceValidationDialogProps {

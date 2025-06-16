@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { unifiedDataService, type StoredTransaction } from '../../data/storage/UnifiedDataService';
-import { BankAccount } from '../../shared/types';
-import { TransactionCategorization } from '../../analytics/categorization/TransactionCategorization';
+import { unifiedDataService, type StoredTransaction } from '@/data/storage/UnifiedDataService';
+import { BankAccount } from '@/shared/types';
+import { TransactionCategorization } from '@/analytics/categorization/TransactionCategorization';
 import { 
   registerGlobalRefresh, 
   unregisterGlobalRefresh, 
   shouldComponentUseCache,
   setComponentState,
   getComponentState 
-} from '../../core/performance/StateManager';
+} from '@/core/performance/StateManager';
 import './Transactions.css';
 
 interface TransactionsProps {

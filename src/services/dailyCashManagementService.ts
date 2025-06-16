@@ -61,6 +61,15 @@ class DailyCashManagementService {
       eventBus.on('HR_PAYMENT_UPDATED', this.handleHRPaymentUpdate.bind(this));
       eventBus.on('HR_PAYMENT_CONFIRMED', this.handleHRPaymentUpdate.bind(this));
 
+      // Listen for intercompany transfer updates (Job 1.4)
+      eventBus.on('INTERCOMPANY_TRANSFERS_EXTRACTED', this.handleIntercompanyTransfersUpdate.bind(this));
+      eventBus.on('INTERCOMPANY_TRANSFER_RECONCILED', this.handleIntercompanyTransferUpdate.bind(this));
+      eventBus.on('INTERCOMPANY_TRANSFER_VERIFIED', this.handleIntercompanyTransferUpdate.bind(this));
+
+      // Listen for time deposit updates (Job 1.5)
+      eventBus.on('TIME_DEPOSITS_EXTRACTED', this.handleTimeDepositsUpdate.bind(this));
+      eventBus.on('INVESTMENT_SUGGESTIONS_GENERATED', this.handleInvestmentSuggestionsUpdate.bind(this));
+
       // Listen for bank import events
       eventBus.on('BANK_STATEMENT_IMPORTED', this.handleBankStatementImport.bind(this));
       eventBus.on('TRANSACTION_DATA_UPDATED', this.handleTransactionDataUpdate.bind(this));

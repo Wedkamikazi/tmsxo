@@ -207,6 +207,25 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
           }}>
             {debugMode ? 'Switch to Production' : 'Switch to Debug'}
           </button>
+          
+          <div style={{ marginTop: '10px', borderTop: '1px solid #ccc', paddingTop: '10px' }}>
+            <button onClick={handleDataFix} style={{
+              padding: '5px 10px',
+              fontSize: '11px',
+              cursor: 'pointer',
+              backgroundColor: '#ff9800',
+              color: 'white',
+              border: 'none',
+              borderRadius: '3px'
+            }}>
+              🔧 Fix Invalid Dates
+            </button>
+            {dataFixStatus && (
+              <div style={{ marginTop: '5px', fontSize: '10px' }}>
+                {dataFixStatus}
+              </div>
+            )}
+          </div>
         </div>
       </>
     );

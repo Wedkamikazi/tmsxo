@@ -263,7 +263,7 @@ export const DataHub: React.FC = () => {
     
     // Extract credit and debit transactions automatically after bank statement import
     try {
-      const { creditTransactionManagementService } = await import('../../../banking/transactions/CreditTransactionManagementService');
+      const { creditTransactionManagementService } = await import('@/banking');
       await creditTransactionManagementService.extractCreditTransactions(transactions, bankAccount.id);
       console.log('✅ Credit transactions extracted successfully');
     } catch (error) {
@@ -271,7 +271,7 @@ export const DataHub: React.FC = () => {
     }
 
     try {
-      const { debitTransactionManagementService } = await import('../../../banking/transactions/DebitTransactionManagementService');
+      const { debitTransactionManagementService } = await import('@/banking');
       await debitTransactionManagementService.extractDebitTransactions(transactions, bankAccount.id);
       console.log('✅ Debit transactions extracted successfully');
     } catch (error) {
@@ -279,7 +279,7 @@ export const DataHub: React.FC = () => {
     }
 
     try {
-      const { hrPaymentManagementService } = await import('../../../treasury/payments/HRPaymentManagementService');
+      const { hrPaymentManagementService } = await import('@/treasury');
       await hrPaymentManagementService.extractHRPayments(transactions, bankAccount.id);
       console.log('✅ HR payments extracted successfully');
     } catch (error) {

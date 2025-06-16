@@ -600,23 +600,23 @@ class DebitTransactionManagementService {
         let score = 0;
 
         // Amount matching (exact match gets highest score)
-        if (Math.abs(forecast.expectedAmount - debitTransaction.amount) < 0.01) {
+        if (Math.abs(forecast.amount - debitTransaction.amount) < 0.01) {
           score += 0.5;
-        } else if (Math.abs(forecast.expectedAmount - debitTransaction.amount) / forecast.expectedAmount < 0.05) {
+        } else if (Math.abs(forecast.amount - debitTransaction.amount) / forecast.amount < 0.05) {
           score += 0.3; // Within 5%
-        } else if (Math.abs(forecast.expectedAmount - debitTransaction.amount) / forecast.expectedAmount < 0.1) {
+        } else if (Math.abs(forecast.amount - debitTransaction.amount) / forecast.amount < 0.1) {
           score += 0.15; // Within 10%
         }
 
-        // Description matching
+        // Description matching with notes
         const description = debitTransaction.description.toLowerCase();
-        const vendorName = forecast.vendorName.toLowerCase();
-        const forecastDescription = forecast.description.toLowerCase();
+        const vendorId = forecast.vendorId.toLowerCase();
+        const forecastNotes = forecast.notes?.toLowerCase() || '';
 
-        if (description.includes(vendorName)) {
+        if (description.includes(vendorId)) {
           score += 0.25;
         }
-        if (description.includes(forecastDescription.split(' ')[0])) { // Match first word of forecast description
+        if (forecastNotes && description.includes(forecastNotes.split(' ')[0])) { // Match first word of forecast notes
           score += 0.15;
         }
 

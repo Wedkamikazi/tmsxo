@@ -1,11 +1,11 @@
-import { isDebugMode as checkDebugMode } from '../../shared/utils/debugging/DebugMode';
+import { isDebugMode as checkDebugMode } from '@/shared/utils/debugging/DebugMode';
 import * as tf from '@tensorflow/tfjs';
-import { Transaction, MLCategorizationResult } from '../../shared/types';
+import { Transaction, MLCategorizationResult } from '@/shared/types';
 import { categorizationService } from '../categorization/CategorizationService';
-import { localStorageManager } from '../../data/storage/LocalStorageManager';
-import { performanceManager } from '../../core/performance/PerformanceManager';
-import { cleanupManager } from '../../data/maintenance/CleanupManager';
-import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
+import { localStorageManager } from '@/data/storage/LocalStorageManager';
+import { performanceManager } from '@/core/performance/PerformanceManager';
+import { cleanupManager } from '@/data/maintenance/CleanupManager';
+import { systemIntegrityService } from '@/data/integrity/SystemIntegrityService';
 
 // ADVANCED ML CATEGORIZATION SERVICE WITH TENSORFLOW.JS
 // FULL LOCAL ML PIPELINE WITH NEURAL NETWORKS AND NLP

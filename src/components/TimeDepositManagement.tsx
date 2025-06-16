@@ -71,6 +71,9 @@ export const TimeDepositManagement: React.FC<TimeDepositManagementProps> = ({ da
         status: filters.status === 'all' ? undefined : filters.status
       };
 
+      // Import time deposit service dynamically
+      const { timeDepositService } = await import('../services/timeDepositService');
+
       // Load data in parallel
       const [deposits, summaryData] = await Promise.all([
         timeDepositService.getAllTimeDeposits(filterOptions),
@@ -80,10 +83,10 @@ export const TimeDepositManagement: React.FC<TimeDepositManagementProps> = ({ da
       // Apply amount filters
       let filteredDeposits = deposits;
       if (filters.minAmount) {
-        filteredDeposits = filteredDeposits.filter(d => d.principalAmount >= parseFloat(filters.minAmount));
+        filteredDeposits = filteredDeposits.filter((d: TimeDeposit) => d.principalAmount >= parseFloat(filters.minAmount));
       }
       if (filters.maxAmount) {
-        filteredDeposits = filteredDeposits.filter(d => d.principalAmount <= parseFloat(filters.maxAmount));
+        filteredDeposits = filteredDeposits.filter((d: TimeDeposit) => d.principalAmount <= parseFloat(filters.maxAmount));
       }
 
       setTimeDeposits(filteredDeposits);

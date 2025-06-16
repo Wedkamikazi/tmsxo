@@ -3,6 +3,7 @@ import { isDebugMode, enableDebugMode, disableDebugMode } from '../utils/debugMo
 import { systemSafetyManager, initializeSystemSafety } from '../utils/systemSafetyManager';
 import { storageQuotaManager } from '../services/storageQuotaManager';
 import { shouldReinitializeServices } from '../utils/stateManager';
+import { migrateTransactionDates, analyzeTransactionDates } from '../utils/dateMigration';
 // import { serviceOrchestrator, SystemStatus } from '../services/serviceOrchestrator';
 
 interface SystemInitializerProps {

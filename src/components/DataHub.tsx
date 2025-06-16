@@ -211,13 +211,21 @@ export const DataHub: React.FC = () => {
   const handleImportComplete = async (transactions: Transaction[], bankAccount: BankAccount) => {
     console.log(`Imported ${transactions.length} transactions for ${bankAccount.name}`);
     
-    // Extract credit transactions automatically after bank statement import
+    // Extract credit and debit transactions automatically after bank statement import
     try {
       const { creditTransactionManagementService } = await import('../services/creditTransactionManagementService');
       await creditTransactionManagementService.extractCreditTransactions(transactions, bankAccount.id);
       console.log('✅ Credit transactions extracted successfully');
     } catch (error) {
       console.error('Failed to extract credit transactions:', error);
+    }
+
+    try {
+      const { debitTransactionManagementService } = await import('../services/debitTransactionManagementService');
+      await debitTransactionManagementService.extractDebitTransactions(transactions, bankAccount.id);
+      console.log('✅ Debit transactions extracted successfully');
+    } catch (error) {
+      console.error('Failed to extract debit transactions:', error);
     }
     
     // All other data operations are handled by unified service with event bus

@@ -288,18 +288,25 @@ class CSVProcessingService {
   // Convert CSV rows to transactions
   convertToTransactions(rows: CSVRow[]): Transaction[] {
     const baseTimestamp = Date.now();
-    return rows.map((row, index) => ({
-      id: `txn_${baseTimestamp}_${index}_${Math.random().toString(36).substr(2, 9)}`,
-      date: this.formatDate(row.postDate),
-      description: row.narrative,
-      debitAmount: Math.abs(this.parseAmount(row.debitAmount)), // Ensure debit amounts are positive for display
-      creditAmount: Math.abs(this.parseAmount(row.creditAmount)), // Ensure credit amounts are positive for display
-      balance: this.parseAmount(row.balance),
-      reference: row.customerReference,
-      postDate: row.postDate,
-      time: row.time,
-      valueDate: row.valueDate
-    }));
+    return rows.map((row, index) => {
+      // Use postDate if available, otherwise fall back to valueDate
+      const dateToUse = row.postDate && row.postDate.trim() ? row.postDate : row.valueDate;
+      const formattedDate = this.formatDate(dateToUse);
+      
+      return {
+        id: `txn_${baseTimestamp}_${index}_${Math.random().toString(36).substr(2, 9)}`,
+        date: formattedDate,
+        description: row.narrative,
+        debitAmount: Math.abs(this.parseAmount(row.debitAmount)), // Ensure debit amounts are positive for display
+        creditAmount: Math.abs(this.parseAmount(row.creditAmount)), // Ensure credit amounts are positive for display
+        balance: this.parseAmount(row.balance),
+        reference: row.customerReference,
+        postDate: row.postDate,
+        time: row.time,
+        valueDate: row.valueDate
+      };
+    });
+  }
   }
 
   private formatDate(dateString: string): string {

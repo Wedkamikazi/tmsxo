@@ -290,6 +290,87 @@ class DebitTransactionManagementService {
   }
 
   // =============================================
+  // CORE EXTRACTION & PROCESSING
+  // =============================================
+
+  /**
+   * Extract debit transactions from imported bank statement transactions
+   * Automatically categorizes using AI/LLM and stores in dedicated Debit Transactions page
+   */
+  async extractDebitTransactions(transactions: Transaction[], accountId: string): Promise<DebitTransaction[]> {
+    try {
+      const debitTransactions: DebitTransaction[] = [];
+
+      for (const transaction of transactions) {
+        // Only process debit transactions (positive debit amounts)
+        if (transaction.debitAmount && transaction.debitAmount > 0) {
+          const debitTransaction: DebitTransaction = {
+            id: `debit_${transaction.id}`,
+            date: transaction.date,
+            description: transaction.description,
+            amount: transaction.debitAmount,
+            reference: transaction.reference || '',
+            accountId: accountId,
+            accountName: this.getAccountName(accountId),
+            extractionDate: new Date().toISOString(),
+            categoryType: await this.categorizeDebitTransaction(transaction),
+            reconciliationStatus: 'pending',
+            observations: ''
+          };
+
+          debitTransactions.push(debitTransaction);
+        }
+      }
+
+      // Store extracted debit transactions
+      await this.storeDebitTransactions(debitTransactions);
+
+      // Emit event for UI updates
+      eventBus.emit('DEBIT_TRANSACTIONS_EXTRACTED', {
+        count: debitTransactions.length,
+        accountId: accountId
+      });
+
+      return debitTransactions;
+    } catch (error) {
+      console.error('Error extracting debit transactions:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * AI/LLM-based categorization of debit transactions
+   */
+  private async categorizeDebitTransaction(transaction: Transaction): Promise<DebitTransaction['categoryType']> {
+    try {
+      // Use the unified categorization service for AI analysis
+      await unifiedCategorizationService.categorizeTransaction(transaction);
+      
+      // Map to debit transaction categories based on description patterns
+      const description = transaction.description.toLowerCase();
+      
+      if (description.includes('payroll') || description.includes('salary') || description.includes('employee')) {
+        return 'hr_payment';
+      } else if (description.includes('fee') || description.includes('charge') || description.includes('commission')) {
+        return 'fee';
+      } else if (description.includes('tax') || description.includes('vat') || description.includes('withholding')) {
+        return 'tax';
+      } else if (description.includes('deposit') || description.includes('investment') || description.includes('placement')) {
+        return 'time_deposit';
+      } else if (description.includes('intercompany') || description.includes('transfer out')) {
+        return 'intercompany_out';
+      } else if (description.includes('vendor') || description.includes('supplier') || description.includes('payment') || description.includes('invoice')) {
+        return 'vendor_payment';
+      } else {
+        return 'other';
+      }
+    } catch (error) {
+      console.warn('AI categorization failed, using fallback logic:', error);
+      return 'other';
+    }
+  }
+
+  // =============================================
   // AUDIT LOGGING
   // =============================================
 

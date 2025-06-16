@@ -15,7 +15,7 @@
  * - Performance monitoring and optimization
  */
 
-import { Transaction, BankAccount, UploadedFile, TransactionCategory, TransactionCategorization } from '../../../shared/types';
+import { Transaction, BankAccount, UploadedFile, TransactionCategory, TransactionCategorization } from '../../shared/types';
 import { performanceManager } from '../../core/performance/PerformanceManager';
 import { systemIntegrityService } from '../integrity/SystemIntegrityService';
 import { eventBus } from '../../core/orchestration/EventBus';

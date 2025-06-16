@@ -247,6 +247,14 @@ export const DataHub: React.FC = () => {
     } catch (error) {
       console.error('Failed to extract debit transactions:', error);
     }
+
+    try {
+      const { hrPaymentManagementService } = await import('../services/hrPaymentManagementService');
+      await hrPaymentManagementService.extractHRPayments(transactions, bankAccount.id);
+      console.log('✅ HR payments extracted successfully');
+    } catch (error) {
+      console.error('Failed to extract HR payments:', error);
+    }
     
     // All other data operations are handled by unified service with event bus
     // Event bus will trigger UI updates

@@ -57,16 +57,23 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
       if (typeof window !== 'undefined') {
         (window as any).storageQuotaManager = storageQuotaManager;
         
-        // Import other services for testing (parallel imports)
-        const [unifiedDataServiceModule, eventBusModule] = await Promise.all([
-          import('../../../data/storage/UnifiedDataService'),
-          import('../../../core/orchestration/EventBus')
-        ]);
+        // BROWSER HANG PREVENTION: Skip heavy imports in debug mode
+        if (!debugMode) {
+          // Import other services for testing (parallel imports)
+          const [unifiedDataServiceModule, eventBusModule] = await Promise.all([
+            import('../../../data/storage/UnifiedDataService'),
+            import('../../../core/orchestration/EventBus')
+          ]);
+          
+          (window as any).unifiedDataService = unifiedDataServiceModule.unifiedDataService;
+          (window as any).eventBus = eventBusModule.eventBus;
+          
+          console.log('✅ Storage Quota Manager ready and available globally');
+        } else {
+          console.log('🔧 DEBUG MODE: Skipping heavy imports to prevent browser hanging');
+          console.log('✅ Storage Quota Manager ready (lightweight mode)');
+        }
         
-        (window as any).unifiedDataService = unifiedDataServiceModule.unifiedDataService;
-        (window as any).eventBus = eventBusModule.eventBus;
-        
-        console.log('✅ Storage Quota Manager ready and available globally');
         console.log('🧪 Test suite available in browser console');
         console.log('📋 Open http://localhost:3000/test-quota-management.html for test interface');
       }

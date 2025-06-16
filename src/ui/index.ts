@@ -5,7 +5,7 @@ export { BalanceValidationDialog } from './components/dialogs/BalanceValidationD
 export { DataHub } from './pages/data/DataHub';
 export { FileManager } from './pages/data/FileManager';
 export { DataManagement } from './pages/data/DataManagement';
-export { DataCleanup } from './pages/data/DataCleanup';
+export { default as DataCleanup } from './pages/data/DataCleanup';
 export { Settings } from './pages/admin/Settings';
 export { SystemInitializer } from './pages/admin/SystemInitializer';
-export { SystemHealthMonitor } from './pages/admin/SystemHealthMonitor'; 
+export { default as SystemHealthMonitor } from './pages/admin/SystemHealthMonitor'; 

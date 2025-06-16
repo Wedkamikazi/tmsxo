@@ -583,14 +583,16 @@ class UnifiedBalanceService {
   // PRIVATE HELPER METHODS
   // ==========================================
 
-  // Calculate total movement for a day
-  private calculateDayMovement(transactions: StoredTransaction[]): number {
-    return transactions.reduce((sum, transaction) => {
-      const debitAmount = transaction.debitAmount || 0;
-      const creditAmount = transaction.creditAmount || 0;
-      return sum + creditAmount - debitAmount; // Credits positive, debits negative
-    }, 0);
-  }
+  // Calculate total movement for a day (no longer used - kept for potential future use)
+  // Movement is now calculated as: closingBalance - openingBalance
+  // This ensures accuracy by using actual bank statement balances
+  // private calculateDayMovement(transactions: StoredTransaction[]): number {
+  //   return transactions.reduce((sum, transaction) => {
+  //     const debitAmount = transaction.debitAmount || 0;
+  //     const creditAmount = transaction.creditAmount || 0;
+  //     return sum + creditAmount - debitAmount; // Credits positive, debits negative
+  //   }, 0);
+  // }
 
   // Extract date from transaction
   private extractDateFromTransaction(transaction: StoredTransaction): string {

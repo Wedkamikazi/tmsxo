@@ -1,15 +1,15 @@
-import { isDebugMode } from '../shared/utils/debugging/DebugMode';
+import { isDebugMode } from '../../shared/utils/debugging/DebugMode';
 import { eventBus } from './EventBus';
-import { localStorageManager } from './localStorageManager';
-import { unifiedDataService } from './unifiedDataService';
-import { performanceManager } from './performanceManager';
-import { systemIntegrityService } from './systemIntegrityService';
-import { crossTabSyncService } from './crossTabSyncService';
-import { unifiedCategorizationService } from './unifiedCategorizationService';
-import { mlNaturalLanguageService } from './mlNaturalLanguageService';
-import { mlPredictiveAnalyticsService } from './mlPredictiveAnalyticsService';
-import { localOllamaIntegration } from './localOllamaIntegration';
-import { enhancedMLOrchestrator } from './enhancedMLOrchestrator';
+import { localStorageManager } from '../../data/storage/LocalStorageManager';
+import { unifiedDataService } from '../../data/storage/UnifiedDataService';
+import { performanceManager } from '../performance/PerformanceManager';
+import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
+import { crossTabSyncService } from '../../data/synchronization/CrossTabSyncService';
+import { unifiedCategorizationService } from '../../analytics/categorization/UnifiedCategorizationService';
+import { mlNaturalLanguageService } from '../../analytics/ml/MLNaturalLanguageService';
+import { mlPredictiveAnalyticsService } from '../../analytics/ml/MLPredictiveAnalyticsService';
+import { localOllamaIntegration } from '../../integration/ai/LocalOllamaIntegration';
+import { enhancedMLOrchestrator } from '../../analytics/ml/EnhancedMLOrchestrator';
 
 // SERVICE ORCHESTRATOR - ULTIMATE SYSTEM INITIALIZATION
 // Manages service startup sequence, dependencies, health monitoring, and graceful shutdown

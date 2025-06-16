@@ -470,7 +470,31 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
   };
 
   const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
+    // Handle malformed datetime strings and extract valid date
+    if (!dateString) return 'Invalid Date';
+    
+    // Extract date part from various formats
+    let dateToUse = dateString;
+    
+    // Handle malformed postDateTime like "2024-12-1019:30:00" (missing T)
+    if (dateString.includes('-') && dateString.includes(':') && !dateString.includes('T')) {
+      // Extract just the date part before the time
+      const match = dateString.match(/(\d{4}-\d{2}-\d{2})/);
+      if (match) {
+        dateToUse = match[1];
+      }
+    }
+    
+    // Handle ISO format dates
+    if (dateString.includes('T')) {
+      dateToUse = dateString.split('T')[0];
+    }
+    
+    const date = new Date(dateToUse);
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date';
+    }
+    
     return date.toLocaleDateString('en-GB', {
       day: '2-digit',
       month: '2-digit',

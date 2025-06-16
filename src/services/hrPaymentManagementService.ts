@@ -1,4 +1,4 @@
-import { HRPayment, PayrollEntry, AuditLogEntry, Transaction } from '../types';
+import { HRPayment, PayrollEntry, AuditLogEntry } from '../types';
 import { eventBus } from './eventBus';
 
 /**

@@ -13,7 +13,7 @@ import { RuleBasedMethod } from './categorization/ruleBasedMethod';
 import { MLEnhancedMethod } from './categorization/mlEnhancedMethod';
 import { TensorFlowMethod } from './categorization/tensorFlowMethod';
 import { isDebugMode } from '../shared/utils/debugging/DebugMode';
-import { eventBus } from './EventBus';
+import { eventBus } from '../../core/orchestration/EventBus';
 
 export interface BatchCategorizationOptions {
   batchSize?: number;

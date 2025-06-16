@@ -182,9 +182,9 @@ class DuplicateDetectionService {
     const matchReasons: string[] = [];
     let score = 0;
     
-    // Date match (most important) - use Post date if available, otherwise fall back to date
-    const existingDate = existing.postDate || existing.date;
-    const newDate = newTxn.postDate || newTxn.date;
+    // Date match (most important) - use formatted date, fallback to postDate if needed
+    const existingDate = existing.date || existing.postDate;
+    const newDate = newTxn.date || newTxn.postDate;
     
     if (existingDate === newDate) {
       score += 0.4;

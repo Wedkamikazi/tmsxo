@@ -15,7 +15,7 @@
  * - End-to-end import workflow orchestration
  */
 
-import { coreDataService } from './coreDataService';
+import { coreDataService } from '../../data/storage/CoreDataService';
 import { eventBus } from './eventBus';
 import { systemIntegrityService } from './systemIntegrityService';
 

@@ -178,20 +178,19 @@ class UnifiedBalanceService {
           // Use previous day's closing balance as today's opening balance
           openingBalance = previousClosingBalance;
         } else {
-          // For the first day, the opening balance should be the balance from the oldest transaction
-          // Since transactions are in reverse chronological order, the oldest transaction
-          // represents the balance at the START of the day (after the first transaction)
-          // We need to work backwards to get the balance BEFORE any transactions
+          // For the VERY FIRST DAY in the dataset, we need to understand the CSV structure:
+          // - Transactions are in REVERSE chronological order (newest first)
+          // - Each transaction shows the balance AFTER that transaction was processed
+          // - The OLDEST transaction (last in the array) shows the balance after the FIRST transaction of the day
+          // - To get the opening balance, we need the balance BEFORE the first transaction
           
-          // Calculate the total impact of ALL transactions for this day
-          let totalDayImpact = 0;
-          for (const transaction of sortedDayTransactions) {
-            const transactionImpact = (transaction.creditAmount || 0) - (transaction.debitAmount || 0);
-            totalDayImpact += transactionImpact;
-          }
+          // Get the oldest transaction (last in sorted array)
+          const oldestTransaction = sortedDayTransactions[sortedDayTransactions.length - 1];
           
-          // Opening balance = Closing balance - Total day impact
-          openingBalance = closingBalance - totalDayImpact;
+          // The opening balance is the balance from the oldest transaction MINUS its impact
+          // This gives us the balance BEFORE that transaction was processed
+          const oldestTransactionImpact = (oldestTransaction.creditAmount || 0) - (oldestTransaction.debitAmount || 0);
+          openingBalance = oldestTransaction.balance - oldestTransactionImpact;
         }
         const dailyMovement = closingBalance - openingBalance;
 

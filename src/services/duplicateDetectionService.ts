@@ -241,8 +241,8 @@ class DuplicateDetectionService {
   
   // Find overlap period between existing and new transactions
   private findOverlapPeriod(existingTransactions: Transaction[], newTransactions: Transaction[]): { start: string; end: string } {
-    const existingDates = existingTransactions.map(t => t.postDate || t.date).sort();
-    const newDates = newTransactions.map(t => t.postDate || t.date).sort();
+    const existingDates = existingTransactions.map(t => t.date || t.postDate).sort();
+    const newDates = newTransactions.map(t => t.date || t.postDate).sort();
     
     const overlapStart = Math.max(
       new Date(existingDates[0] || '1900-01-01').getTime(),

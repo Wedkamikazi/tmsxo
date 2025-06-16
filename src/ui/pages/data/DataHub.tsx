@@ -262,7 +262,7 @@ export const DataHub: React.FC = () => {
     }
 
     try {
-      const { debitTransactionManagementService } = await import('../services/debitTransactionManagementService');
+      const { debitTransactionManagementService } = await import('../../../banking/transactions/DebitTransactionManagementService');
       await debitTransactionManagementService.extractDebitTransactions(transactions, bankAccount.id);
       console.log('✅ Debit transactions extracted successfully');
     } catch (error) {

@@ -5,6 +5,8 @@
  * CRITICAL SAFETY FEATURE - DO NOT REMOVE
  */
 
+import React from 'react';
+
 interface ComponentRenderMetrics {
   renderCount: number;
   lastRenderTime: number;

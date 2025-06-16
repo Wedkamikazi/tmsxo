@@ -15,6 +15,7 @@ import { CreditTransactions } from './CreditTransactions';
 import { DebitTransactions } from './DebitTransactions';
 import { HRPayments } from './HRPayments';
 import { DailyCashManagement } from './DailyCashManagement';
+import { TimeDepositManagement } from './TimeDepositManagement';
 import { 
   stateManager, 
   saveActiveTab, 

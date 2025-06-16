@@ -42,7 +42,7 @@ export const MLIntegrationDashboard: React.FC = () => {
     return () => {
       tensorFlowCleanup.cleanup();
     };
-  }, [tensorFlowCleanup]);
+  }, []);
 
   const [systemStatus, setSystemStatus] = useState<MLSystemStatus | null>(null);
   const [predictiveInsights, setPredictiveInsights] = useState<PredictiveInsight[]>([]);

@@ -5,6 +5,7 @@ a comprehensive **Daily Cash Management Table** template that integrates all the
 ## Enhanced Cash Management Workflow
 
 ### 1. Credit Transactions
+
 - **Extraction & Storage:** Automatically extract credit transactions from bank statements to a dedicated “Credit Transactions” page.
 - **Categorization:** Use AI/LLM-based categorization to identify transaction types (e.g., customer payments, refunds).
 - **Reconciliation:**  

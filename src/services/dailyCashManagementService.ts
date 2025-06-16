@@ -401,6 +401,273 @@ class DailyCashManagementService {
   }
 
   // =============================================
+  // BALANCE CALCULATION ENGINE
+  // =============================================
+
+  /**
+   * Calculate all balances for a daily cash entry
+   * Integrates with existing transaction services to populate cash flows
+   */
+  async calculateBalances(entry: DailyCashEntry): Promise<DailyCashEntry> {
+    try {
+      // Calculate opening balance
+      entry.openingBalance = await this.calculateOpeningBalance(entry.date, entry.accountNumber);
+      
+      // Aggregate cash flows from transaction services
+      entry.cashIn = await this.calculateCashIn(entry.date, entry.accountNumber);
+      entry.cashOut = await this.calculateCashOut(entry.date, entry.accountNumber);
+      
+      // Calculate projected closing balance
+      entry.closingBalanceProjected = entry.openingBalance + entry.cashIn - entry.cashOut + entry.intercoIn - entry.intercoOut - entry.timeDepositOut + entry.timeDepositIn;
+      
+      // Get actual closing balance from bank data
+      entry.closingBalanceActual = await this.getActualClosingBalance(entry.date, entry.accountNumber);
+      
+      // Calculate discrepancy
+      entry.discrepancy = entry.closingBalanceActual - entry.closingBalanceProjected;
+      
+      return entry;
+    } catch (error) {
+      console.error('Failed to calculate balances for entry:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Calculate opening balance for a specific date and account
+   * Uses previous day's closing balance or bank data if first day
+   */
+  private async calculateOpeningBalance(date: string, accountNumber: string): Promise<number> {
+    try {
+      // Get previous day's date
+      const currentDate = new Date(date);
+      const previousDate = new Date(currentDate);
+      previousDate.setDate(previousDate.getDate() - 1);
+      const previousDateStr = previousDate.toISOString().split('T')[0];
+
+      // Try to get previous day's entry
+      const previousEntry = await this.getDailyCashEntryByDateAndAccount(previousDateStr, accountNumber);
+      if (previousEntry && previousEntry.closingBalanceActual !== 0) {
+        return previousEntry.closingBalanceActual;
+      }
+
+      // Fallback: get opening balance from bank balance service
+      return await this.getOpeningBalanceFromBankData(date, accountNumber);
+    } catch (error) {
+      console.error('Failed to calculate opening balance:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Calculate total cash in (credit transactions) for a specific date and account
+   */
+  private async calculateCashIn(date: string, accountNumber: string): Promise<number> {
+    try {
+      // Import credit transaction service
+      const { creditTransactionManagementService } = await import('./creditTransactionManagementService');
+      
+      const creditTransactions = await creditTransactionManagementService.getAllCreditTransactions();
+      
+      // Filter for specific date and account
+      const dayCredits = creditTransactions.filter(transaction => 
+        transaction.date === date && 
+        transaction.accountId === accountNumber
+      );
+
+      // Sum up all credit amounts
+      return dayCredits.reduce((sum, transaction) => sum + transaction.amount, 0);
+    } catch (error) {
+      console.error('Failed to calculate cash in:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Calculate total cash out (debit + HR transactions) for a specific date and account
+   */
+  private async calculateCashOut(date: string, accountNumber: string): Promise<number> {
+    try {
+      let totalCashOut = 0;
+
+      // Get debit transactions
+      try {
+        const { debitTransactionManagementService } = await import('./debitTransactionManagementService');
+        const debitTransactions = await debitTransactionManagementService.getAllDebitTransactions();
+        
+        const dayDebits = debitTransactions.filter(transaction => 
+          transaction.date === date && 
+          transaction.accountId === accountNumber
+        );
+        
+        totalCashOut += dayDebits.reduce((sum, transaction) => sum + transaction.amount, 0);
+      } catch (error) {
+        console.warn('Debit transaction service not available:', error);
+      }
+
+      // Get HR payments
+      try {
+        const { hrPaymentManagementService } = await import('./hrPaymentManagementService');
+        const hrPayments = await hrPaymentManagementService.getAllHRPayments();
+        
+        const dayHRPayments = hrPayments.filter(payment => 
+          payment.date === date && 
+          payment.accountId === accountNumber
+        );
+        
+        totalCashOut += dayHRPayments.reduce((sum, payment) => sum + payment.amount, 0);
+      } catch (error) {
+        console.warn('HR payment service not available:', error);
+      }
+
+      return totalCashOut;
+    } catch (error) {
+      console.error('Failed to calculate cash out:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Get actual closing balance from bank data for a specific date and account
+   */
+  private async getActualClosingBalance(date: string, accountNumber: string): Promise<number> {
+    try {
+      // Import unified balance service
+      const { unifiedBalanceService } = await import('./unifiedBalanceService');
+      
+      const dailyBalances = unifiedBalanceService.getDailyBalances();
+      
+      // Find balance for specific date and account
+      const dayBalance = dailyBalances.find(balance => 
+        balance.date === date && 
+        balance.accountNumber === accountNumber
+      );
+
+      return dayBalance ? dayBalance.closingBalance : 0;
+    } catch (error) {
+      console.error('Failed to get actual closing balance:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Get opening balance from bank data when no previous day entry exists
+   */
+  private async getOpeningBalanceFromBankData(date: string, accountNumber: string): Promise<number> {
+    try {
+      // Import unified balance service
+      const { unifiedBalanceService } = await import('./unifiedBalanceService');
+      
+      const dailyBalances = unifiedBalanceService.getDailyBalances();
+      
+      // Find balance for specific date and account
+      const dayBalance = dailyBalances.find(balance => 
+        balance.date === date && 
+        balance.accountNumber === accountNumber
+      );
+
+      return dayBalance ? dayBalance.openingBalance : 0;
+    } catch (error) {
+      console.error('Failed to get opening balance from bank data:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Recalculate balances for existing daily cash entries
+   * Useful when transaction data is updated
+   */
+  async recalculateBalances(
+    dateFrom?: string, 
+    dateTo?: string, 
+    accountIds?: string[]
+  ): Promise<DailyCashEntry[]> {
+    try {
+      let entries = await this.getDailyCashEntriesForDisplay({
+        dateFrom,
+        dateTo,
+        accountId: accountIds?.[0] // For simplicity, take first account if multiple
+      });
+
+      // Filter by account IDs if provided
+      if (accountIds && accountIds.length > 0) {
+        entries = entries.filter(entry => accountIds.includes(entry.accountNumber));
+      }
+
+      const recalculatedEntries: DailyCashEntry[] = [];
+
+      for (const entry of entries) {
+        const recalculatedEntry = await this.calculateBalances(entry);
+        recalculatedEntries.push(recalculatedEntry);
+      }
+
+      // Store recalculated entries
+      if (recalculatedEntries.length > 0) {
+        await this.storeDailyCashEntries(recalculatedEntries);
+        
+        eventBus.emit('DAILY_CASH_BALANCES_RECALCULATED', {
+          count: recalculatedEntries.length,
+          dateRange: { from: dateFrom, to: dateTo }
+        });
+      }
+
+      return recalculatedEntries;
+    } catch (error) {
+      console.error('Failed to recalculate balances:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Calculate balance summary statistics
+   */
+  async getBalanceSummaryStats(entries: DailyCashEntry[]): Promise<{
+    totalCashIn: number;
+    totalCashOut: number;
+    totalDiscrepancies: number;
+    averageDiscrepancy: number;
+    maxDiscrepancy: number;
+    entriesWithDiscrepancies: number;
+    discrepancyPercentage: number;
+  }> {
+    try {
+      if (entries.length === 0) {
+        return {
+          totalCashIn: 0,
+          totalCashOut: 0,
+          totalDiscrepancies: 0,
+          averageDiscrepancy: 0,
+          maxDiscrepancy: 0,
+          entriesWithDiscrepancies: 0,
+          discrepancyPercentage: 0
+        };
+      }
+
+      const totalCashIn = entries.reduce((sum, entry) => sum + entry.cashIn, 0);
+      const totalCashOut = entries.reduce((sum, entry) => sum + entry.cashOut, 0);
+      const discrepancies = entries.map(entry => Math.abs(entry.discrepancy));
+      const entriesWithDiscrepancies = entries.filter(entry => Math.abs(entry.discrepancy) > 0.01).length;
+
+      return {
+        totalCashIn,
+        totalCashOut,
+        totalDiscrepancies: discrepancies.reduce((sum, d) => sum + d, 0),
+        averageDiscrepancy: discrepancies.length > 0 
+          ? discrepancies.reduce((sum, d) => sum + d, 0) / discrepancies.length 
+          : 0,
+        maxDiscrepancy: discrepancies.length > 0 ? Math.max(...discrepancies) : 0,
+        entriesWithDiscrepancies,
+        discrepancyPercentage: entries.length > 0 
+          ? (entriesWithDiscrepancies / entries.length) * 100 
+          : 0
+      };
+    } catch (error) {
+      console.error('Failed to calculate balance summary stats:', error);
+      throw error;
+    }
+  }
+
+  // =============================================
   // PUBLIC API FOR UI COMPONENTS
   // =============================================
 

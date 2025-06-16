@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import { Transaction, MLCategorizationResult } from '../../../shared/types';
+import { Transaction, MLCategorizationResult } from '../../shared/types';
 import { localOllamaIntegration } from '../../integration/ai/LocalOllamaIntegration';
 // import { systemIntegrityService } from './systemIntegrityService';
 // import { performanceManager } from './performanceManager';

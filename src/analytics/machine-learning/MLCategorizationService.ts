@@ -2,7 +2,7 @@ import { isDebugMode as checkDebugMode } from '../shared/utils/debugging/DebugMo
 import * as tf from '@tensorflow/tfjs';
 import { Transaction, MLCategorizationResult } from '../../../shared/types';
 import { categorizationService } from './categorizationService';
-import { localStorageManager } from './localStorageManager';
+import { localStorageManager } from '../../data/storage/LocalStorageManager';
 import { performanceManager } from './performanceManager';
 import { cleanupManager } from './cleanupManager';
 import { systemIntegrityService } from './systemIntegrityService';

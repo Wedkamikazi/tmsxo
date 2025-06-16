@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import { Transaction } from '../../../shared/types';
+import { Transaction } from '../../shared/types';
 import { localStorageManager } from '../../data/storage/LocalStorageManager';
 
 // ADVANCED NLP SERVICE FOR TRANSACTION ANALYSIS

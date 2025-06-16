@@ -25,7 +25,7 @@ function App(): React.ReactElement {
         // CRITICAL: Set debug mode for safer initialization
         if (!isDebugMode()) {
           console.log('⚠️ BROWSER HANG PREVENTION: Enabling debug mode for safer startup');
-          localStorage.setItem('treasury_debug_mode', 'true');
+          localStorage.setItem('debugMode', 'true');
           window.location.reload(); // Reload to apply debug mode
           return;
         }

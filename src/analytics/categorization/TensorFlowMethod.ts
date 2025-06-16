@@ -11,7 +11,7 @@ import {
   TensorFlowModelStatus,
   FeatureConfig
 } from './TensorFlowTypes';
-import { localStorageManager } from '../';
+import { localStorageManager } from '../../data/storage/LocalStorageManager';
 import { cleanupManager } from '../../data/maintenance/CleanupManager';
 import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
 import { isDebugMode as checkDebugMode } from '../../shared/utils/debugging/DebugMode';

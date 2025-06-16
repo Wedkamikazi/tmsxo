@@ -1218,8 +1218,20 @@ class ImportProcessingService {
     fileId?: string;
     transactionCount: number;
     backupKey?: string;
-    validation: ReturnType<typeof this.validateImportWorkflow>;
-    processing?: Awaited<ReturnType<typeof this.processFile>>;
+    validation: {
+      canProceed: boolean;
+      issues: string[];
+      warnings: string[];
+      historyValidation: ImportHistoryValidation;
+      csvValidation: ValidationResult;
+    };
+    processing?: {
+      success: boolean;
+      fileId?: string;
+      transactionCount: number;
+      validationResult: ValidationResult;
+      error?: string;
+    };
     error?: string;
   }> {
     try {

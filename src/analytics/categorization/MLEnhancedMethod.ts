@@ -318,7 +318,7 @@ export class MLEnhancedMethod implements CategorizationStrategy {
 
   private async categorizeWithRules(transaction: Transaction): Promise<UnifiedCategorizationResult> {
     // Import rule-based method to avoid circular dependencies
-    const { RuleBasedMethod } = await import('./ruleBasedMethod');
+    const { RuleBasedMethod } = await import('./RuleBasedMethod');
     const ruleBasedMethod = new RuleBasedMethod();
     
     try {

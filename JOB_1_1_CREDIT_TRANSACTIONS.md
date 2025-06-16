@@ -19,6 +19,7 @@ Implementing automated credit transaction processing with AI categorization and 
 **File:** `src/services/creditTransactionManagementService.ts`
 
 **Core Features Implemented:**
+
 - ✅ **Automatic Extraction**: Pulls credit transactions from bank statement imports
 - ✅ **AI Categorization**: Classifies as customer payments, refunds, interest, etc.
 - ✅ **Smart Auto-Reconciliation**: 
@@ -35,6 +36,7 @@ Implementing automated credit transaction processing with AI categorization and 
 **Files:** `src/components/CreditTransactions.tsx` + `CreditTransactions.css`
 
 **UI Features Implemented:**
+
 - ✅ **Professional Dashboard**: Summary cards showing total, pending, matched, confirmed
 - ✅ **Advanced Filtering**: By status, date range, account
 - ✅ **Interactive Table**: Status badges, confidence scores, match details
@@ -101,6 +103,7 @@ Bank Import → Extract Credits → AI Categorize → Auto-Reconcile → Manual 
 ### **Test Ready:**
 
 Users can now:
+
 1. Import bank statements (existing flow)
 2. View "Credit Transactions" tab
 3. See extracted credit transactions with AI categorization

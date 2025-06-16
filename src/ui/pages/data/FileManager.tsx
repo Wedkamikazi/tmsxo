@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { unifiedDataService } from '../../../data/storage/UnifiedDataService';
-import { UploadedFile } from '../../../shared/types';
+import { unifiedDataService } from '@/data/storage/UnifiedDataService';
+import { UploadedFile } from '@/shared/types';
 import './FileManager.css';
 
 interface FileManagerProps {

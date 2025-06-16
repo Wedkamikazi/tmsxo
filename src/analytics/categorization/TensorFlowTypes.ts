@@ -2,7 +2,7 @@
 // Extracted from mlCategorizationService.ts - interfaces and types for TensorFlow-based categorization
 
 import * as tf from '@tensorflow/tfjs';
-import { Transaction } from '../../types';
+import { Transaction } from '../../shared/types';
 
 // TENSORFLOW MODEL CONFIGURATION
 export interface TensorFlowModelConfig {

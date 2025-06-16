@@ -1,12 +1,14 @@
 import * as tf from '@tensorflow/tfjs';
-import { Transaction, MLCategorizationResult } from '../../shared/types';
-import { localOllamaIntegration } from '../../integration/ai/LocalOllamaIntegration';
+import { Transaction, MLCategorizationResult } from '@/shared/types';
+import { localOllamaIntegration } from '@/integration/ai/LocalOllamaIntegration';
 // import { systemIntegrityService } from './systemIntegrityService';
 // import { performanceManager } from './performanceManager';
-import { cleanupManager } from '../../data/maintenance/CleanupManager';
-import { localStorageManager } from '../../data/storage/LocalStorageManager';
+import { cleanupManager } from '@/data/maintenance/CleanupManager';
+import { localStorageManager } from '@/data/storage/LocalStorageManager';
 import { categorizationService } from '../categorization/CategorizationService';
-import { isDebugMode } from '../../shared/utils/debugging/DebugMode';
+import { isDebugMode } from '@/shared/utils/debugging/DebugMode';
+import { mlCategorizationService } from './MLCategorizationService';
+import { mlNaturalLanguageService } from './MLNaturalLanguageService';
 
 // ENHANCED ML ORCHESTRATOR
 // Intelligently combines TensorFlow.js models with Ollama for optimal performance

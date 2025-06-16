@@ -420,16 +420,19 @@ class CSVProcessingService {
         // Convert HHMM to HH:MM
         timeString = timeString.substring(0, 2) + ':' + timeString.substring(2);
       }
+      // Validate time format
+      if (!/^\d{2}:\d{2}$/.test(timeString)) {
+        timeString = '00:00';
+      }
     }
     
-    // Combine date and time - add debug logging for invalid dates
+    // Combine date and time with proper validation
     const dateTimeString = `${formattedDate}T${timeString}:00`;
     const result = new Date(dateTimeString);
     
     if (isNaN(result.getTime())) {
-      console.warn(`Invalid datetime created: "${dateTimeString}" from postDate: "${postDate}", time: "${time}"`);
-      // Return current date as fallback
-      return new Date();
+      // Return fallback date instead of current date to avoid infinite loops
+      return new Date('2024-01-01T00:00:00');
     }
     
     return result;

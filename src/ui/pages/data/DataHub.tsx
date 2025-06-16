@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { BankStatementImport } from './BankStatementImport';
-import { BankAccountManager } from './BankAccountManager';
+import { BankStatementImport } from '../../../banking/imports/BankStatementImport';
+import { BankAccountManager } from '../../../banking/accounts/BankAccountManager';
 import { Transactions } from '../../../banking/transactions/Transactions';
-import { BankBalance } from './BankBalance';
+import { BankBalance } from '../../../banking/accounts/BankBalance';
 import { FileManager } from './FileManager';
-import QwenIntegrationStatus from './QwenIntegrationStatus';
-import SimpleDataCleanup from './SimpleDataCleanup';
-import { OllamaChat } from './OllamaChat';
-import { Settings } from './Settings';
-import { ErrorBoundary } from './ErrorBoundary';
-import SystemHealthMonitor from './SystemHealthMonitor';
-import OllamaControlWidget from './OllamaControlWidget';
-import { CreditTransactions } from './CreditTransactions';
-import { DebitTransactions } from './DebitTransactions';
-import { HRPayments } from './HRPayments';
-import { DailyCashManagement } from './DailyCashManagement';
-import { TimeDepositManagement } from './TimeDepositManagement';
+import QwenIntegrationStatus from '../../../integration/ai/QwenIntegrationStatus';
+import SimpleDataCleanup from './DataCleanup';
+import { OllamaChat } from '../../../integration/ai/OllamaChat';
+import { Settings } from '../admin/Settings';
+import { ErrorBoundary } from '../../components/common/ErrorBoundary';
+import SystemHealthMonitor from '../admin/SystemHealthMonitor';
+import OllamaControlWidget from '../../../integration/ai/OllamaControlWidget';
+import { CreditTransactions } from '../../../banking/transactions/CreditTransactions';
+import { DebitTransactions } from '../../../banking/transactions/DebitTransactions';
+import { HRPayments } from '../../../treasury/payments/HRPayments';
+import { DailyCashManagement } from '../../../treasury/cash-management/DailyCashManagement';
+import { TimeDepositManagement } from '../../../treasury/time-deposits/TimeDepositManagement';
 import { 
   stateManager, 
   saveActiveTab, 

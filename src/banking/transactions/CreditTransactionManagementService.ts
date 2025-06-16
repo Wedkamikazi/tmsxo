@@ -19,7 +19,7 @@ import {
   Transaction 
 } from '../../shared/types';
 import { eventBus } from '../../core/orchestration/EventBus';
-import { unifiedCategorizationService } from './unifiedCategorizationService';
+import { unifiedCategorizationService } from '../../analytics/categorization/UnifiedCategorizationService';
 
 // =============================================
 // CREDIT TRANSACTION MANAGEMENT SERVICE

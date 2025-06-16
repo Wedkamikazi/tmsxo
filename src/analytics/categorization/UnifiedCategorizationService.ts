@@ -12,7 +12,7 @@ import {
 import { RuleBasedMethod } from './RuleBasedMethod';
 import { MLEnhancedMethod } from './MLEnhancedMethod';
 import { TensorFlowMethod } from './TensorFlowMethod';
-import { isDebugMode } from '../shared/utils/debugging/DebugMode';
+import { isDebugMode } from '../../shared/utils/debugging/DebugMode';
 import { eventBus } from '../../core/orchestration/EventBus';
 
 export interface BatchCategorizationOptions {

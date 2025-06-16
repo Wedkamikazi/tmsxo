@@ -466,8 +466,8 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
                 <td className="account-cell">{balance.accountName}</td>
                 <td className="currency-cell">{formatCurrency(balance.openingBalance)}</td>
                 <td className="currency-cell">{formatCurrency(balance.closingBalance)}</td>
-                <td className={`currency-cell ${getMovementColorClass(balance.movement)}`}>
-                  {formatCurrency(balance.movement)}
+                <td className={`currency-cell ${getMovementColorClass(balance.dailyMovement)}`}>
+                  {formatCurrency(balance.dailyMovement)}
                 </td>
                 <td className="count-cell">
                   {balance.transactionCount}

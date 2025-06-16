@@ -579,7 +579,7 @@ class CreditTransactionManagementService {
             notes: 'Regular monthly payment from major client'
           }
         ];
-        await coreDataService.setData(this.FORECASTED_COLLECTIONS_KEY, sampleForecasts);
+        localStorage.setItem(this.FORECASTED_COLLECTIONS_KEY, JSON.stringify(sampleForecasts));
       }
     } catch (error) {
       console.error('Failed to initialize default data:', error);

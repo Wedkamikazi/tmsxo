@@ -387,7 +387,7 @@ class DailyCashManagementService {
 
       // Test time deposit service (Job 1.5)
       try {
-        const { timeDepositService } = await import('./timeDepositService');
+        const { timeDepositService } = await import('../time-deposits/TimeDepositService');
         await timeDepositService.getAllTimeDeposits();
         status.timeDepositService = true;
       } catch (error) {

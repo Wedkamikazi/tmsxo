@@ -1,5 +1,5 @@
 import React, { Component, ReactNode, ErrorInfo } from 'react';
-import { eventBus } from '../../../core/orchestration/EventBus';
+import { eventBus } from '@/core/orchestration/EventBus';
 
 interface Props {
   children: ReactNode;

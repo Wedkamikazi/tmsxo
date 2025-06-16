@@ -4,8 +4,8 @@
  * Prevents memory leaks and ensures proper resource cleanup
  */
 
-import { performanceManager } from '../../core/performance/PerformanceManager';
-import { systemSafetyManager } from '../../core/safety/SystemSafetyManager';
+import { performanceManager } from '@/core/performance/PerformanceManager';
+import { systemSafetyManager } from '@/core/safety/SystemSafetyManager';
 
 interface DisposableResource {
   id: string;

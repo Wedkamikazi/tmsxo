@@ -1,8 +1,8 @@
 import { eventBus, DataEvent } from '../../core/orchestration/EventBus';
 import { localStorageManager } from '../storage/LocalStorageManager';
 import { unifiedDataService } from '../storage/UnifiedDataService';
-import { performanceManager } from './performanceManager';
-import { crossTabSyncService } from './crossTabSyncService';
+import { performanceManager } from '../../core/performance/PerformanceManager';
+import { crossTabSyncService } from '../synchronization/CrossTabSyncService';
 import { isDebugMode } from '../shared/utils/debugging/DebugMode';
 
 // SYSTEM INTEGRITY SERVICE - ULTIMATE INTEGRATION ENHANCEMENT

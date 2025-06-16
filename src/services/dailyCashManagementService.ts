@@ -166,6 +166,81 @@ class DailyCashManagementService {
   }
 
   /**
+   * Handle intercompany transfers extraction/update events (Job 1.4)
+   */
+  private async handleIntercompanyTransfersUpdate(data: any): Promise<void> {
+    try {
+      console.log('🔄 Handling intercompany transfers update:', data);
+      
+      if (data.accountId) {
+        await this.recalculateEntriesForAccount(data.accountId);
+      }
+    } catch (error) {
+      console.error('Failed to handle intercompany transfers update:', error);
+    }
+  }
+
+  /**
+   * Handle individual intercompany transfer update (Job 1.4)
+   */
+  private async handleIntercompanyTransferUpdate(data: any): Promise<void> {
+    try {
+      if (data.transfer && data.transfer.date && data.transfer.accountId) {
+        await this.recalculateEntriesForDateAndAccount(data.transfer.date, data.transfer.accountId);
+      } else if (data.transferId) {
+        // Try to get transfer details and recalculate
+        try {
+          const { intercompanyTransferService } = await import('./intercompanyTransferService');
+          const transfers = await intercompanyTransferService.getAllIntercompanyTransfers();
+          const transfer = transfers.find(t => t.id === data.transferId);
+          
+          if (transfer) {
+            await this.recalculateEntriesForDateAndAccount(transfer.date, transfer.accountId);
+          }
+        } catch (error) {
+          console.warn('Could not retrieve transfer details for recalculation:', error);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to handle intercompany transfer update:', error);
+    }
+  }
+
+  /**
+   * Handle time deposits extraction/update events (Job 1.5)
+   */
+  private async handleTimeDepositsUpdate(data: any): Promise<void> {
+    try {
+      console.log('💰 Handling time deposits update:', data);
+      
+      if (data.accountId) {
+        await this.recalculateEntriesForAccount(data.accountId);
+      }
+    } catch (error) {
+      console.error('Failed to handle time deposits update:', error);
+    }
+  }
+
+  /**
+   * Handle investment suggestions update (Job 1.5)
+   */
+  private async handleInvestmentSuggestionsUpdate(data: any): Promise<void> {
+    try {
+      console.log('💡 Investment suggestions generated:', data);
+      
+      // Investment suggestions don't directly affect daily cash entries
+      // but we emit an event for UI updates
+      eventBus.emit('DAILY_CASH_INVESTMENT_SUGGESTIONS_AVAILABLE', {
+        accountId: data.accountId,
+        suggestionCount: data.count,
+        totalSuggestedAmount: data.totalSuggestedAmount
+      });
+    } catch (error) {
+      console.error('Failed to handle investment suggestions update:', error);
+    }
+  }
+
+  /**
    * Handle bank statement import events
    */
   private async handleBankStatementImport(data: any): Promise<void> {

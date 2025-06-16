@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { unifiedDataService, type StoredTransaction } from '../data/storage/UnifiedDataService';
 import { BankAccount } from '../../shared/types';
-import { TransactionCategorization } from './TransactionCategorization';
+import { TransactionCategorization } from '../../analytics/categorization/TransactionCategorization';
 import { 
   registerGlobalRefresh, 
   unregisterGlobalRefresh, 

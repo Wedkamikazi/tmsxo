@@ -906,7 +906,7 @@ class DailyCashManagementService {
 
       // Get HR payments
       try {
-        const { hrPaymentManagementService } = await import('./hrPaymentManagementService');
+        const { hrPaymentManagementService } = await import('../payments/HRPaymentManagementService');
         const hrPayments = await hrPaymentManagementService.getAllHRPayments();
         
         const dayHRPayments = hrPayments.filter(payment => 

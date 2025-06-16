@@ -1555,6 +1555,7 @@ npm run test:e2e
 After each micro-job completion, verify:
 
 **Accounting Professional Review**:
+
 - [ ] Double-entry bookkeeping maintained
 - [ ] Trial balance validates
 - [ ] Cash flow calculations correct
@@ -1562,6 +1563,7 @@ After each micro-job completion, verify:
 - [ ] GAAP principles followed
 
 **Treasury Professional Review**:
+
 - [ ] Cash position calculations accurate
 - [ ] Risk calculations per Basel III
 - [ ] Liquidity ratios correct
@@ -1569,6 +1571,7 @@ After each micro-job completion, verify:
 - [ ] CTP standards followed
 
 **Banking Professional Review**:
+
 - [ ] Bank reconciliation standard process
 - [ ] Outstanding items properly handled
 - [ ] Controls and authorizations in place
@@ -1576,6 +1579,7 @@ After each micro-job completion, verify:
 - [ ] Audit trail complete
 
 **Finance Expert Review**:
+
 - [ ] Financial analysis accurate
 - [ ] Variance analysis meaningful
 - [ ] Forecasting methodology sound

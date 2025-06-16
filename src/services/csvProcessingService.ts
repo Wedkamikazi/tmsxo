@@ -288,43 +288,21 @@ class CSVProcessingService {
   // Convert CSV rows to transactions
   convertToTransactions(rows: CSVRow[]): Transaction[] {
     const baseTimestamp = Date.now();
-    return rows.map((row, index) => {
-      // Debug logging for problematic dates
-      if (!row.postDate || !this.isValidDate(row.postDate)) {
-        console.warn(`Row ${index + 1}: Invalid postDate "${row.postDate}", using valueDate "${row.valueDate}"`);
-      }
-      
-      // Use valueDate as primary, fallback to postDate
-      const primaryDate = row.valueDate || row.postDate;
-      const formattedDate = this.formatDate(primaryDate);
-      
-      // Additional debug logging
-      if (formattedDate.includes('Invalid') || formattedDate === primaryDate) {
-        console.warn(`Row ${index + 1}: Date formatting issue - original: "${primaryDate}", formatted: "${formattedDate}"`);
-      }
-      
-      return {
-        id: `txn_${baseTimestamp}_${index}_${Math.random().toString(36).substr(2, 9)}`,
-        date: formattedDate,
-        description: row.narrative,
-        debitAmount: Math.abs(this.parseAmount(row.debitAmount)), // Ensure debit amounts are positive for display
-        creditAmount: Math.abs(this.parseAmount(row.creditAmount)), // Ensure credit amounts are positive for display
-        balance: this.parseAmount(row.balance),
-        reference: row.customerReference,
-        postDate: primaryDate, // Store the original date value
-        time: row.time,
-        valueDate: row.valueDate
-      };
-    });
+    return rows.map((row, index) => ({
+      id: `txn_${baseTimestamp}_${index}_${Math.random().toString(36).substr(2, 9)}`,
+      date: this.formatDate(row.postDate),
+      description: row.narrative,
+      debitAmount: Math.abs(this.parseAmount(row.debitAmount)), // Ensure debit amounts are positive for display
+      creditAmount: Math.abs(this.parseAmount(row.creditAmount)), // Ensure credit amounts are positive for display
+      balance: this.parseAmount(row.balance),
+      reference: row.customerReference,
+      postDate: row.postDate,
+      time: row.time,
+      valueDate: row.valueDate
+    }));
   }
 
   private formatDate(dateString: string): string {
-    // Return current date if input is empty or invalid
-    if (!dateString || dateString.trim() === '') {
-      console.warn(`Empty date string provided to formatDate, using current date`);
-      return new Date().toISOString().split('T')[0];
-    }
-    
     // Handle slash-separated dates
     if (dateString.includes('/')) {
       const parts = dateString.split('/');
@@ -335,8 +313,8 @@ class CSVProcessingService {
         
         // Log for debugging
         if (isNaN(part1) || isNaN(part2) || isNaN(year)) {
-          console.warn(`Invalid date parts in formatDate: "${dateString}" -> [${part1}, ${part2}, ${year}], using current date`);
-          return new Date().toISOString().split('T')[0];
+          console.warn(`Invalid date parts in formatDate: "${dateString}" -> [${part1}, ${part2}, ${year}]`);
+          return dateString; // Return original if parsing fails
         }
         
         let month: number, day: number;
@@ -364,17 +342,8 @@ class CSVProcessingService {
           // Convert to YYYY-MM-DD format
           const monthStr = month.toString().padStart(2, '0');
           const dayStr = day.toString().padStart(2, '0');
-          const formattedDate = `${year}-${monthStr}-${dayStr}`;
-          
-          // Verify the formatted date is valid
-          const testDate = new Date(formattedDate);
-          if (!isNaN(testDate.getTime())) {
-            return formattedDate;
-          }
+          return `${year}-${monthStr}-${dayStr}`;
         }
-        
-        console.warn(`Invalid date parts after validation: day=${day}, month=${month}, year=${year}, using current date`);
-        return new Date().toISOString().split('T')[0];
       }
     }
     
@@ -387,29 +356,13 @@ class CSVProcessingService {
       if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900) {
         const monthStr = month.toString().padStart(2, '0');
         const dayStr = day.toString().padStart(2, '0');
-        const formattedDate = `${year}-${monthStr}-${dayStr}`;
-        
-        // Verify the formatted date is valid
-        const testDate = new Date(formattedDate);
-        if (!isNaN(testDate.getTime())) {
-          return formattedDate;
-        }
+        return `${year}-${monthStr}-${dayStr}`;
       }
     }
     
-    // Fallback to original logic with validation
-    try {
-      const date = new Date(dateString);
-      if (!isNaN(date.getTime())) {
-        return date.toISOString().split('T')[0];
-      }
-    } catch (error) {
-      console.warn(`Failed to parse date "${dateString}":`, error);
-    }
-    
-    // Final fallback - use current date
-    console.warn(`All date parsing failed for "${dateString}", using current date`);
-    return new Date().toISOString().split('T')[0];
+    // Fallback to original logic
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
   }
 
   // Helper method to create a sortable datetime from Post date and Time
@@ -427,17 +380,9 @@ class CSVProcessingService {
       }
     }
     
-    // Combine date and time - add debug logging for invalid dates
+    // Combine date and time
     const dateTimeString = `${formattedDate}T${timeString}:00`;
-    const result = new Date(dateTimeString);
-    
-    if (isNaN(result.getTime())) {
-      console.warn(`Invalid datetime created: "${dateTimeString}" from postDate: "${postDate}", time: "${time}"`);
-      // Return current date as fallback
-      return new Date();
-    }
-    
-    return result;
+    return new Date(dateTimeString);
   }
 
   // Process file and generate import summary

@@ -24,12 +24,26 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+<<<<<<< HEAD
     "downlevelIteration": true,
     "baseUrl": "src",
     "paths": {
       "@/*": ["*"],
       "../types": ["types/index"],
       "../../types": ["types/index"]
+=======
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["*"],
+      "@/core/*": ["core/*"],
+      "@/data/*": ["data/*"],
+      "@/banking/*": ["banking/*"],
+      "@/treasury/*": ["treasury/*"],
+      "@/ui/*": ["ui/*"],
+      "@/integration/*": ["integration/*"],
+      "@/analytics/*": ["analytics/*"],
+      "@/shared/*": ["shared/*"]
+>>>>>>> c54e28f4e033b6074d7fc9bdb0ee99050462a6d9
     }
   },
   "include": [

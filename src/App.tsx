@@ -1,13 +1,11 @@
 import React from 'react';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import { SystemInitializer } from './components/SystemInitializer';
-import { initializeSystemSafety } from './utils/systemSafetyManager';
-import { shouldReinitializeServices } from './utils/stateManager';
-import { DataHub } from './components/DataHub'; // Direct import for instant refresh
-import './styles/globals.css';
+import { ErrorBoundary, SystemInitializer, DataHub } from '@/ui';
+import { initializeSystemSafety, shouldReinitializeServices } from '@/core';
+import { isDebugMode } from '@/shared/utils/debugging/DebugMode';
+import './ui/styles/globals.css';
 
 // Import DataHub conditionally only for full initialization
-const LazyDataHub = React.lazy(() => import('./components/DataHub').then(module => ({ default: module.DataHub })));
+const LazyDataHub = React.lazy(() => import('@/ui').then(module => ({ default: module.DataHub })));
 
 function App(): React.ReactElement {
   // Check if we can use instant refresh
@@ -23,6 +21,8 @@ function App(): React.ReactElement {
     const initSafety = async () => {
       try {
         console.log('🛡️ App starting - Initializing safety system...');
+        console.log('🔧 Debug Mode Status:', isDebugMode() ? 'ENABLED' : 'DISABLED');
+        
         await initializeSystemSafety();
         console.log('✅ Safety system ready - App can proceed safely');
       } catch (error) {
@@ -74,6 +74,9 @@ function App(): React.ReactElement {
                     margin: '0 auto 16px'
                   }}></div>
                   <div style={{ fontSize: '18px', fontWeight: 500 }}>Loading Treasury Management System...</div>
+                  <div style={{ fontSize: '14px', marginTop: '8px', opacity: 0.8 }}>
+                    {isDebugMode() ? '🔧 Debug Mode: Lightweight initialization' : '🚀 Production Mode: Full features'}
+                  </div>
                 </div>
                 <style>{`
                   @keyframes spin {

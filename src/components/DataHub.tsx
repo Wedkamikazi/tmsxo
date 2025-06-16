@@ -201,6 +201,22 @@ export const DataHub: React.FC = () => {
         setDataRefreshTrigger(newTrigger);
       });
 
+      // Add listeners for HR payment events
+      const unsubscribeHRExtracted = eventBus.on('HR_PAYMENTS_EXTRACTED', () => {
+        const newTrigger = incrementDataRefresh();
+        setDataRefreshTrigger(newTrigger);
+      });
+
+      const unsubscribeHRUpdated = eventBus.on('HR_PAYMENT_UPDATED', () => {
+        const newTrigger = incrementDataRefresh();
+        setDataRefreshTrigger(newTrigger);
+      });
+
+      const unsubscribeHRConfirmed = eventBus.on('HR_PAYMENT_CONFIRMED', () => {
+        const newTrigger = incrementDataRefresh();
+        setDataRefreshTrigger(newTrigger);
+      });
+
       const unsubscribeDebitUpdated = eventBus.on('DEBIT_TRANSACTION_UPDATED', () => {
         const newTrigger = incrementDataRefresh();
         setDataRefreshTrigger(newTrigger);

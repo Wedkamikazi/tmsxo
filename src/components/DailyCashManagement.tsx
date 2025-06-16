@@ -34,7 +34,6 @@ export const DailyCashManagement: React.FC<DailyCashManagementProps> = ({ dataRe
   const [dailyCashEntries, setDailyCashEntries] = useState<DailyCashEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedEntry, setSelectedEntry] = useState<DailyCashEntry | null>(null);
   
   // Filter states
   const [filters, setFilters] = useState({

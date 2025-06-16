@@ -11,16 +11,15 @@
  * - Integration with daily cash management
  */
 
-import { 
-  TimeDeposit, 
+import {
+  TimeDeposit,
   InvestmentSuggestion,
   ObligationEntry,
   BusinessCalendar,
   AuditLogEntry,
-  Transaction 
+  Transaction
 } from '../types';
 import { eventBus } from './eventBus';
-import { unifiedCategorizationService } from './unifiedCategorizationService';
 
 // =============================================
 // TIME DEPOSIT SERVICE

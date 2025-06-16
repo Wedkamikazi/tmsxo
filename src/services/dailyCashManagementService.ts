@@ -34,6 +34,293 @@ class DailyCashManagementService {
 
   constructor() {
     console.log('✅ Daily Cash Management Service initialized');
+    this.initializeEventListeners();
+  }
+
+  // =============================================
+  // SERVICE INTEGRATION & EVENT COORDINATION
+  // =============================================
+
+  /**
+   * Initialize event listeners for real-time integration with transaction services
+   */
+  private initializeEventListeners(): void {
+    try {
+      // Listen for credit transaction updates
+      eventBus.on('CREDIT_TRANSACTIONS_EXTRACTED', this.handleCreditTransactionsUpdate.bind(this));
+      eventBus.on('CREDIT_TRANSACTION_UPDATED', this.handleCreditTransactionUpdate.bind(this));
+      eventBus.on('CREDIT_TRANSACTION_CONFIRMED', this.handleCreditTransactionUpdate.bind(this));
+
+      // Listen for debit transaction updates
+      eventBus.on('DEBIT_TRANSACTIONS_EXTRACTED', this.handleDebitTransactionsUpdate.bind(this));
+      eventBus.on('DEBIT_TRANSACTION_UPDATED', this.handleDebitTransactionUpdate.bind(this));
+      eventBus.on('DEBIT_TRANSACTION_CONFIRMED', this.handleDebitTransactionUpdate.bind(this));
+
+      // Listen for HR payment updates
+      eventBus.on('HR_PAYMENTS_EXTRACTED', this.handleHRPaymentsUpdate.bind(this));
+      eventBus.on('HR_PAYMENT_UPDATED', this.handleHRPaymentUpdate.bind(this));
+      eventBus.on('HR_PAYMENT_CONFIRMED', this.handleHRPaymentUpdate.bind(this));
+
+      // Listen for bank import events
+      eventBus.on('BANK_STATEMENT_IMPORTED', this.handleBankStatementImport.bind(this));
+      eventBus.on('TRANSACTION_DATA_UPDATED', this.handleTransactionDataUpdate.bind(this));
+
+      console.log('✅ Daily Cash Management event listeners initialized');
+    } catch (error) {
+      console.error('Failed to initialize event listeners:', error);
+    }
+  }
+
+  /**
+   * Handle credit transactions extraction/update events
+   */
+  private async handleCreditTransactionsUpdate(data: any): Promise<void> {
+    try {
+      console.log('📊 Handling credit transactions update:', data);
+      
+      if (data.accountId) {
+        // Recalculate daily cash entries for the affected account
+        await this.recalculateEntriesForAccount(data.accountId);
+      }
+    } catch (error) {
+      console.error('Failed to handle credit transactions update:', error);
+    }
+  }
+
+  /**
+   * Handle individual credit transaction update
+   */
+  private async handleCreditTransactionUpdate(transaction: any): Promise<void> {
+    try {
+      if (transaction.date && transaction.accountId) {
+        await this.recalculateEntriesForDateAndAccount(transaction.date, transaction.accountId);
+      }
+    } catch (error) {
+      console.error('Failed to handle credit transaction update:', error);
+    }
+  }
+
+  /**
+   * Handle debit transactions extraction/update events
+   */
+  private async handleDebitTransactionsUpdate(data: any): Promise<void> {
+    try {
+      console.log('📊 Handling debit transactions update:', data);
+      
+      if (data.accountId) {
+        await this.recalculateEntriesForAccount(data.accountId);
+      }
+    } catch (error) {
+      console.error('Failed to handle debit transactions update:', error);
+    }
+  }
+
+  /**
+   * Handle individual debit transaction update
+   */
+  private async handleDebitTransactionUpdate(transaction: any): Promise<void> {
+    try {
+      if (transaction.date && transaction.accountId) {
+        await this.recalculateEntriesForDateAndAccount(transaction.date, transaction.accountId);
+      }
+    } catch (error) {
+      console.error('Failed to handle debit transaction update:', error);
+    }
+  }
+
+  /**
+   * Handle HR payments extraction/update events
+   */
+  private async handleHRPaymentsUpdate(data: any): Promise<void> {
+    try {
+      console.log('📊 Handling HR payments update:', data);
+      
+      if (data.accountId) {
+        await this.recalculateEntriesForAccount(data.accountId);
+      }
+    } catch (error) {
+      console.error('Failed to handle HR payments update:', error);
+    }
+  }
+
+  /**
+   * Handle individual HR payment update
+   */
+  private async handleHRPaymentUpdate(payment: any): Promise<void> {
+    try {
+      if (payment.date && payment.accountId) {
+        await this.recalculateEntriesForDateAndAccount(payment.date, payment.accountId);
+      }
+    } catch (error) {
+      console.error('Failed to handle HR payment update:', error);
+    }
+  }
+
+  /**
+   * Handle bank statement import events
+   */
+  private async handleBankStatementImport(data: any): Promise<void> {
+    try {
+      console.log('📊 Handling bank statement import:', data);
+      
+      // Generate daily cash entries for newly imported data
+      if (data.dateRange && data.accountIds) {
+        await this.generateDailyCashEntries(
+          data.dateRange.from,
+          data.dateRange.to,
+          data.accountIds
+        );
+        
+        // Recalculate balances for the imported period
+        await this.recalculateBalances(
+          data.dateRange.from,
+          data.dateRange.to,
+          data.accountIds
+        );
+      }
+    } catch (error) {
+      console.error('Failed to handle bank statement import:', error);
+    }
+  }
+
+  /**
+   * Handle general transaction data updates
+   */
+  private async handleTransactionDataUpdate(data: any): Promise<void> {
+    try {
+      console.log('📊 Handling transaction data update:', data);
+      
+      // Trigger recalculation for affected date range
+      if (data.dateRange) {
+        await this.recalculateBalances(data.dateRange.from, data.dateRange.to);
+      }
+    } catch (error) {
+      console.error('Failed to handle transaction data update:', error);
+    }
+  }
+
+  /**
+   * Recalculate daily cash entries for a specific account
+   */
+  private async recalculateEntriesForAccount(accountId: string): Promise<void> {
+    try {
+      // Get last 30 days for recalculation (reasonable scope)
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30);
+      
+      const startDateStr = startDate.toISOString().split('T')[0];
+      const endDateStr = endDate.toISOString().split('T')[0];
+
+      await this.recalculateBalances(startDateStr, endDateStr, [accountId]);
+    } catch (error) {
+      console.error('Failed to recalculate entries for account:', error);
+    }
+  }
+
+  /**
+   * Recalculate daily cash entry for a specific date and account
+   */
+  private async recalculateEntriesForDateAndAccount(date: string, accountId: string): Promise<void> {
+    try {
+      const entry = await this.getDailyCashEntryByDateAndAccount(date, accountId);
+      
+      if (entry) {
+        const recalculatedEntry = await this.calculateBalances(entry);
+        await this.updateDailyCashEntry(recalculatedEntry);
+        
+        console.log(`✅ Recalculated daily cash entry for ${date}, account ${accountId}`);
+      } else {
+        // Entry doesn't exist, try to generate it
+        const accounts = await this.getAccountsForGeneration([accountId]);
+        if (accounts.length > 0) {
+          const newEntry = await this.createDailyCashEntry(date, accounts[0]);
+          const calculatedEntry = await this.calculateBalances(newEntry);
+          await this.storeDailyCashEntries([calculatedEntry]);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to recalculate entry for date and account:', error);
+    }
+  }
+
+  /**
+   * Check service availability and integration status
+   */
+  async checkServiceIntegration(): Promise<{
+    creditTransactionService: boolean;
+    debitTransactionService: boolean;
+    hrPaymentService: boolean;
+    unifiedBalanceService: boolean;
+    unifiedDataService: boolean;
+    integrationScore: number;
+  }> {
+    const status = {
+      creditTransactionService: false,
+      debitTransactionService: false,
+      hrPaymentService: false,
+      unifiedBalanceService: false,
+      unifiedDataService: false,
+      integrationScore: 0
+    };
+
+    try {
+      // Test credit transaction service
+      try {
+        const { creditTransactionManagementService } = await import('./creditTransactionManagementService');
+        await creditTransactionManagementService.getAllCreditTransactions();
+        status.creditTransactionService = true;
+      } catch (error) {
+        console.warn('Credit transaction service not available:', error);
+      }
+
+      // Test debit transaction service
+      try {
+        const { debitTransactionManagementService } = await import('./debitTransactionManagementService');
+        await debitTransactionManagementService.getAllDebitTransactions();
+        status.debitTransactionService = true;
+      } catch (error) {
+        console.warn('Debit transaction service not available:', error);
+      }
+
+      // Test HR payment service
+      try {
+        const { hrPaymentManagementService } = await import('./hrPaymentManagementService');
+        await hrPaymentManagementService.getAllHRPayments();
+        status.hrPaymentService = true;
+      } catch (error) {
+        console.warn('HR payment service not available:', error);
+      }
+
+      // Test unified balance service
+      try {
+        const { unifiedBalanceService } = await import('./unifiedBalanceService');
+        unifiedBalanceService.getDailyBalances();
+        status.unifiedBalanceService = true;
+      } catch (error) {
+        console.warn('Unified balance service not available:', error);
+      }
+
+      // Test unified data service
+      try {
+        const { unifiedDataService } = await import('./unifiedDataService');
+        unifiedDataService.getAllAccounts();
+        status.unifiedDataService = true;
+      } catch (error) {
+        console.warn('Unified data service not available:', error);
+      }
+
+      // Calculate integration score
+      const availableServices = Object.values(status).filter(Boolean).length - 1; // Exclude integrationScore
+      status.integrationScore = (availableServices / 5) * 100;
+
+      console.log('📊 Service integration status:', status);
+      return status;
+
+    } catch (error) {
+      console.error('Failed to check service integration:', error);
+      return status;
+    }
   }
 
   // =============================================

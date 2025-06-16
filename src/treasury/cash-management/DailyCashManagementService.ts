@@ -396,7 +396,7 @@ class DailyCashManagementService {
 
       // Test unified balance service
       try {
-        const { unifiedBalanceService } = await import('./unifiedBalanceService');
+        const { unifiedBalanceService } = await import('../../banking/accounts/UnifiedBalanceService');
         unifiedBalanceService.getDailyBalances();
         status.unifiedBalanceService = true;
       } catch (error) {

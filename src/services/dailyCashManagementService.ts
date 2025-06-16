@@ -335,6 +335,8 @@ class DailyCashManagementService {
     creditTransactionService: boolean;
     debitTransactionService: boolean;
     hrPaymentService: boolean;
+    intercompanyTransferService: boolean;
+    timeDepositService: boolean;
     unifiedBalanceService: boolean;
     unifiedDataService: boolean;
     integrationScore: number;

@@ -563,7 +563,7 @@ class CreditTransactionManagementService {
             status: 'pending'
           }
         ];
-        await coreDataService.setData(this.AR_AGING_KEY, sampleARAgings);
+        localStorage.setItem(this.AR_AGING_KEY, JSON.stringify(sampleARAgings));
       }
 
       // Initialize with sample Forecasted Collections if none exists

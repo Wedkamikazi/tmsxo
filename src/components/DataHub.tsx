@@ -14,6 +14,7 @@ import OllamaControlWidget from './OllamaControlWidget';
 import { CreditTransactions } from './CreditTransactions';
 import { DebitTransactions } from './DebitTransactions';
 import { HRPayments } from './HRPayments';
+import { DailyCashManagement } from './DailyCashManagement';
 import { 
   stateManager, 
   saveActiveTab, 

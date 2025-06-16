@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
-  bankBalanceService, 
+  unifiedBalanceService, 
   type DailyBalance, 
-  type BankBalanceFilters, 
-  type BankBalanceStats 
-} from '../../core/services/bankBalanceService';
+  type BalanceFilters, 
+  type BalanceStats 
+} from './UnifiedBalanceService';
 import { unifiedDataService } from '../../data/storage/UnifiedDataService';
 import { BankAccount } from '../../shared/types';
 import { 

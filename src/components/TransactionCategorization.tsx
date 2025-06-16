@@ -51,7 +51,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
       cleanup.cleanup();
       eventCleanup.cleanup();
     };
-  }, [cleanup, eventCleanup]);
+  }, []);
 
   // State management
   const [transactions, setTransactions] = useState<StoredTransaction[]>([]);

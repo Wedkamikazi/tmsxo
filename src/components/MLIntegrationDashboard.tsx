@@ -134,7 +134,7 @@ export const MLIntegrationDashboard: React.FC = () => {
     return () => {
       timerCleanup.clearInterval('data-refresh');
     };
-  }, [loadSystemData, timerCleanup]);
+  }, [loadSystemData]);
 
   // Generate comprehensive performance metrics
   const generatePerformanceMetrics = async (): Promise<ModelPerformanceMetrics> => {

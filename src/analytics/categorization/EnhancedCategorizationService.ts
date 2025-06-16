@@ -4,7 +4,7 @@ import { enhancedMLOrchestrator, EnhancedMLResult } from './enhancedMLOrchestrat
 import { categorizationService } from './categorizationService';
 import { systemIntegrityService } from './systemIntegrityService';
 import { localStorageManager } from './localStorageManager';
-import { eventBus } from './EventBus';
+import { eventBus } from '../../core/orchestration/EventBus';
 import { isDebugMode } from '../shared/utils/debugging/DebugMode';
 
 // ENHANCED TRANSACTION CATEGORIZATION SERVICE

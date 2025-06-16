@@ -1,7 +1,7 @@
 import { StoredTransaction } from './unifiedDataService';
 import { unifiedDataService } from './unifiedDataService';
 import { BankAccount } from '../types';
-import { importHistoryService } from './importHistoryService';
+import { importProcessingService } from './importProcessingService';
 import { systemIntegrityService } from './systemIntegrityService';
 
 // UNIFIED BALANCE SERVICE

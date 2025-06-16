@@ -205,26 +205,60 @@ interface ProfessionalCashFlowEngine {
   forecastCashFlow(days: number): CashFlowForecast;
 }
 
-// Correct Cash Flow Formula per GAAP
-interface CashFlowCalculation {
+// CORRECTED Cash Flow Formula per GAAP (fixes current system errors)
+interface ProfessionalCashFlowCalculation {
+  // Beginning cash from balance sheet
   beginningCash: number;
+
+  // Operating Activities (GAAP Classification)
   operatingActivities: {
-    netIncome: number;
-    depreciation: number;
-    workingCapitalChanges: number;
-    otherOperating: number;
+    netIncome: number;                    // From income statement
+    adjustments: {
+      depreciation: number;               // Add back non-cash expenses
+      amortization: number;               // Add back non-cash expenses
+      gainOnSaleOfAssets: number;         // Subtract gains (investing activity)
+      lossOnSaleOfAssets: number;         // Add back losses
+    };
+    workingCapitalChanges: {
+      accountsReceivableChange: number;   // Decrease = cash inflow
+      inventoryChange: number;            // Decrease = cash inflow
+      prepaidExpensesChange: number;      // Decrease = cash inflow
+      accountsPayableChange: number;      // Increase = cash inflow
+      accruedLiabilitiesChange: number;   // Increase = cash inflow
+    };
+    netOperatingCashFlow: number;         // Sum of above
   };
+
+  // Investing Activities (GAAP Classification)
   investingActivities: {
-    capitalExpenditures: number;
-    investments: number;
-    assetSales: number;
+    capitalExpenditures: number;          // Cash outflow (negative)
+    proceedsFromAssetSales: number;       // Cash inflow (positive)
+    investmentPurchases: number;          // Cash outflow (negative)
+    investmentSales: number;              // Cash inflow (positive)
+    netInvestingCashFlow: number;         // Sum of above
   };
+
+  // Financing Activities (GAAP Classification)
   financingActivities: {
-    debtChanges: number;
-    equityChanges: number;
-    dividends: number;
+    debtProceeds: number;                 // Cash inflow (positive)
+    debtRepayments: number;               // Cash outflow (negative)
+    equityIssuance: number;               // Cash inflow (positive)
+    dividendPayments: number;             // Cash outflow (negative)
+    shareRepurchases: number;             // Cash outflow (negative)
+    netFinancingCashFlow: number;         // Sum of above
   };
-  endingCash: number; // Must reconcile to balance sheet
+
+  // Net change in cash (must equal ending - beginning)
+  netCashChange: number;                  // Operating + Investing + Financing
+  endingCash: number;                     // Must reconcile to balance sheet
+
+  // Validation (CRITICAL for professional standards)
+  reconciliation: {
+    calculatedEndingCash: number;         // beginningCash + netCashChange
+    balanceSheetCash: number;             // From balance sheet
+    isReconciled: boolean;                // Must be true
+    variance: number;                     // Must be zero
+  };
 }
 ```
 

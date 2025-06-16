@@ -194,6 +194,22 @@ export const DataHub: React.FC = () => {
         setDataRefreshTrigger(newTrigger);
       });
 
+      // Add listeners for debit transaction events
+      const unsubscribeDebitExtracted = eventBus.on('DEBIT_TRANSACTIONS_EXTRACTED', () => {
+        const newTrigger = incrementDataRefresh();
+        setDataRefreshTrigger(newTrigger);
+      });
+
+      const unsubscribeDebitUpdated = eventBus.on('DEBIT_TRANSACTION_UPDATED', () => {
+        const newTrigger = incrementDataRefresh();
+        setDataRefreshTrigger(newTrigger);
+      });
+
+      const unsubscribeDebitConfirmed = eventBus.on('DEBIT_TRANSACTION_CONFIRMED', () => {
+        const newTrigger = incrementDataRefresh();
+        setDataRefreshTrigger(newTrigger);
+      });
+
       return () => {
         unsubscribeTransactions();
         unsubscribeFiles();
@@ -201,6 +217,9 @@ export const DataHub: React.FC = () => {
         unsubscribeAccounts();
         unsubscribeFilesUpdated();
         unsubscribeAccountsUpdated();
+        unsubscribeDebitExtracted();
+        unsubscribeDebitUpdated();
+        unsubscribeDebitConfirmed();
       };
     }
     

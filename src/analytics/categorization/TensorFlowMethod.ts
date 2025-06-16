@@ -14,7 +14,7 @@ import {
 import { localStorageManager } from '../localStorageManager';
 import { cleanupManager } from '../cleanupManager';
 import { systemIntegrityService } from '../systemIntegrityService';
-import { isDebugMode as checkDebugMode } from '../../utils/debugMode';
+import { isDebugMode as checkDebugMode } from '../../shared/utils/debugging/DebugMode';
 
 export class TensorFlowMethod implements CategorizationStrategy {
   name = 'tensorflow';

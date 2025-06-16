@@ -958,7 +958,7 @@ class DailyCashManagementService {
   }> {
     try {
       // Import time deposit service
-      const { timeDepositService } = await import('./timeDepositService');
+      const { timeDepositService } = await import('../time-deposits/TimeDepositService');
       
       const timeDepositData = await timeDepositService.getTimeDepositMovementsForDate(date, accountNumber);
       

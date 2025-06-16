@@ -17,7 +17,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { DailyCashEntry } from '../../../shared/types';
-import { dailyCashManagementService } from '../treasury/cash-management/DailyCashManagementService';
+import { dailyCashManagementService } from './DailyCashManagementService';
 import { eventBus } from '../core/orchestration/EventBus';
 import { ErrorBoundary } from '../../components/common/ErrorBoundary';
 import './DailyCashManagement.css';

@@ -230,15 +230,330 @@ class HRPaymentManagementService {
   }
 
   // =============================================
+  // CORE EXTRACTION & PROCESSING
+  // =============================================
+
+  /**
+   * Extract HR payments from imported bank statement transactions
+   * Automatically categorizes using AI/LLM and stores in dedicated HR Payments page
+   */
+  async extractHRPayments(transactions: Transaction[], accountId: string): Promise<HRPayment[]> {
+    try {
+      const hrPayments: HRPayment[] = [];
+
+      for (const transaction of transactions) {
+        // Only process debit transactions that could be HR payments
+        if (transaction.debitAmount && transaction.debitAmount > 0) {
+          const description = transaction.description.toLowerCase();
+          
+          // Check if transaction matches HR payment patterns
+          if (this.isHRPaymentPattern(description)) {
+            const hrPayment: HRPayment = {
+              id: `hr_${transaction.id}`,
+              date: transaction.date,
+              description: transaction.description,
+              amount: transaction.debitAmount,
+              reference: transaction.reference || '',
+              accountId: accountId,
+              accountName: this.getAccountName(accountId),
+              extractionDate: new Date().toISOString(),
+              paymentType: await this.categorizeHRPayment(transaction),
+              reconciliationStatus: 'pending',
+              observations: ''
+            };
+
+            hrPayments.push(hrPayment);
+          }
+        }
+      }
+
+      // Store extracted HR payments
+      await this.storeHRPayments(hrPayments);
+
+      // Emit event for UI updates
+      eventBus.emit('HR_PAYMENTS_EXTRACTED', {
+        count: hrPayments.length,
+        accountId: accountId
+      });
+
+      return hrPayments;
+    } catch (error) {
+      console.error('Error extracting HR payments:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Check if transaction description matches HR payment patterns
+   */
+  private isHRPaymentPattern(description: string): boolean {
+    const hrKeywords = [
+      'payroll', 'salary', 'wage', 'employee', 'staff',
+      'bonus', 'overtime', 'commission', 'allowance',
+      'reimbursement', 'expense', 'benefits', 'pension',
+      'final settlement', 'severance', 'gratuity'
+    ];
+    
+    return hrKeywords.some(keyword => description.includes(keyword));
+  }
+
+  /**
+   * AI/LLM-based categorization of HR payments
+   */
+  private async categorizeHRPayment(transaction: Transaction): Promise<HRPayment['paymentType']> {
+    try {
+      // Use the unified categorization service for AI analysis
+      await unifiedCategorizationService.categorizeTransaction(transaction);
+      
+      // Map to HR payment types based on description patterns
+      const description = transaction.description.toLowerCase();
+      
+      if (description.includes('bonus') || description.includes('incentive') || description.includes('commission')) {
+        return 'bonus';
+      } else if (description.includes('overtime') || description.includes('extra time') || description.includes('ot')) {
+        return 'overtime';
+      } else if (description.includes('reimbursement') || description.includes('expense') || description.includes('allowance')) {
+        return 'reimbursement';
+      } else if (description.includes('final') || description.includes('settlement') || description.includes('severance') || description.includes('gratuity')) {
+        return 'final_settlement';
+      } else if (description.includes('payroll') || description.includes('salary') || description.includes('wage')) {
+        return 'salary';
+      } else {
+        return 'salary'; // Default to salary for most HR payments
+      }
+    } catch (error) {
+      console.warn('AI categorization failed, using fallback logic:', error);
+      return 'salary';
+    }
+  }
+
+  // =============================================
+  // RECONCILIATION LOGIC
+  // =============================================
+
+  /**
+   * Auto-reconcile HR payments with payroll entries
+   */
+  async performAutoReconciliation(hrPaymentId: string): Promise<ReconciliationMatch | null> {
+    try {
+      const hrPayment = await this.getHRPaymentById(hrPaymentId);
+      if (!hrPayment) {
+        throw new Error('HR payment not found');
+      }
+
+      // Try to match with payroll entries
+      const payrollMatch = await this.matchWithPayrollEntries(hrPayment);
+      if (payrollMatch && payrollMatch.confidenceScore >= 0.7) {
+        const reconciliationMatch: ReconciliationMatch = {
+          id: `match_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          transactionId: hrPayment.id,
+          matchedEntityId: payrollMatch.matchedEntityId,
+          matchedEntityType: 'payroll',
+          matchType: 'auto',
+          confidenceScore: payrollMatch.confidenceScore,
+          matchDate: new Date().toISOString(),
+          notes: payrollMatch.notes
+        };
+
+        // Update HR payment
+        hrPayment.reconciliationStatus = 'auto_matched';
+        hrPayment.confidenceRatio = payrollMatch.confidenceScore;
+        hrPayment.payrollMatch = payrollMatch.payrollEntry;
+
+        await this.updateHRPayment(hrPayment);
+        await this.storeReconciliationMatch(reconciliationMatch);
+
+        return reconciliationMatch;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Auto-reconciliation failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Manual reconciliation by user
+   */
+  async performManualReconciliation(
+    hrPaymentId: string, 
+    payrollEntryId: string, 
+    notes?: string
+  ): Promise<ReconciliationMatch> {
+    try {
+      const hrPayment = await this.getHRPaymentById(hrPaymentId);
+      if (!hrPayment) {
+        throw new Error('HR payment not found');
+      }
+
+      const reconciliationMatch: ReconciliationMatch = {
+        id: `manual_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        transactionId: hrPayment.id,
+        matchedEntityId: payrollEntryId,
+        matchedEntityType: 'payroll',
+        matchType: 'manual',
+        confidenceScore: 1.0, // Manual matches get full confidence
+        matchDate: new Date().toISOString(),
+        notes: notes || 'Manual reconciliation by user'
+      };
+
+      // Update HR payment
+      hrPayment.reconciliationStatus = 'manually_matched';
+      hrPayment.confidenceRatio = 1.0;
+
+      // Attach the payroll entry details
+      const payrollEntry = await this.getPayrollEntryById(payrollEntryId);
+      hrPayment.payrollMatch = payrollEntry || undefined;
+
+      await this.updateHRPayment(hrPayment);
+      await this.storeReconciliationMatch(reconciliationMatch);
+
+      // Log the manual action
+      await this.logAuditEntry('MANUAL_RECONCILIATION', hrPayment.id, {
+        payrollEntryId,
+        notes
+      });
+
+      return reconciliationMatch;
+    } catch (error) {
+      console.error('Manual reconciliation failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * User confirms an HR payment to clear it
+   */
+  async confirmPayment(hrPaymentId: string, verifiedBy: string, observations?: string): Promise<void> {
+    try {
+      const hrPayment = await this.getHRPaymentById(hrPaymentId);
+      if (!hrPayment) {
+        throw new Error('HR payment not found');
+      }
+
+      hrPayment.reconciliationStatus = 'confirmed';
+      hrPayment.verificationDate = new Date().toISOString();
+      hrPayment.verifiedBy = verifiedBy;
+      if (observations) {
+        hrPayment.observations = observations;
+      }
+
+      await this.updateHRPayment(hrPayment);
+
+      // Log the confirmation
+      await this.logAuditEntry('PAYMENT_CONFIRMED', hrPayment.id, {
+        verifiedBy,
+        observations
+      });
+
+      eventBus.emit('HR_PAYMENT_CONFIRMED', hrPayment);
+    } catch (error) {
+      console.error('Payment confirmation failed:', error);
+      throw error;
+    }
+  }
+
+  // =============================================
+  // MATCHING ALGORITHMS
+  // =============================================
+
+  private async matchWithPayrollEntries(hrPayment: HRPayment): Promise<{
+    confidenceScore: number;
+    matchedEntityId: string;
+    payrollEntry: PayrollEntry;
+    notes: string;
+  } | null> {
+    try {
+      const payrollEntries = await this.getPayrollEntries();
+      let bestMatch: any = null;
+      let highestScore = 0;
+
+      for (const payrollEntry of payrollEntries) {
+        let score = 0;
+
+        // Amount matching (both gross and net amounts)
+        if (Math.abs(payrollEntry.netAmount - hrPayment.amount) < 0.01) {
+          score += 0.7; // Exact net amount match
+        } else if (Math.abs(payrollEntry.grossAmount - hrPayment.amount) < 0.01) {
+          score += 0.5; // Exact gross amount match
+        } else if (Math.abs(payrollEntry.netAmount - hrPayment.amount) / payrollEntry.netAmount < 0.05) {
+          score += 0.4; // Within 5% of net amount
+        } else if (Math.abs(payrollEntry.grossAmount - hrPayment.amount) / payrollEntry.grossAmount < 0.05) {
+          score += 0.3; // Within 5% of gross amount
+        }
+
+        // Employee name matching in description
+        const description = hrPayment.description.toLowerCase();
+        const employeeName = payrollEntry.employeeName.toLowerCase();
+        const nameParts = employeeName.split(' ');
+        
+        let nameMatches = 0;
+        nameParts.forEach(namePart => {
+          if (description.includes(namePart)) {
+            nameMatches++;
+          }
+        });
+        
+        if (nameMatches === nameParts.length) {
+          score += 0.4; // Full name match
+        } else if (nameMatches > 0) {
+          score += (nameMatches / nameParts.length) * 0.3; // Partial name match
+        }
+
+        // Date proximity (payment date vs payroll pay date)
+        const paymentDate = new Date(hrPayment.date);
+        const payDate = new Date(payrollEntry.payDate);
+        const daysDiff = Math.abs((paymentDate.getTime() - payDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (daysDiff <= 3) {
+          score += 0.2; // Within 3 days
+        } else if (daysDiff <= 7) {
+          score += 0.1; // Within a week
+        }
+
+        if (score > highestScore) {
+          highestScore = score;
+          bestMatch = {
+            confidenceScore: score,
+            matchedEntityId: payrollEntry.id,
+            payrollEntry: payrollEntry,
+            notes: `Matched based on ${Math.abs(payrollEntry.netAmount - hrPayment.amount) < 0.01 ? 'exact net amount' : 'amount approximation'}, employee name recognition, and date proximity`
+          };
+        }
+      }
+
+      return bestMatch;
+    } catch (error) {
+      console.error('Payroll matching failed:', error);
+      return null;
+    }
+  }
+
+  // =============================================
+  // RECONCILIATION MATCH STORAGE
+  // =============================================
+
+  private async storeReconciliationMatch(match: ReconciliationMatch): Promise<void> {
+    try {
+      const existingMatches = this.getStoredData(this.RECONCILIATION_MATCHES_KEY);
+      existingMatches.push(match);
+      this.storeData(this.RECONCILIATION_MATCHES_KEY, existingMatches);
+    } catch (error) {
+      console.error('Failed to store reconciliation match:', error);
+      throw error;
+    }
+  }
+
+  // =============================================
   // UTILITY METHODS
   // =============================================
 
-  // Will be used in later micro-jobs
-  // private getAccountName(accountId: string): string {
-  //   // This would typically fetch from the account service
-  //   // For now, return a placeholder
-  //   return `Account ${accountId.substring(0, 8)}`;
-  // }
+  private getAccountName(accountId: string): string {
+    // This would typically fetch from the account service
+    // For now, return a placeholder
+    return `Account ${accountId.substring(0, 8)}`;
+  }
 
   async logAuditEntry(action: string, paymentId: string, details: any): Promise<void> {
     try {

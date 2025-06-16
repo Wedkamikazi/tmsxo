@@ -98,7 +98,7 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
         console.log('📋 Open http://localhost:3000/test-quota-management.html for test interface');
       }
 
-      // STEP 4: Continue with normal initialization
+      // STEP 5: Continue with normal initialization
       setInitializationStatus('Initializing services...');
       
       const currentDebugMode = isDebugMode();

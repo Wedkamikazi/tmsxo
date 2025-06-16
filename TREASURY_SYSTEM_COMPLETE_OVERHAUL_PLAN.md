@@ -820,32 +820,174 @@ interface ProfessionalCashPositionService {
   optimizeExcessCash(): CashOptimizationResult;
 }
 
-// Professional Cash Position Structure
-interface CashPosition {
+// CORRECTED Professional Cash Position Structure (fixes current system errors)
+interface ProfessionalCashPosition {
   asOfDate: Date;
-  totalCash: number;
-  availableCash: number;
-  restrictedCash: number;
+  cutOffTime: string;                     // Professional cut-off procedures
 
-  // By currency (multi-currency support)
-  cashByCurrency: CurrencyPosition[];
+  // Cash Classification (per CTP standards)
+  cashClassification: {
+    totalCash: number;                    // Sum of all cash accounts
+    availableCash: number;                // Unrestricted, immediately available
+    restrictedCash: number;               // Legally or contractually restricted
+    cashEquivalents: number;              // Highly liquid investments (<90 days)
 
-  // By account type
-  operatingAccounts: AccountPosition[];
-  investmentAccounts: AccountPosition[];
-  restrictedAccounts: AccountPosition[];
-
-  // Liquidity metrics
-  liquidityRatios: {
-    currentRatio: number;
-    quickRatio: number;
-    cashRatio: number;
-    operatingCashFlowRatio: number;
+    // Detailed breakdown
+    demandDeposits: number;               // Checking accounts
+    savingsDeposits: number;              // Savings accounts
+    timeDeposits: number;                 // CDs and time deposits
+    moneyMarketFunds: number;             // Money market investments
+    treasuryBills: number;                // T-bills (<90 days)
   };
 
-  // Risk metrics
-  concentrationRisk: ConcentrationRisk;
-  counterpartyRisk: CounterpartyRisk[];
+  // Multi-Currency Support (professional FX handling)
+  currencyPositions: Array<{
+    currency: string;
+    localAmount: number;                  // Amount in local currency
+    usdEquivalent: number;                // Converted to USD
+    exchangeRate: number;                 // Current exchange rate
+    rateSource: string;                   // Rate source (e.g., Reuters, Bloomberg)
+    rateTimestamp: string;                // When rate was obtained
+    exposureType: 'functional' | 'transaction' | 'translation';
+  }>;
+
+  // Account Classification (banking standards)
+  accountPositions: {
+    operatingAccounts: Array<{
+      accountId: string;
+      bankName: string;
+      accountType: 'checking' | 'savings' | 'money_market';
+      balance: number;
+      availableBalance: number;           // After holds and restrictions
+      currency: string;
+      interestRate: number;
+      lastStatementDate: string;
+    }>;
+
+    investmentAccounts: Array<{
+      accountId: string;
+      institutionName: string;
+      accountType: 'investment' | 'brokerage' | 'trust';
+      marketValue: number;
+      cashBalance: number;                // Uninvested cash
+      currency: string;
+      lastValuationDate: string;
+    }>;
+
+    restrictedAccounts: Array<{
+      accountId: string;
+      restrictionType: 'legal' | 'contractual' | 'regulatory';
+      restrictionDescription: string;
+      balance: number;
+      releaseDate?: string;               // When restriction lifts
+    }>;
+  };
+
+  // Professional Liquidity Ratios (CTP standards)
+  liquidityMetrics: {
+    // Primary liquidity ratios
+    currentRatio: number;                 // Current Assets / Current Liabilities
+    quickRatio: number;                   // (Current Assets - Inventory) / Current Liabilities
+    cashRatio: number;                    // (Cash + Cash Equivalents) / Current Liabilities
+
+    // Advanced liquidity metrics
+    operatingCashFlowRatio: number;       // Operating Cash Flow / Current Liabilities
+    cashConversionCycle: number;          // Days to convert operations to cash
+    defensiveInterval: number;            // Days company can operate with liquid assets
+
+    // Banking liquidity ratios
+    liquidityCoverageRatio: number;       // High-quality liquid assets / Net cash outflows (30 days)
+    netStableFundingRatio: number;        // Available stable funding / Required stable funding
+  };
+
+  // Risk Assessment (Basel III compliant)
+  riskMetrics: {
+    concentrationRisk: {
+      bankConcentration: Array<{
+        bankName: string;
+        percentage: number;               // % of total cash
+        riskRating: string;               // Bank credit rating
+        isOverLimit: boolean;             // Exceeds concentration limit
+      }>;
+
+      currencyConcentration: Array<{
+        currency: string;
+        percentage: number;               // % of total cash
+        volatility: number;               // Currency volatility measure
+        hedgeRatio: number;               // % hedged
+      }>;
+
+      geographicConcentration: Array<{
+        country: string;
+        percentage: number;               // % of total cash
+        politicalRisk: string;            // Country risk rating
+      }>;
+    };
+
+    counterpartyRisk: Array<{
+      counterpartyName: string;
+      exposureAmount: number;
+      creditRating: string;               // S&P/Moody's rating
+      probabilityOfDefault: number;       // PD calculation
+      lossGivenDefault: number;           // LGD calculation
+      expectedLoss: number;               // PD × LGD × Exposure
+      creditLimit: number;
+      utilizationPercentage: number;
+    }>;
+
+    liquidityRisk: {
+      stressTestResults: Array<{
+        scenario: string;                 // Stress scenario name
+        timeHorizon: number;              // Days
+        cashOutflow: number;              // Projected outflow
+        liquidAssetsAvailable: number;    // Available to meet outflow
+        survivalPeriod: number;           // Days company can survive
+        passesStressTest: boolean;
+      }>;
+    };
+  };
+
+  // Cash Flow Forecasting (professional standards)
+  cashFlowForecast: {
+    forecastHorizon: number;              // Days forecasted
+    forecastAccuracy: number;             // Historical accuracy %
+
+    projectedCashFlows: Array<{
+      date: string;
+      operatingInflows: number;
+      operatingOutflows: number;
+      investingInflows: number;
+      investingOutflows: number;
+      financingInflows: number;
+      financingOutflows: number;
+      netCashFlow: number;
+      cumulativeCashFlow: number;
+      projectedBalance: number;
+    }>;
+
+    scenarioAnalysis: {
+      baseCase: number;                   // Expected cash flow
+      optimisticCase: number;             // Best case scenario
+      pessimisticCase: number;            // Worst case scenario
+      probabilityWeighted: number;        // Probability-weighted average
+    };
+  };
+
+  // Regulatory Compliance
+  complianceMetrics: {
+    minimumCashRequirement: number;       // Regulatory minimum
+    actualCashPosition: number;           // Current position
+    excessCash: number;                   // Above minimum
+    complianceRatio: number;              // Actual / Required
+    isCompliant: boolean;
+
+    reportingRequirements: Array<{
+      regulatorName: string;
+      reportType: string;
+      nextDueDate: string;
+      isOverdue: boolean;
+    }>;
+  };
 }
 ```
 

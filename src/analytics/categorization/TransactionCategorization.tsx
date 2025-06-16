@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useCleanup, useTimerCleanup, useEventListenerCleanup } from '../shared/hooks/useCleanup';
-import { useInfiniteLoopProtection } from '../utils/infiniteLoopProtection';
+import { useInfiniteLoopProtection } from '../../core/safety/InfiniteLoopProtection';
 import { Transaction, TransactionCategory, TransactionCategorization as TransactionCategorizationData } from '../../../shared/types';
 import { unifiedDataService, type StoredTransaction } from '../data/storage/UnifiedDataService';
 import { unifiedCategorizationService } from '../analytics/categorization/UnifiedCategorizationService';

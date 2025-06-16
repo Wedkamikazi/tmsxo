@@ -1,6 +1,6 @@
 import { isDebugMode as checkDebugMode } from '../shared/utils/debugging/DebugMode';
 import { eventBus, DataEvent } from './EventBus';
-import { unifiedDataService } from './unifiedDataService';
+import { unifiedDataService } from '../storage/UnifiedDataService';
 
 // CROSS-TAB SYNCHRONIZATION SERVICE
 // Ensures real-time data consistency across multiple browser tabs

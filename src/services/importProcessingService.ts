@@ -69,6 +69,24 @@ export interface BackupData {
   accountBalance?: number;
 }
 
+export interface ValidationResult {
+  isValid: boolean;
+  rowsProcessed: number;
+  errors: string[];
+  warnings: string[];
+  invalidRows: number[];
+}
+
+export interface ProcessedRow {
+  rowIndex: number;
+  date: string;
+  description: string;
+  amount: number;
+  isValid: boolean;
+  errors: string[];
+  warnings: string[];
+}
+
 // ======================
 // IMPORT PROCESSING SERVICE - FOUNDATION
 // ======================

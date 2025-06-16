@@ -394,8 +394,8 @@ class CSVProcessingService {
       
       // Sort transactions by Post date and time (newest first, matching bank statement order)
       const sortedTransactions = transactions.sort((a, b) => {
-        const dateA = this.createSortableDateTime(a.postDate || a.date, a.time || '00:00');
-        const dateB = this.createSortableDateTime(b.postDate || b.date, b.time || '00:00');
+        const dateA = this.createSortableDateTime(a.date, a.time || '00:00');
+        const dateB = this.createSortableDateTime(b.date, b.time || '00:00');
         return dateB.getTime() - dateA.getTime(); // Newest first (most recent transaction first)
       });
       

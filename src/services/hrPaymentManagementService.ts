@@ -157,28 +157,29 @@ class HRPaymentManagementService {
     }
   }
 
-  private async storeHRPayments(payments: HRPayment[]): Promise<void> {
-    try {
-      // Get existing payments
-      const existing = await this.getAllHRPayments();
-      
-      // Merge with new payments (avoid duplicates)
-      const merged = [...existing];
-      payments.forEach(newPayment => {
-        const existingIndex = merged.findIndex(p => p.id === newPayment.id);
-        if (existingIndex >= 0) {
-          merged[existingIndex] = newPayment;
-        } else {
-          merged.push(newPayment);
-        }
-      });
+  // Will be used in later micro-jobs
+  // private async storeHRPayments(payments: HRPayment[]): Promise<void> {
+  //   try {
+  //     // Get existing payments
+  //     const existing = await this.getAllHRPayments();
+  //     
+  //     // Merge with new payments (avoid duplicates)
+  //     const merged = [...existing];
+  //     payments.forEach(newPayment => {
+  //       const existingIndex = merged.findIndex(p => p.id === newPayment.id);
+  //       if (existingIndex >= 0) {
+  //         merged[existingIndex] = newPayment;
+  //       } else {
+  //         merged.push(newPayment);
+  //       }
+  //     });
 
-      this.storeData(this.STORAGE_KEY, merged);
-    } catch (error) {
-      console.error('Failed to store HR payments:', error);
-      throw error;
-    }
-  }
+  //     this.storeData(this.STORAGE_KEY, merged);
+  //   } catch (error) {
+  //     console.error('Failed to store HR payments:', error);
+  //     throw error;
+  //   }
+  // }
 
   async updateHRPayment(payment: HRPayment): Promise<void> {
     try {

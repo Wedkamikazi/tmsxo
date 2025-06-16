@@ -1,21 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { BankStatementImport } from '../../../banking/imports/BankStatementImport';
-import { BankAccountManager } from '../../../banking/accounts/BankAccountManager';
-import { Transactions } from '../../../banking/transactions/Transactions';
-import { BankBalance } from '../../../banking/accounts/BankBalance';
-import { FileManager } from './FileManager';
-import QwenIntegrationStatus from '../../../integration/ai/QwenIntegrationStatus';
+import { 
+  BankStatementImport, 
+  BankAccountManager, 
+  Transactions, 
+  BankBalance,
+  CreditTransactions,
+  DebitTransactions
+} from '@/banking';
+import { 
+  HRPayments, 
+  DailyCashManagement, 
+  TimeDepositManagement 
+} from '@/treasury';
+import { 
+  OllamaChat, 
+  OllamaControlWidget, 
+  QwenIntegrationStatus 
+} from '@/integration';
+import { 
+  FileManager, 
+  DataCleanup, 
+  Settings, 
+  ErrorBoundary, 
+  SystemHealthMonitor 
+} from '@/ui';
 import SimpleDataCleanup from './DataCleanup';
-import { OllamaChat } from '../../../integration/ai/OllamaChat';
-import { Settings } from '../admin/Settings';
-import { ErrorBoundary } from '../../components/common/ErrorBoundary';
-import SystemHealthMonitor from '../admin/SystemHealthMonitor';
-import OllamaControlWidget from '../../../integration/ai/OllamaControlWidget';
-import { CreditTransactions } from '../../../banking/transactions/CreditTransactions';
-import { DebitTransactions } from '../../../banking/transactions/DebitTransactions';
-import { HRPayments } from '../../../treasury/payments/HRPayments';
-import { DailyCashManagement } from '../../../treasury/cash-management/DailyCashManagement';
-import { TimeDepositManagement } from '../../../treasury/time-deposits/TimeDepositManagement';
 import { 
   stateManager, 
   saveActiveTab, 

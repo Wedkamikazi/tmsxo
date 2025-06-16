@@ -270,7 +270,7 @@ export const DataHub: React.FC = () => {
     }
 
     try {
-      const { hrPaymentManagementService } = await import('../services/hrPaymentManagementService');
+      const { hrPaymentManagementService } = await import('../../../treasury/payments/HRPaymentManagementService');
       await hrPaymentManagementService.extractHRPayments(transactions, bankAccount.id);
       console.log('✅ HR payments extracted successfully');
     } catch (error) {

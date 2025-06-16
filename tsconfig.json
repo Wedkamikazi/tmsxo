@@ -23,7 +23,19 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["*"],
+      "@/core/*": ["core/*"],
+      "@/data/*": ["data/*"],
+      "@/banking/*": ["banking/*"],
+      "@/treasury/*": ["treasury/*"],
+      "@/ui/*": ["ui/*"],
+      "@/integration/*": ["integration/*"],
+      "@/analytics/*": ["analytics/*"],
+      "@/shared/*": ["shared/*"]
+    }
   },
   "include": [
     "src"

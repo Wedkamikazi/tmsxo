@@ -1293,10 +1293,10 @@ class CoreDataService {
       {
         id: 'acc_default_checking',
         name: 'Primary Checking',
-        type: 'checking',
-        balance: 0,
+        accountNumber: '****1234',
+        bankName: 'Default Bank',
         currency: 'USD',
-        isActive: true
+        currentBalance: 0
       }
     ];
   }

@@ -18,7 +18,7 @@ import {
   BusinessCalendar,
   AuditLogEntry,
   Transaction
-} from '../../../shared/types';
+} from '../../shared/types';
 import { eventBus } from '../../core/orchestration/EventBus';
 
 // =============================================

@@ -447,12 +447,6 @@ class CSVProcessingService {
       const sortedTransactions = transactions.sort((a, b) => {
         const dateA = this.createSortableDateTime(a.postDate || a.date, a.time || '00:00');
         const dateB = this.createSortableDateTime(b.postDate || b.date, b.time || '00:00');
-        
-        // Debug logging for 31/12/2024 sorting
-        if (a.postDate?.includes('31/12/2024') || b.postDate?.includes('31/12/2024')) {
-          console.log(`Sorting transactions with 31/12/2024: A: ${a.postDate} (${dateA.toISOString()}), B: ${b.postDate} (${dateB.toISOString()})`);
-        }
-        
         return dateB.getTime() - dateA.getTime(); // Newest first (most recent transaction first)
       });
       

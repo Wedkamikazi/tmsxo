@@ -2,7 +2,7 @@
 // Extracted from mlCategorizationService.ts - implements TensorFlow-based transaction categorization
 
 import * as tf from '@tensorflow/tfjs';
-import { Transaction } from '../../shared/types';
+import { Transaction } from '@/shared/types';
 import { CategorizationStrategy, UnifiedCategorizationResult } from './index';
 import { 
   TensorFlowModelConfig, 
@@ -11,10 +11,10 @@ import {
   TensorFlowModelStatus,
   FeatureConfig
 } from './TensorFlowTypes';
-import { localStorageManager } from '../../data/storage/LocalStorageManager';
-import { cleanupManager } from '../../data/maintenance/CleanupManager';
-import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
-import { isDebugMode as checkDebugMode } from '../../shared/utils/debugging/DebugMode';
+import { localStorageManager } from '@/data/storage/LocalStorageManager';
+import { cleanupManager } from '@/data/maintenance/CleanupManager';
+import { systemIntegrityService } from '@/data/integrity/SystemIntegrityService';
+import { isDebugMode as checkDebugMode } from '@/shared/utils/debugging/DebugMode';
 
 export class TensorFlowMethod implements CategorizationStrategy {
   name = 'tensorflow';

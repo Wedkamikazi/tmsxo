@@ -517,9 +517,10 @@ class CreditTransactionManagementService {
         notes: `Credit transaction ${action.toLowerCase().replace('_', ' ')}`
       };
 
-      const existing = await coreDataService.getData<AuditLogEntry[]>(this.AUDIT_LOG_KEY) || [];
+      const item = localStorage.getItem(this.AUDIT_LOG_KEY);
+      const existing = item ? JSON.parse(item) as AuditLogEntry[] : [];
       existing.push(auditEntry);
-      await coreDataService.setData(this.AUDIT_LOG_KEY, existing);
+      localStorage.setItem(this.AUDIT_LOG_KEY, JSON.stringify(existing));
     } catch (error) {
       console.error('Failed to log audit entry:', error);
     }

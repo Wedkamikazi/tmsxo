@@ -3,7 +3,7 @@ import {
   CollectionType
 } from '../types';
 import { unifiedDataService } from './unifiedDataService';
-import { fileStorageService } from './fileStorageService';
+import { importProcessingService } from './importProcessingService';
 
 // Stub services for missing dependencies - minimal implementation for production build
 const stubReconciliationService = {

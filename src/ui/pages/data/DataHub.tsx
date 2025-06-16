@@ -685,8 +685,8 @@ export const DataHub: React.FC = () => {
         );
       case 'dataCleanup':
         return (
-          <ErrorBoundary componentName="SimpleDataCleanup">
-            <SimpleDataCleanup />
+          <ErrorBoundary componentName="DataCleanup">
+            <DataCleanup />
           </ErrorBoundary>
         );
       case 'ollamaChat':

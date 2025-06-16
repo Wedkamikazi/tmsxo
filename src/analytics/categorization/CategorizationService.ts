@@ -1,5 +1,5 @@
 import { TransactionCategory, CategorizationRule, TransactionCategorization, Transaction } from '../../../shared/types';
-import { localStorageManager } from './localStorageManager';
+import { localStorageManager } from '../../data/storage/LocalStorageManager';
 import { eventBus } from '../../core/orchestration/EventBus';
 
 /**

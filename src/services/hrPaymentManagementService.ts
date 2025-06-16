@@ -26,7 +26,7 @@ import { unifiedCategorizationService } from './unifiedCategorizationService';
 class HRPaymentManagementService {
   private readonly STORAGE_KEY = 'tms_hr_payments';
   private readonly PAYROLL_KEY = 'tms_payroll_entries';
-  // private readonly RECONCILIATION_MATCHES_KEY = 'tms_hr_reconciliation_matches';
+  private readonly RECONCILIATION_MATCHES_KEY = 'tms_hr_reconciliation_matches';
   private readonly AUDIT_LOG_KEY = 'tms_hr_audit_log';
 
   constructor() {

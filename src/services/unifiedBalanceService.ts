@@ -196,8 +196,8 @@ class UnifiedBalanceService {
           openingBalance,
           dailyMovement,
           transactionCount: dayTransactions.length,
-          lastTransactionTime: this.extractTimeFromTransaction(lastTransaction),
-          lastTransactionId: lastTransaction.id
+          lastTransactionTime: this.extractTimeFromTransaction(mostRecentTransaction),
+          lastTransactionId: mostRecentTransaction.id
         });
 
         previousClosingBalance = closingBalance;

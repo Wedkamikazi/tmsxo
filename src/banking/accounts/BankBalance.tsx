@@ -31,7 +31,7 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
   const cachedState = getComponentState<{
     filteredBalances: DailyBalance[];
     bankAccounts: BankAccount[];
-    stats: BankBalanceStats | null;
+    stats: BalanceStats | null;
   }>('BankBalance');
   
   // State management

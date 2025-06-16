@@ -509,7 +509,7 @@ const ManualReconciliationModal: React.FC<ManualReconciliationModalProps> = ({
                           </div>
                           <div className="option-details">
                             <p>Invoice: {entry.invoiceNumber} | Due: {new Date(entry.dueDate).toLocaleDateString()}</p>
-                            <p>Category: {entry.category} | Terms: {entry.paymentTerms}</p>
+                            <p>Aging: {entry.agingDays} days | Status: {entry.status}</p>
                           </div>
                         </div>
                       ))}

@@ -225,11 +225,12 @@ class HRPaymentManagementService {
   // UTILITY METHODS
   // =============================================
 
-  private getAccountName(accountId: string): string {
-    // This would typically fetch from the account service
-    // For now, return a placeholder
-    return `Account ${accountId.substring(0, 8)}`;
-  }
+  // Will be used in later micro-jobs
+  // private getAccountName(accountId: string): string {
+  //   // This would typically fetch from the account service
+  //   // For now, return a placeholder
+  //   return `Account ${accountId.substring(0, 8)}`;
+  // }
 
   async logAuditEntry(action: string, paymentId: string, details: any): Promise<void> {
     try {

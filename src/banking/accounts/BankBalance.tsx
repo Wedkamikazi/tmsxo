@@ -92,12 +92,13 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
       const accounts = unifiedDataService.getAllAccounts();
       setBankAccounts(accounts);
       
-      // Apply filters and sorting to get daily balances
-      const filtered = bankBalanceService.getFilteredBalances(filters, sortField, sortDirection);
+      // Get daily balances and apply filters
+      const allBalances = unifiedBalanceService.getDailyBalances();
+      const filtered = unifiedBalanceService.filterBalances(allBalances, filters);
       setFilteredBalances(filtered);
       
       // Calculate stats
-      const balanceStats = bankBalanceService.getBalanceStats(filtered);
+      const balanceStats = unifiedBalanceService.getBalanceStats(filtered);
       setStats(balanceStats);
       
       // Save state for caching

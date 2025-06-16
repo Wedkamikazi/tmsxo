@@ -139,7 +139,7 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
   };
 
   // Handle filter changes
-  const handleFilterChange = (key: keyof BankBalanceFilters, value: string) => {
+  const handleFilterChange = (key: keyof BalanceFilters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
     setCurrentPage(1); // Reset to first page when filters change
   };
@@ -161,7 +161,7 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
   // Export to CSV
   const handleExportCSV = () => {
     try {
-      const csvContent = bankBalanceService.exportToCSV(filteredBalances);
+      const csvContent = unifiedBalanceService.exportToCSV(filteredBalances);
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);

@@ -343,7 +343,7 @@ class TimeDepositService {
         const type: 'placement' | 'maturity' = isMaturity ? 'maturity' : 'placement';
 
         // Extract deposit number if available
-        const depositNumberMatch = description.match(/(?:td|deposit)[:\s\-]*([a-z0-9\-]+)/i);
+        const depositNumberMatch = description.match(/(?:td|deposit)[:\s-]*([a-z0-9-]+)/i);
         const depositNumber = depositNumberMatch ? depositNumberMatch[1] : undefined;
 
         // Extract interest rate if available

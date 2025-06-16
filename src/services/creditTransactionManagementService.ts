@@ -411,7 +411,7 @@ class CreditTransactionManagementService {
     try {
       const existing = await this.getAllCreditTransactions();
       const updated = [...existing, ...creditTransactions];
-      await coreDataService.setData(this.STORAGE_KEY, updated);
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(updated));
     } catch (error) {
       console.error('Failed to store credit transactions:', error);
       throw error;
@@ -420,8 +420,9 @@ class CreditTransactionManagementService {
 
   async getAllCreditTransactions(): Promise<CreditTransaction[]> {
     try {
-      const transactions = await coreDataService.getData<CreditTransaction[]>(this.STORAGE_KEY);
-      return transactions || [];
+      const item = localStorage.getItem(this.STORAGE_KEY);
+      if (!item) return [];
+      return JSON.parse(item) as CreditTransaction[];
     } catch (error) {
       console.error('Failed to get credit transactions:', error);
       return [];

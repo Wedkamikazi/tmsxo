@@ -1,7 +1,7 @@
 // RULE-BASED CATEGORIZATION METHOD
 // Extracted from categorizationService.ts - implements rule-based transaction categorization
 
-import { Transaction, CategorizationRule, TransactionCategory } from '../../types';
+import { Transaction, CategorizationRule, TransactionCategory } from '../../shared/types';
 import { CategorizationStrategy, UnifiedCategorizationResult } from './index';
 import { localStorageManager } from '../../data/storage/LocalStorageManager';
 import { eventBus } from '../../core/orchestration/EventBus';

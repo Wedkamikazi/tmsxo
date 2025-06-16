@@ -935,9 +935,10 @@ class CoreDataService {
   // SNAPSHOT MANAGEMENT
   // ======================
 
-  createSnapshot(operationType: string): string {
+    createSnapshot(operationType: string): string {
     const timestamp = new Date().toISOString();
-    
+    console.log(`📸 Creating snapshot for operation: ${operationType}`);
+
     const snapshot: StorageSnapshot = {
       timestamp,
       transactions: this.getAllTransactions(),

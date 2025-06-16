@@ -1,15 +1,17 @@
 import { CSVRow, Transaction, ImportSummary, ValidationError, ValidationRule, CSVTemplate } from '../types';
 
 // CSV Template Configuration
+// POST DATE is the primary date used for all transactions (when transaction was posted to account)
+// VALUE DATE is kept for reference but not used as primary date (used by banks for interest calculations)
 export const CSV_TEMPLATE: CSVTemplate = {
   headers: ['Bank reference', 'Narrative', 'Customer reference', 'TRN type', 'Value date', 'Credit amount', 'Debit amount', 'Time', 'Post date', 'Balance'],
   validationRules: [
     { field: 'Bank reference', rule: 'required', message: 'Bank reference is required' },
     { field: 'Narrative', rule: 'required', message: 'Narrative is required' },
     { field: 'TRN type', rule: 'required', message: 'Transaction type is required' },
-    { field: 'Value date', rule: 'required', message: 'Value date is required' },
+    { field: 'Value date', rule: 'required', message: 'Value date is required (but Post date takes priority)' },
     { field: 'Value date', rule: 'date', message: 'Value date must be in valid format (MM/DD/YYYY, DD/MM/YYYY, or MMDDYYYY)' },
-    { field: 'Post date', rule: 'required', message: 'Post date is required' },
+    { field: 'Post date', rule: 'required', message: 'Post date is required (PRIMARY date used for transactions)' },
     { field: 'Post date', rule: 'date', message: 'Post date must be in valid format (MM/DD/YYYY, DD/MM/YYYY, or MMDDYYYY)' },
     { field: 'Credit amount', rule: 'number', message: 'Credit amount must be a valid number' },
     { field: 'Debit amount', rule: 'number', message: 'Debit amount must be a valid number' },

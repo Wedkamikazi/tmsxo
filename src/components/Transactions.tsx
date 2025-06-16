@@ -470,12 +470,45 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
   };
 
   const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+    try {
+      const date = new Date(dateString);
+      
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        // If the dateString contains DD/MM/YYYY format, try to parse it manually
+        if (dateString.includes('/') && dateString.length >= 10) {
+          const parts = dateString.split('T')[0].split('/');
+          if (parts.length === 3) {
+            const day = parseInt(parts[0]);
+            const month = parseInt(parts[1]);
+            const year = parseInt(parts[2]);
+            
+            // Create date with month-1 (JavaScript months are 0-indexed)
+            const parsedDate = new Date(year, month - 1, day);
+            if (!isNaN(parsedDate.getTime())) {
+              return parsedDate.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              });
+            }
+          }
+        }
+        
+        // Return the original string if we can't parse it
+        console.warn(`Unable to parse date: "${dateString}"`);
+        return dateString.split('T')[0]; // Return just the date part if it has time
+      }
+      
+      return date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch (error) {
+      console.error('Error formatting date:', dateString, error);
+      return dateString.split('T')[0]; // Fallback to just the date part
+    }
   };
 
   const getAccountName = (accountId: string): string => {

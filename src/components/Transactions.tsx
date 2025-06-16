@@ -236,6 +236,9 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
       return [];
     }
     
+    console.log('🔍 SORTING DEBUG: Starting with', transactions.length, 'total transactions');
+    console.log('🔍 SORTING DEBUG: Sort field:', sortField, 'Direction:', sortDirection);
+    
     let filtered = [...transactions];
     
     // Apply filters

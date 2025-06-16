@@ -30,6 +30,7 @@ class HRPaymentManagementService {
   private readonly AUDIT_LOG_KEY = 'tms_hr_audit_log';
 
   constructor() {
+    console.log('✅ HR Payment Management Service initialized');
     this.initializeDefaultData();
   }
 

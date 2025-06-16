@@ -935,7 +935,7 @@ class DailyCashManagementService {
   }> {
     try {
       // Import intercompany transfer service
-      const { intercompanyTransferService } = await import('./intercompanyTransferService');
+      const { intercompanyTransferService } = await import('../intercompany/IntercompanyTransferService');
       
       const intercoData = await intercompanyTransferService.getIntercompanyTransfersForDate(date, accountNumber);
       

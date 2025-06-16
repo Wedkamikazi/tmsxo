@@ -1738,7 +1738,7 @@ class SystemIntegrityService {
     };
 
     const [categorization, predictiveAnalytics, naturalLanguage] = await Promise.allSettled([
-              checkMLService('unifiedCategorizationService', (await import('./unifiedCategorizationService')).unifiedCategorizationService),
+              checkMLService('unifiedCategorizationService', (await import('../../analytics/categorization/UnifiedCategorizationService')).unifiedCategorizationService),
       checkMLService('mlPredictiveAnalyticsService', (await import('../../analytics/machine-learning/MLPredictiveAnalyticsService')).mlPredictiveAnalyticsService),
       checkMLService('mlNaturalLanguageService', (await import('./mlNaturalLanguageService')).mlNaturalLanguageService)
     ]);

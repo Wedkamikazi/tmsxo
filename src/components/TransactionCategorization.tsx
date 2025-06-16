@@ -169,7 +169,7 @@ export const TransactionCategorization: React.FC<TransactionCategorizationProps>
     return () => {
       timerCleanup.clearInterval('status-check');
     };
-  }, [loadData, refreshTrigger, checkServiceStatus, timerCleanup]);
+  }, [loadData, refreshTrigger, checkServiceStatus]);
 
   // Get categorization data for a transaction
   const getTransactionCategorization = useCallback((transactionId: string): TransactionCategorizationData | undefined => {

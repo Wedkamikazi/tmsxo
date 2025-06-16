@@ -6,10 +6,10 @@ import { performanceManager } from '../performance/PerformanceManager';
 import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
 import { crossTabSyncService } from '../../data/synchronization/CrossTabSyncService';
 import { unifiedCategorizationService } from '../../analytics/categorization/UnifiedCategorizationService';
-import { mlNaturalLanguageService } from '../../analytics/ml/MLNaturalLanguageService';
-import { mlPredictiveAnalyticsService } from '../../analytics/ml/MLPredictiveAnalyticsService';
+import { mlNaturalLanguageService } from '../../analytics/machine-learning/MLNaturalLanguageService';
+import { mlPredictiveAnalyticsService } from '../../analytics/machine-learning/MLPredictiveAnalyticsService';
 import { localOllamaIntegration } from '../../integration/ai/LocalOllamaIntegration';
-import { enhancedMLOrchestrator } from '../../analytics/ml/EnhancedMLOrchestrator';
+import { enhancedMLOrchestrator } from '../../analytics/machine-learning/EnhancedMLOrchestrator';
 
 // SERVICE ORCHESTRATOR - ULTIMATE SYSTEM INITIALIZATION
 // Manages service startup sequence, dependencies, health monitoring, and graceful shutdown

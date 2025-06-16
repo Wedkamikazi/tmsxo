@@ -16,8 +16,8 @@
  */
 
 import { coreDataService } from '../../data/storage/CoreDataService';
-import { eventBus } from './eventBus';
-import { systemIntegrityService } from './systemIntegrityService';
+import { eventBus } from '../../core/orchestration/EventBus';
+import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
 
 // ======================
 // TYPE DEFINITIONS

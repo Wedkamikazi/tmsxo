@@ -26,7 +26,6 @@ import { eventBus } from './eventBus';
 
 class DailyCashManagementService {
   private readonly STORAGE_KEY = 'tms_daily_cash_entries';
-  private readonly VERIFICATION_KEY = 'tms_daily_cash_verification';
   private readonly AUDIT_LOG_KEY = 'tms_daily_cash_audit_log';
 
   constructor() {

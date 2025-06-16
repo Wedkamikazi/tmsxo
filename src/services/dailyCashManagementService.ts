@@ -14,11 +14,8 @@
  * - Real-time updates via event system
  */
 
-import { 
+import {
   DailyCashEntry,
-  CreditTransaction,
-  DebitTransaction,
-  HRPayment,
   AuditLogEntry
 } from '../types';
 import { eventBus } from './eventBus';

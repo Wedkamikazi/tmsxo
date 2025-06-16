@@ -446,9 +446,9 @@ class CreditTransactionManagementService {
       
       if (index !== -1) {
         transactions[index] = creditTransaction;
-        await coreDataService.setData(this.STORAGE_KEY, transactions);
-        
-        eventBus.emit('CREDIT_TRANSACTION_UPDATED', creditTransaction);
+              localStorage.setItem(this.STORAGE_KEY, JSON.stringify(transactions));
+      
+      eventBus.emit('CREDIT_TRANSACTION_UPDATED', creditTransaction);
       }
     } catch (error) {
       console.error('Failed to update credit transaction:', error);

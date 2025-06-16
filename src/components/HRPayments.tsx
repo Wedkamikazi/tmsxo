@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
   HRPayment, 
-  PayrollEntry,
-  ReconciliationMatch 
+  PayrollEntry
 } from '../types';
 import { hrPaymentManagementService } from '../services/hrPaymentManagementService';
 import { eventBus } from '../services/eventBus';

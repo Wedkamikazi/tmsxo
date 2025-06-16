@@ -484,7 +484,7 @@ class UnifiedBalanceService {
 
     try {
       // Get existing balance data  
-      const lastImport = importHistoryService.getLastImportInfo(accountId);
+      const lastImport = importProcessingService.getLastImportInfo(accountId);
 
       // Check for backward import scenario
       if (lastImport && new Date(importDateRange.to) < new Date(lastImport.lastImportDate)) {

@@ -75,9 +75,11 @@ export interface BackupData {
 
 class ImportProcessingService {
   private readonly IMPORT_HISTORY_STORAGE_KEY = 'treasury_import_history';
+  private readonly BACKUP_KEY_PREFIX = 'tms_backup_';
+  private readonly MAX_BACKUPS = 10;
 
   constructor() {
-    console.log('✅ Import Processing Service (Foundation) initialized');
+    console.log('✅ Import Processing Service (Foundation + File Storage) initialized');
   }
 
   // ======================

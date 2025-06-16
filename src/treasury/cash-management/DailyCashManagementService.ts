@@ -369,7 +369,7 @@ class DailyCashManagementService {
 
       // Test HR payment service
       try {
-        const { hrPaymentManagementService } = await import('./hrPaymentManagementService');
+        const { hrPaymentManagementService } = await import('../payments/HRPaymentManagementService');
         await hrPaymentManagementService.getAllHRPayments();
         status.hrPaymentService = true;
       } catch (error) {

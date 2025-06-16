@@ -176,10 +176,17 @@ export class TensorFlowMethod implements CategorizationStrategy {
     try {
       console.log('🧠 Initializing TensorFlow Categorization Method...');
       
-      // Check debug mode first
+      // Check debug mode first - CRITICAL for preventing browser hang
       if (checkDebugMode()) {
-        console.log('🔧 TensorFlow Method: Debug mode detected - skipping initialization');
+        console.log('🔧 TensorFlow Method: Debug mode detected - COMPLETELY DISABLED to prevent browser hanging');
         this.isInitialized = false;
+        return;
+      }
+      
+      // PERFORMANCE CHECK: Don't initialize if page is still loading heavily
+      if (document.readyState !== 'complete') {
+        console.log('⏳ TensorFlow Method: Page still loading - deferring initialization');
+        setTimeout(() => this.initializeTensorFlow(), 5000); // Defer 5 seconds
         return;
       }
       

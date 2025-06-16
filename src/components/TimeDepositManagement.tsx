@@ -888,7 +888,7 @@ export const TimeDepositManagement: React.FC<TimeDepositManagementProps> = ({ da
           <div key={suggestion.id} className={`suggestion-card ${suggestion.riskLevel}`}>
             <div className="card-header">
               <div className="suggestion-info">
-                <h3>{suggestion.termDays}-Day Placement</h3>
+                <h3>{suggestion.suggestedTerm}-Day Placement</h3>
                 <span className={`risk-badge ${suggestion.riskLevel}`}>
                   {suggestion.riskLevel.toUpperCase()}
                 </span>
@@ -901,20 +901,20 @@ export const TimeDepositManagement: React.FC<TimeDepositManagementProps> = ({ da
             <div className="card-content">
               <div className="suggestion-details">
                 <div className="detail-row">
-                  <span>Interest Rate:</span>
-                  <span className="detail-value">{formatPercentage(suggestion.interestRate)}</span>
+                  <span>Suggested Term:</span>
+                  <span className="detail-value">{suggestion.suggestedTerm} days</span>
                 </div>
                 <div className="detail-row">
-                  <span>Expected Return:</span>
-                  <span className="detail-value text-green-600">{formatCurrency(suggestion.expectedReturn)}</span>
+                  <span>Projected Return:</span>
+                  <span className="detail-value text-green-600">{formatCurrency(suggestion.projectedReturn)}</span>
                 </div>
                 <div className="detail-row">
-                  <span>Confidence:</span>
-                  <span className="detail-value">{formatPercentage(suggestion.confidence * 100)}</span>
+                  <span>Available After:</span>
+                  <span className="detail-value">{formatCurrency(suggestion.liquidity.availableAfterInvestment)}</span>
                 </div>
                 <div className="detail-row">
-                  <span>Maturity Date:</span>
-                  <span className="detail-value">{formatDate(suggestion.recommendedMaturityDate)}</span>
+                  <span>Buffer Amount:</span>
+                  <span className="detail-value">{formatCurrency(suggestion.liquidity.bufferAmount)}</span>
                 </div>
               </div>
               

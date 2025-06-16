@@ -11,9 +11,9 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { CreditTransaction, ARAgingEntry, ForecastedCollection } from '../../shared/types';
+import { CreditTransaction, ARAgingEntry, ForecastedCollection } from '@/shared/types';
 import { creditTransactionManagementService } from './CreditTransactionManagementService';
-import { ErrorBoundary } from '../../ui/components/common/ErrorBoundary';
+import { ErrorBoundary } from '@/ui/components/common/ErrorBoundary';
 import './CreditTransactions.css';
 
 interface CreditTransactionsProps {

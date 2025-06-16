@@ -9,7 +9,7 @@ import {
   StrategyConfig,
   StrategyPerformance
 } from '.';
-import { RuleBasedMethod } from './categorization/ruleBasedMethod';
+import { RuleBasedMethod } from './RuleBasedMethod';
 import { MLEnhancedMethod } from './categorization/mlEnhancedMethod';
 import { TensorFlowMethod } from './categorization/tensorFlowMethod';
 import { isDebugMode } from '../shared/utils/debugging/DebugMode';

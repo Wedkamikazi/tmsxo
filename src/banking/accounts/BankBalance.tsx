@@ -4,7 +4,7 @@ import {
   type DailyBalance, 
   type BankBalanceFilters, 
   type BankBalanceStats 
-} from '../services/bankBalanceService';
+} from '../../core/services/bankBalanceService';
 import { unifiedDataService } from '../data/storage/UnifiedDataService';
 import { BankAccount } from '../../shared/types';
 import { 

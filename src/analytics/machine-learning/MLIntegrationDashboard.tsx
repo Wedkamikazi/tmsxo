@@ -6,7 +6,7 @@ import { TensorFlowMethod } from '../services/categorization/tensorFlowMethod';
 import { mlPredictiveAnalyticsService, PredictiveInsight } from '../analytics/machine-learning/MLPredictiveAnalyticsService';
 import { mlNaturalLanguageService, NLPAnalysisResult } from '../analytics/machine-learning/MLNaturalLanguageService';
 import { unifiedDataService } from '../data/storage/UnifiedDataService';
-import { Transaction } from '../../../shared/types';
+import { Transaction } from '../../shared/types';
 import * as tf from '@tensorflow/tfjs';
 import './MLIntegrationDashboard.css';
 

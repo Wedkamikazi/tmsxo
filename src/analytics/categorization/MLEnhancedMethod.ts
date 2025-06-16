@@ -6,7 +6,7 @@ import { CategorizationStrategy, UnifiedCategorizationResult } from './index';
 import { MLEnhancedStrategy, MLEnhancedPerformance, LearningDataPoint } from './MLEnhancedTypes';
 import { enhancedMLOrchestrator } from '../enhancedMLOrchestrator';
 import { localStorageManager } from '../';
-import { eventBus } from '../eventBus';
+import { eventBus } from '../../core/orchestration/EventBus';
 import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
 
 export class MLEnhancedMethod implements CategorizationStrategy {

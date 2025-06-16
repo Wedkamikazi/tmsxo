@@ -695,7 +695,7 @@ class IntercompanyTransferService {
   private async logAuditEntry(action: string, entityId: string, details: any): Promise<void> {
     try {
       const auditEntry: AuditLogEntry = {
-        id: `audit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: `audit_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
         timestamp: new Date().toISOString(),
         userId: 'system', // In real app, get from auth context
         action: action,

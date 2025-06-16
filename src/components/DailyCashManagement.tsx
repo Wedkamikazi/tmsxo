@@ -191,11 +191,12 @@ export const DailyCashManagement: React.FC<DailyCashManagementProps> = ({ dataRe
     try {
       setLoading(true);
       
-      await dailyCashManagementService.markEntryAsVerified(entry.id, {
-        verifiedBy: 'Current User', // In real app, get from auth context
-        verifiedDate: new Date().toISOString(),
-        notes: 'Manual verification'
-      });
+      await dailyCashManagementService.markDayAsVerified(
+        entry.date,
+        entry.accountNumber,
+        'Current User', // In real app, get from auth context
+        'Manual verification'
+      );
       
       // Refresh data to show updated verification status
       await loadDailyCashData();

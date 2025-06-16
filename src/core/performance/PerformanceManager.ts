@@ -5,7 +5,7 @@
  */
 
 import * as tf from '@tensorflow/tfjs';
-import { eventBus } from './EventBus';
+import { eventBus } from '../orchestration/EventBus';
 import { systemIntegrityService } from './systemIntegrityService';
 import { isDebugMode as checkDebugMode } from '../shared/utils/debugging/DebugMode';
 

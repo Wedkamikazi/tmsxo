@@ -1669,7 +1669,7 @@ class SystemIntegrityService {
   }> {
     try {
       // Import serviceOrchestrator dynamically to avoid circular dependencies
-      const { serviceOrchestrator } = await import('./serviceOrchestrator');
+      const { serviceOrchestrator } = await import('../../core/orchestration/ServiceOrchestrator');
       const systemStatus = serviceOrchestrator.getSystemStatus();
       
       const criticalServices = ['eventBus', 'localStorageManager', 'unifiedDataService', 'systemIntegrityService'];

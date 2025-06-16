@@ -13,7 +13,7 @@
  */
 
 import { eventBus } from './eventBus';
-import { systemIntegrityService } from './systemIntegrityService';
+import { systemIntegrityService } from '../integrity/SystemIntegrityService';
 
 export interface StorageQuotaInfo {
   total: number;           // Total localStorage quota in bytes

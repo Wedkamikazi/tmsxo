@@ -380,6 +380,24 @@ class DailyCashManagementService {
         console.warn('HR payment service not available:', error);
       }
 
+      // Test intercompany transfer service (Job 1.4)
+      try {
+        const { intercompanyTransferService } = await import('./intercompanyTransferService');
+        await intercompanyTransferService.getAllIntercompanyTransfers();
+        status.intercompanyTransferService = true;
+      } catch (error) {
+        console.warn('Intercompany transfer service not available:', error);
+      }
+
+      // Test time deposit service (Job 1.5)
+      try {
+        const { timeDepositService } = await import('./timeDepositService');
+        await timeDepositService.getAllTimeDeposits();
+        status.timeDepositService = true;
+      } catch (error) {
+        console.warn('Time deposit service not available:', error);
+      }
+
       // Test unified balance service
       try {
         const { unifiedBalanceService } = await import('./unifiedBalanceService');

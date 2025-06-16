@@ -186,7 +186,7 @@ class DailyCashManagementService {
       } else if (data.transferId) {
         // Try to get transfer details and recalculate
         try {
-          const { intercompanyTransferService } = await import('./intercompanyTransferService');
+          const { intercompanyTransferService } = await import('../intercompany/IntercompanyTransferService');
           const transfers = await intercompanyTransferService.getAllIntercompanyTransfers();
           const transfer = transfers.find(t => t.id === data.transferId);
           

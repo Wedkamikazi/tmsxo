@@ -273,10 +273,10 @@ class CSVProcessingService {
       const year = parseInt(dateString.substring(4, 8));
       
       if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900 && year <= 2100) {
-        const date = new Date(year, month - 1, day);
-        return date.getFullYear() === year && 
-               date.getMonth() === month - 1 && 
-               date.getDate() === day;
+          const date = new Date(year, month - 1, day);
+          return date.getFullYear() === year && 
+                 date.getMonth() === month - 1 && 
+                 date.getDate() === day;
       }
     }
     
@@ -288,38 +288,24 @@ class CSVProcessingService {
   // Convert CSV rows to transactions
   convertToTransactions(rows: CSVRow[]): Transaction[] {
     const baseTimestamp = Date.now();
-    return rows.map((row, index) => {
-      // Use postDate if available, otherwise fall back to valueDate
-      const dateToUse = row.postDate && row.postDate.trim() ? row.postDate : row.valueDate;
-      const formattedDate = this.formatDate(dateToUse);
-      
-      return {
-        id: `txn_${baseTimestamp}_${index}_${Math.random().toString(36).substr(2, 9)}`,
-        date: formattedDate,
-        description: row.narrative,
-        debitAmount: Math.abs(this.parseAmount(row.debitAmount)), // Ensure debit amounts are positive for display
-        creditAmount: Math.abs(this.parseAmount(row.creditAmount)), // Ensure credit amounts are positive for display
-        balance: this.parseAmount(row.balance),
-        reference: row.customerReference,
-        postDate: row.postDate,
-        time: row.time,
-        valueDate: row.valueDate
-      };
-    });
+    return rows.map((row, index) => ({
+      id: `txn_${baseTimestamp}_${index}_${Math.random().toString(36).substr(2, 9)}`,
+      date: this.formatDate(row.postDate),
+      description: row.narrative,
+      debitAmount: Math.abs(this.parseAmount(row.debitAmount)), // Ensure debit amounts are positive for display
+      creditAmount: Math.abs(this.parseAmount(row.creditAmount)), // Ensure credit amounts are positive for display
+      balance: this.parseAmount(row.balance),
+      reference: row.customerReference,
+      postDate: row.postDate,
+      time: row.time,
+      valueDate: row.valueDate
+    }));
   }
 
   private formatDate(dateString: string): string {
-    // Handle empty or null dates
-    if (!dateString || dateString.trim() === '') {
-      console.warn(`Empty date string provided to formatDate`);
-      return new Date().toISOString().split('T')[0]; // Return today's date as fallback
-    }
-    
-    const trimmedDate = dateString.trim();
-    
     // Handle slash-separated dates
-    if (trimmedDate.includes('/')) {
-      const parts = trimmedDate.split('/');
+    if (dateString.includes('/')) {
+      const parts = dateString.split('/');
       if (parts.length === 3) {
         const part1 = parseInt(parts[0]);
         const part2 = parseInt(parts[1]);
@@ -327,8 +313,8 @@ class CSVProcessingService {
         
         // Log for debugging
         if (isNaN(part1) || isNaN(part2) || isNaN(year)) {
-          console.warn(`Invalid date parts in formatDate: "${trimmedDate}" -> [${part1}, ${part2}, ${year}]`);
-          return new Date().toISOString().split('T')[0]; // Return today's date as fallback
+          console.warn(`Invalid date parts in formatDate: "${dateString}" -> [${part1}, ${part2}, ${year}]`);
+          return dateString; // Return original if parsing fails
         }
         
         let month: number, day: number;
@@ -356,62 +342,32 @@ class CSVProcessingService {
           // Convert to YYYY-MM-DD format
           const monthStr = month.toString().padStart(2, '0');
           const dayStr = day.toString().padStart(2, '0');
-          const formattedDate = `${year}-${monthStr}-${dayStr}`;
-          
-          // Validate the final date
-          const testDate = new Date(formattedDate);
-          if (testDate.getFullYear() === year && testDate.getMonth() === month - 1 && testDate.getDate() === day) {
-            return formattedDate;
-          } else {
-            console.warn(`Invalid date created: "${trimmedDate}" -> "${formattedDate}"`);
-            return new Date().toISOString().split('T')[0]; // Return today's date as fallback
-          }
-        } else {
-          console.warn(`Date parts out of range: "${trimmedDate}" -> day=${day}, month=${month}, year=${year}`);
-          return new Date().toISOString().split('T')[0]; // Return today's date as fallback
+          return `${year}-${monthStr}-${dayStr}`;
         }
       }
     }
     
     // Handle MMDDYYYY format (no separators)
-    if (trimmedDate.length === 8 && /^\d{8}$/.test(trimmedDate)) {
-      const month = parseInt(trimmedDate.substring(0, 2));
-      const day = parseInt(trimmedDate.substring(2, 4));
-      const year = parseInt(trimmedDate.substring(4, 8));
-      
+    if (dateString.length === 8 && /^\d{8}$/.test(dateString)) {
+      const month = parseInt(dateString.substring(0, 2));
+      const day = parseInt(dateString.substring(2, 4));
+      const year = parseInt(dateString.substring(4, 8));
+        
       if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900) {
         const monthStr = month.toString().padStart(2, '0');
         const dayStr = day.toString().padStart(2, '0');
-        const formattedDate = `${year}-${monthStr}-${dayStr}`;
-        
-        // Validate the final date
-        const testDate = new Date(formattedDate);
-        if (testDate.getFullYear() === year && testDate.getMonth() === month - 1 && testDate.getDate() === day) {
-          return formattedDate;
-        }
+        return `${year}-${monthStr}-${dayStr}`;
       }
     }
     
     // Fallback to original logic
-    try {
-      const date = new Date(trimmedDate);
-      if (date instanceof Date && !isNaN(date.getTime())) {
-        return date.toISOString().split('T')[0];
-      } else {
-        console.warn(`Failed to parse date with fallback logic: "${trimmedDate}"`);
-        return new Date().toISOString().split('T')[0]; // Return today's date as fallback
-      }
-    } catch (error) {
-      console.error(`Error parsing date "${trimmedDate}":`, error);
-      return new Date().toISOString().split('T')[0]; // Return today's date as fallback
-    }
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
   }
 
   // Helper method to create a sortable datetime from Post date and Time
   private createSortableDateTime(postDate: string, time: string): Date {
-    // Ensure we have a valid date string
-    const dateToUse = postDate && postDate.trim() ? postDate : new Date().toISOString().split('T')[0];
-    const formattedDate = this.formatDate(dateToUse);
+    const formattedDate = this.formatDate(postDate);
     
     // Handle time format (HH:MM)
     let timeString = '00:00';
@@ -422,24 +378,11 @@ class CSVProcessingService {
         // Convert HHMM to HH:MM
         timeString = timeString.substring(0, 2) + ':' + timeString.substring(2);
       }
-      // Validate time format
-      if (!/^\d{1,2}:\d{2}$/.test(timeString)) {
-        console.warn(`Invalid time format: "${time}" -> using 00:00`);
-        timeString = '00:00';
-      }
     }
     
     // Combine date and time
     const dateTimeString = `${formattedDate}T${timeString}:00`;
-    const result = new Date(dateTimeString);
-    
-    // Validate the resulting date
-    if (isNaN(result.getTime())) {
-      console.warn(`Invalid datetime created: "${dateTimeString}" -> using current time`);
-      return new Date();
-    }
-    
-    return result;
+    return new Date(dateTimeString);
   }
 
   // Process file and generate import summary

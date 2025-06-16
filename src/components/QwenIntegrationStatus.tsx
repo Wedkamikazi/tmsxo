@@ -26,7 +26,7 @@ const QwenIntegrationStatus: React.FC = () => {
       try {
         const tfMethod = new TensorFlowMethod();
         const modelStatus = tfMethod.getModelStatus();
-        setStatus(modelStatus);
+    setStatus(modelStatus);
       } catch (error) {
         console.error('Failed to get model status:', error);
         setStatus({

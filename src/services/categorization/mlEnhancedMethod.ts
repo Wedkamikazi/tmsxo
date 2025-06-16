@@ -345,27 +345,27 @@ export class MLEnhancedMethod implements CategorizationStrategy {
     try {
       const categorizations = JSON.parse(localStorage.getItem('transaction-categorizations') || '[]');
       const existingCategorization = categorizations.find((cat: any) => cat.transactionId === transaction.id);
+    
+    if (existingCategorization) {
+      const category = this.categoryMappings.get(existingCategorization.categoryId);
       
-      if (existingCategorization) {
-        const category = this.categoryMappings.get(existingCategorization.categoryId);
-        
-        this.performance.methodBreakdown.manual++;
-        
-        return {
-          categoryId: existingCategorization.categoryId,
-          categoryName: category?.name || existingCategorization.categoryId,
-          confidence: 1.0, // Manual categorization is always high confidence
-          method: 'manual',
-          reasoning: existingCategorization.reasoning || 'Manual categorization',
-          suggestions: [],
-          alternatives: [],
-          processingTime: 0,
-          metadata: {
-            anomalyDetected: false,
-            fallbackReason: 'low_ml_confidence',
-            strategyUsed: 'manual-fallback'
-          }
-        };
+      this.performance.methodBreakdown.manual++;
+      
+      return {
+        categoryId: existingCategorization.categoryId,
+        categoryName: category?.name || existingCategorization.categoryId,
+        confidence: 1.0, // Manual categorization is always high confidence
+        method: 'manual',
+        reasoning: existingCategorization.reasoning || 'Manual categorization',
+        suggestions: [],
+        alternatives: [],
+        processingTime: 0,
+        metadata: {
+          anomalyDetected: false,
+          fallbackReason: 'low_ml_confidence',
+          strategyUsed: 'manual-fallback'
+        }
+      };
       }
     } catch (error) {
       console.warn('Failed to load manual categorizations:', error);

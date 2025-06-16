@@ -371,6 +371,311 @@ class DebitTransactionManagementService {
   }
 
   // =============================================
+  // RECONCILIATION LOGIC
+  // =============================================
+
+  /**
+   * Auto-reconcile debit transactions with AP Aging and Forecasted Payments
+   */
+  async performAutoReconciliation(debitTransactionId: string): Promise<ReconciliationMatch | null> {
+    try {
+      const debitTransaction = await this.getDebitTransactionById(debitTransactionId);
+      if (!debitTransaction) {
+        throw new Error('Debit transaction not found');
+      }
+
+      // Try to match with AP Aging first
+      const apMatch = await this.matchWithAPAging(debitTransaction);
+      if (apMatch && apMatch.confidenceScore >= 0.8) {
+        const reconciliationMatch: ReconciliationMatch = {
+          id: `match_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          transactionId: debitTransaction.id,
+          matchedEntityId: apMatch.matchedEntityId,
+          matchedEntityType: 'ap_aging',
+          matchType: 'auto',
+          confidenceScore: apMatch.confidenceScore,
+          matchDate: new Date().toISOString(),
+          notes: apMatch.notes
+        };
+
+        // Update debit transaction
+        debitTransaction.reconciliationStatus = 'auto_matched';
+        debitTransaction.confidenceRatio = apMatch.confidenceScore;
+        debitTransaction.apAgingMatch = apMatch.apEntry;
+
+        await this.updateDebitTransaction(debitTransaction);
+        await this.storeReconciliationMatch(reconciliationMatch);
+
+        return reconciliationMatch;
+      }
+
+      // Try to match with Forecasted Payments
+      const forecastMatch = await this.matchWithForecastedPayments(debitTransaction);
+      if (forecastMatch && forecastMatch.confidenceScore >= 0.7) {
+        const reconciliationMatch: ReconciliationMatch = {
+          id: `match_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          transactionId: debitTransaction.id,
+          matchedEntityId: forecastMatch.matchedEntityId,
+          matchedEntityType: 'forecast',
+          matchType: 'auto',
+          confidenceScore: forecastMatch.confidenceScore,
+          matchDate: new Date().toISOString(),
+          notes: forecastMatch.notes
+        };
+
+        // Update debit transaction
+        debitTransaction.reconciliationStatus = 'auto_matched';
+        debitTransaction.confidenceRatio = forecastMatch.confidenceScore;
+        debitTransaction.forecastMatch = forecastMatch.forecastEntry;
+
+        await this.updateDebitTransaction(debitTransaction);
+        await this.storeReconciliationMatch(reconciliationMatch);
+
+        return reconciliationMatch;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Auto-reconciliation failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Manual reconciliation by user
+   */
+  async performManualReconciliation(
+    debitTransactionId: string, 
+    matchedEntityId: string, 
+    matchedEntityType: ReconciliationMatch['matchedEntityType'],
+    notes?: string
+  ): Promise<ReconciliationMatch> {
+    try {
+      const debitTransaction = await this.getDebitTransactionById(debitTransactionId);
+      if (!debitTransaction) {
+        throw new Error('Debit transaction not found');
+      }
+
+      const reconciliationMatch: ReconciliationMatch = {
+        id: `manual_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        transactionId: debitTransaction.id,
+        matchedEntityId: matchedEntityId,
+        matchedEntityType: matchedEntityType,
+        matchType: 'manual',
+        confidenceScore: 1.0, // Manual matches get full confidence
+        matchDate: new Date().toISOString(),
+        notes: notes || 'Manual reconciliation by user'
+      };
+
+      // Update debit transaction
+      debitTransaction.reconciliationStatus = 'manually_matched';
+      debitTransaction.confidenceRatio = 1.0;
+
+      // Attach the matched entity details
+      if (matchedEntityType === 'ap_aging') {
+        debitTransaction.apAgingMatch = await this.getAPAgingById(matchedEntityId);
+      } else if (matchedEntityType === 'forecast') {
+        debitTransaction.forecastMatch = await this.getForecastedPaymentById(matchedEntityId);
+      }
+
+      await this.updateDebitTransaction(debitTransaction);
+      await this.storeReconciliationMatch(reconciliationMatch);
+
+      // Log the manual action
+      await this.logAuditEntry('MANUAL_RECONCILIATION', debitTransaction.id, {
+        matchedEntityId,
+        matchedEntityType,
+        notes
+      });
+
+      return reconciliationMatch;
+    } catch (error) {
+      console.error('Manual reconciliation failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * User confirms a matched transaction to clear it
+   */
+  async confirmTransaction(debitTransactionId: string, verifiedBy: string, observations?: string): Promise<void> {
+    try {
+      const debitTransaction = await this.getDebitTransactionById(debitTransactionId);
+      if (!debitTransaction) {
+        throw new Error('Debit transaction not found');
+      }
+
+      debitTransaction.reconciliationStatus = 'confirmed';
+      debitTransaction.verificationDate = new Date().toISOString();
+      debitTransaction.verifiedBy = verifiedBy;
+      if (observations) {
+        debitTransaction.observations = observations;
+      }
+
+      await this.updateDebitTransaction(debitTransaction);
+
+      // Log the confirmation
+      await this.logAuditEntry('TRANSACTION_CONFIRMED', debitTransaction.id, {
+        verifiedBy,
+        observations
+      });
+
+      eventBus.emit('DEBIT_TRANSACTION_CONFIRMED', debitTransaction);
+    } catch (error) {
+      console.error('Transaction confirmation failed:', error);
+      throw error;
+    }
+  }
+
+  // =============================================
+  // MATCHING ALGORITHMS
+  // =============================================
+
+  private async matchWithAPAging(debitTransaction: DebitTransaction): Promise<{
+    confidenceScore: number;
+    matchedEntityId: string;
+    apEntry: APAgingEntry;
+    notes: string;
+  } | null> {
+    try {
+      const apEntries = await this.getAPAging();
+      let bestMatch: any = null;
+      let highestScore = 0;
+
+      for (const apEntry of apEntries) {
+        let score = 0;
+
+        // Amount matching (exact match gets highest score)
+        if (Math.abs(apEntry.amount - debitTransaction.amount) < 0.01) {
+          score += 0.6;
+        } else if (Math.abs(apEntry.amount - debitTransaction.amount) / apEntry.amount < 0.05) {
+          score += 0.4; // Within 5%
+        } else if (Math.abs(apEntry.amount - debitTransaction.amount) / apEntry.amount < 0.1) {
+          score += 0.2; // Within 10%
+        }
+
+        // Description matching
+        const description = debitTransaction.description.toLowerCase();
+        const vendorName = apEntry.vendorName.toLowerCase();
+        const invoiceNumber = apEntry.invoiceNumber.toLowerCase();
+
+        if (description.includes(vendorName)) {
+          score += 0.3;
+        }
+        if (description.includes(invoiceNumber)) {
+          score += 0.3;
+        }
+
+        // Date proximity (closer dates get higher scores)
+        const transactionDate = new Date(debitTransaction.date);
+        const dueDate = new Date(apEntry.dueDate);
+        const daysDiff = Math.abs((transactionDate.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (daysDiff <= 7) {
+          score += 0.2;
+        } else if (daysDiff <= 30) {
+          score += 0.1;
+        }
+
+        if (score > highestScore) {
+          highestScore = score;
+          bestMatch = {
+            confidenceScore: score,
+            matchedEntityId: apEntry.id,
+            apEntry: apEntry,
+            notes: `Matched based on amount (${score >= 0.6 ? 'exact' : 'approximate'}), vendor name, and date proximity`
+          };
+        }
+      }
+
+      return bestMatch;
+    } catch (error) {
+      console.error('AP Aging matching failed:', error);
+      return null;
+    }
+  }
+
+  private async matchWithForecastedPayments(debitTransaction: DebitTransaction): Promise<{
+    confidenceScore: number;
+    matchedEntityId: string;
+    forecastEntry: ForecastedPayment;
+    notes: string;
+  } | null> {
+    try {
+      const forecasts = await this.getForecastedPayments();
+      let bestMatch: any = null;
+      let highestScore = 0;
+
+      for (const forecast of forecasts) {
+        let score = 0;
+
+        // Amount matching (exact match gets highest score)
+        if (Math.abs(forecast.expectedAmount - debitTransaction.amount) < 0.01) {
+          score += 0.5;
+        } else if (Math.abs(forecast.expectedAmount - debitTransaction.amount) / forecast.expectedAmount < 0.05) {
+          score += 0.3; // Within 5%
+        } else if (Math.abs(forecast.expectedAmount - debitTransaction.amount) / forecast.expectedAmount < 0.1) {
+          score += 0.15; // Within 10%
+        }
+
+        // Description matching
+        const description = debitTransaction.description.toLowerCase();
+        const vendorName = forecast.vendorName.toLowerCase();
+        const forecastDescription = forecast.description.toLowerCase();
+
+        if (description.includes(vendorName)) {
+          score += 0.25;
+        }
+        if (description.includes(forecastDescription.split(' ')[0])) { // Match first word of forecast description
+          score += 0.15;
+        }
+
+        // Date proximity (expected payment date)
+        const transactionDate = new Date(debitTransaction.date);
+        const expectedDate = new Date(forecast.expectedDate);
+        const daysDiff = Math.abs((transactionDate.getTime() - expectedDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (daysDiff <= 3) {
+          score += 0.2;
+        } else if (daysDiff <= 7) {
+          score += 0.15;
+        } else if (daysDiff <= 14) {
+          score += 0.1;
+        }
+
+        // Apply forecast confidence as a multiplier
+        score *= forecast.confidence;
+
+        if (score > highestScore) {
+          highestScore = score;
+          bestMatch = {
+            confidenceScore: score,
+            matchedEntityId: forecast.id,
+            forecastEntry: forecast,
+            notes: `Matched based on expected amount, vendor name, and payment date (forecast confidence: ${(forecast.confidence * 100).toFixed(1)}%)`
+          };
+        }
+      }
+
+      return bestMatch;
+    } catch (error) {
+      console.error('Forecasted Payments matching failed:', error);
+      return null;
+    }
+  }
+
+  private async storeReconciliationMatch(match: ReconciliationMatch): Promise<void> {
+    try {
+      const existingMatches = this.getStoredData(this.RECONCILIATION_MATCHES_KEY);
+      existingMatches.push(match);
+      this.storeData(this.RECONCILIATION_MATCHES_KEY, existingMatches);
+    } catch (error) {
+      console.error('Failed to store reconciliation match:', error);
+      throw error;
+    }
+  }
+
+  // =============================================
   // AUDIT LOGGING
   // =============================================
 

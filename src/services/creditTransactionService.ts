@@ -76,7 +76,8 @@ class CreditTransactionService {
         }
       ];
       
-      fileStorageService.writeData(this.COLLECTION_TYPES_FILENAME, defaultTypes);
+      // Store collection types in localStorage (simplified implementation)
+      localStorage.setItem(`tms_${this.COLLECTION_TYPES_FILENAME}`, JSON.stringify(defaultTypes));
     }
   }
 

@@ -36,7 +36,7 @@ export const DailyCashManagement: React.FC<DailyCashManagementProps> = ({ dataRe
   const [error, setError] = useState<string | null>(null);
   
   // Filter states
-  const [filters, setFilters] = useState({
+  const [filters] = useState({
     dateFrom: '',
     dateTo: '',
     accountId: 'all',

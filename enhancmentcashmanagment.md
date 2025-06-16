@@ -1,4 +1,6 @@
-a comprehensive **Daily Cash Management Table** template that integrates all the key elements—bank balances, intercompany transfers, cash in/out, matured investments, and projected balances—based on transaction aging and maturity.
+# Enhanced Cash Management System
+
+A comprehensive **Daily Cash Management Table** template that integrates all the key elements—bank balances, intercompany transfers, cash in/out, matured investments, and projected balances—based on transaction aging and maturity.
 
 ---
 

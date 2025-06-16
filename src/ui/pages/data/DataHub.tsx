@@ -75,11 +75,11 @@ export const DataHub: React.FC = () => {
       setServicesLoaded(true);
       
       // Set services as available immediately when using cache
-      import('../../../core/orchestration/EventBus').then(eventBusModule => {
-        setEventBus(eventBusModule.eventBus);
+      import('@/core').then(coreModule => {
+        setEventBus(coreModule.eventBus);
       });
-      import('../../../data/storage/UnifiedDataService').then(unifiedDataServiceModule => {
-        setUnifiedDataService(unifiedDataServiceModule.unifiedDataService);
+      import('@/data').then(dataModule => {
+        setUnifiedDataService(dataModule.unifiedDataService);
       });
       
       // Mark services as initialized to ensure cache persistence

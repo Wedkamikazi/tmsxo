@@ -118,6 +118,34 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
     systemSafetyManager.emergencyStop();
   };
 
+  const handleDataFix = async () => {
+    setDataFixStatus('🔧 Checking transaction dates...');
+    
+    // First validate to see if there are any issues
+    const validation = validateTransactionDates();
+    
+    if (validation.invalid === 0) {
+      setDataFixStatus('✅ All transaction dates are valid - no fix needed');
+      return;
+    }
+    
+    setDataFixStatus(`⚠️ Found ${validation.invalid} invalid dates. Fixing...`);
+    
+    // Run the advanced fix
+    const result = fixInvalidTransactionDatesAdvanced();
+    
+    if (result.fixed > 0) {
+      setDataFixStatus(`✅ Fixed ${result.fixed} transactions with invalid dates`);
+    } else {
+      setDataFixStatus('❌ Could not fix invalid dates - check console for details');
+    }
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      setDataFixStatus('');
+    }, 5000);
+  };
+
   // INSTANT REFRESH: If initialized immediately (using cache), render children directly
   if (isInitialized && !shouldReinitializeServices()) {
     const systemStatus = getSystemStatus();

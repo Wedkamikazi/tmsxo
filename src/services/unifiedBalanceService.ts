@@ -167,7 +167,6 @@ class UnifiedBalanceService {
         );
 
         const mostRecentTransaction = sortedDayTransactions[0]; // Most recent transaction of the day
-        const oldestTransaction = sortedDayTransactions[sortedDayTransactions.length - 1]; // Oldest transaction of the day
 
         // The closing balance comes from the MOST RECENT transaction of the day
         // This is the actual balance after all transactions for that day

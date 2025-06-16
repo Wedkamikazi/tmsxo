@@ -10,8 +10,8 @@ import {
   StrategyPerformance
 } from '.';
 import { RuleBasedMethod } from './RuleBasedMethod';
-import { MLEnhancedMethod } from './categorization/mlEnhancedMethod';
-import { TensorFlowMethod } from './categorization/tensorFlowMethod';
+import { MLEnhancedMethod } from './MLEnhancedMethod';
+import { TensorFlowMethod } from './TensorFlowMethod';
 import { isDebugMode } from '../shared/utils/debugging/DebugMode';
 import { eventBus } from '../../core/orchestration/EventBus';
 

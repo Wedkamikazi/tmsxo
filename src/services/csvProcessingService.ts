@@ -410,7 +410,9 @@ class CSVProcessingService {
 
   // Helper method to create a sortable datetime from Post date and Time
   private createSortableDateTime(postDate: string, time: string): Date {
-    const formattedDate = this.formatDate(postDate);
+    // Ensure we have a valid date string
+    const dateToUse = postDate && postDate.trim() ? postDate : new Date().toISOString().split('T')[0];
+    const formattedDate = this.formatDate(dateToUse);
     
     // Handle time format (HH:MM)
     let timeString = '00:00';
@@ -421,11 +423,24 @@ class CSVProcessingService {
         // Convert HHMM to HH:MM
         timeString = timeString.substring(0, 2) + ':' + timeString.substring(2);
       }
+      // Validate time format
+      if (!/^\d{1,2}:\d{2}$/.test(timeString)) {
+        console.warn(`Invalid time format: "${time}" -> using 00:00`);
+        timeString = '00:00';
+      }
     }
     
     // Combine date and time
     const dateTimeString = `${formattedDate}T${timeString}:00`;
-    return new Date(dateTimeString);
+    const result = new Date(dateTimeString);
+    
+    // Validate the resulting date
+    if (isNaN(result.getTime())) {
+      console.warn(`Invalid datetime created: "${dateTimeString}" -> using current time`);
+      return new Date();
+    }
+    
+    return result;
   }
 
   // Process file and generate import summary

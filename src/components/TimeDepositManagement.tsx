@@ -636,7 +636,7 @@ export const TimeDepositManagement: React.FC<TimeDepositManagementProps> = ({ da
                         <span>{formatDate(deposit.maturityDate)}</span>
                       </td>
                       <td>
-                        <span className={`status-badge ${deposit.status}`}>
+                        <span className={`status-badge ${deposit.status} ${getStatusColor(deposit.status)}`}>
                           {deposit.status.toUpperCase()}
                         </span>
                       </td>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ErrorBoundary, SystemInitializer, DataHub } from '@/ui';
 import { initializeSystemSafety, shouldReinitializeServices } from '@/core';
+import { isDebugMode } from '@/shared/utils/debugging/DebugMode';
 import './ui/styles/globals.css';
 
 // Import DataHub conditionally only for full initialization
@@ -20,6 +21,15 @@ function App(): React.ReactElement {
     const initSafety = async () => {
       try {
         console.log('🛡️ App starting - Initializing safety system...');
+        
+        // CRITICAL: Set debug mode for safer initialization
+        if (!isDebugMode()) {
+          console.log('⚠️ BROWSER HANG PREVENTION: Enabling debug mode for safer startup');
+          localStorage.setItem('treasury_debug_mode', 'true');
+          window.location.reload(); // Reload to apply debug mode
+          return;
+        }
+        
         await initializeSystemSafety();
         console.log('✅ Safety system ready - App can proceed safely');
       } catch (error) {
@@ -71,6 +81,9 @@ function App(): React.ReactElement {
                     margin: '0 auto 16px'
                   }}></div>
                   <div style={{ fontSize: '18px', fontWeight: 500 }}>Loading Treasury Management System...</div>
+                  <div style={{ fontSize: '14px', marginTop: '8px', opacity: 0.8 }}>
+                    {isDebugMode() ? '🔧 Debug Mode: Lightweight initialization' : '🚀 Production Mode: Full features'}
+                  </div>
                 </div>
                 <style>{`
                   @keyframes spin {

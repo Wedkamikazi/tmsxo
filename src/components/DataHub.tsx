@@ -11,6 +11,7 @@ import { Settings } from './Settings';
 import { ErrorBoundary } from './ErrorBoundary';
 import SystemHealthMonitor from './SystemHealthMonitor';
 import OllamaControlWidget from './OllamaControlWidget';
+import { CreditTransactions } from './CreditTransactions';
 import { 
   stateManager, 
   saveActiveTab, 

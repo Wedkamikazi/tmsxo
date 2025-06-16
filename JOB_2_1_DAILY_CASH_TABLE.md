@@ -29,7 +29,7 @@ Creating the comprehensive **Daily Cash Management Table** - the central dashboa
 
 - 🔄 **Daily Entry Generation**: Create entries for each account/date combination
 - 🔄 **Data Aggregation**: Pull data from all transaction modules
-- 🔄 **Balance Calculation**: 
+- 🔄 **Balance Calculation**:
   - Opening balance (previous day's closing)
   - Cash In aggregation (credit transactions, investment maturities)
   - Cash Out aggregation (debit transactions, HR payments, new investments)
@@ -217,4 +217,4 @@ Even with just Credit Transactions (Job 1.1), this table will provide:
 
 ---
 
-**💡 RECOMMENDATION:** Implement this immediately after Job 1.2 (Debit Transactions) to have both credit and debit data feeding into the table for maximum immediate value. 
+**💡 RECOMMENDATION:** Implement this immediately after Job 1.2 (Debit Transactions) to have both credit and debit data feeding into the table for maximum immediate value.

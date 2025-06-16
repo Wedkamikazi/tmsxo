@@ -83,9 +83,9 @@ export class TensorFlowMethod implements CategorizationStrategy {
 
   async isAvailable(): Promise<boolean> {
     try {
-      // Check if we're in debug mode
+      // Check if we're in debug mode - return false to skip heavy TensorFlow initialization
       if (checkDebugMode()) {
-        console.log('🔧 TensorFlow Method: Debug mode detected - limited availability');
+        console.log('🔧 TensorFlow Method: Debug mode detected - DISABLED to prevent browser hanging');
         return false;
       }
       

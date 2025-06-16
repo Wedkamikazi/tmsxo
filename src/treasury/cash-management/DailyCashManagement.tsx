@@ -18,8 +18,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { DailyCashEntry } from '../../../shared/types';
 import { dailyCashManagementService } from './DailyCashManagementService';
-import { eventBus } from '../core/orchestration/EventBus';
-import { ErrorBoundary } from '../../components/common/ErrorBoundary';
+import { eventBus } from '../../core/orchestration/EventBus';
+import { ErrorBoundary } from '../../ui/components/common/ErrorBoundary';
 import './DailyCashManagement.css';
 
 interface DailyCashManagementProps {

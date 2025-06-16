@@ -99,6 +99,7 @@ interface JournalEntry {
 - [ ] **Audit Trail**: Complete transaction history maintained
 
 **AI Assistant Testing Instructions**:
+
 ```bash
 # Test double-entry validation
 npm test -- --testNamePattern="DoubleEntry"

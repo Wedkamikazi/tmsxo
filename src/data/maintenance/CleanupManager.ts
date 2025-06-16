@@ -5,7 +5,7 @@
  */
 
 import { performanceManager } from '../../core/performance/PerformanceManager';
-import { systemSafetyManager } from '../core/safety/SystemSafetyManager';
+import { systemSafetyManager } from '../../core/safety/SystemSafetyManager';
 
 interface DisposableResource {
   id: string;

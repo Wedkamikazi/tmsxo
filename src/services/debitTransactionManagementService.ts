@@ -113,43 +113,35 @@ class DebitTransactionManagementService {
     const sampleForecasts: ForecastedPayment[] = [
       {
         id: 'fp_001',
-        vendorName: 'Monthly Software License',
-        expectedAmount: 2500.00,
+        vendorId: 'vendor_005',
         expectedDate: '2024-12-20',
-        paymentType: 'recurring',
-        description: 'Software licensing monthly payment',
-        category: 'software_license',
-        confidence: 0.95
+        amount: 2500.00,
+        confidence: 'high',
+        notes: 'Software licensing monthly payment'
       },
       {
         id: 'fp_002',
-        vendorName: 'Office Rent Payment',
-        expectedAmount: 18000.00,
+        vendorId: 'vendor_006',
         expectedDate: '2024-12-31',
-        paymentType: 'recurring',
-        description: 'Monthly office rent payment',
-        category: 'rent',
-        confidence: 0.98
+        amount: 18000.00,
+        confidence: 'high',
+        notes: 'Monthly office rent payment'
       },
       {
         id: 'fp_003',
-        vendorName: 'Insurance Premium',
-        expectedAmount: 7500.00,
+        vendorId: 'vendor_007',
         expectedDate: '2024-12-28',
-        paymentType: 'scheduled',
-        description: 'Quarterly insurance premium',
-        category: 'insurance',
-        confidence: 0.85
+        amount: 7500.00,
+        confidence: 'medium',
+        notes: 'Quarterly insurance premium'
       },
       {
         id: 'fp_004',
-        vendorName: 'Equipment Maintenance',
-        expectedAmount: 3200.00,
+        vendorId: 'vendor_008',
         expectedDate: '2024-12-22',
-        paymentType: 'scheduled',
-        description: 'Quarterly equipment maintenance',
-        category: 'maintenance',
-        confidence: 0.75
+        amount: 3200.00,
+        confidence: 'medium',
+        notes: 'Quarterly equipment maintenance'
       }
     ];
 

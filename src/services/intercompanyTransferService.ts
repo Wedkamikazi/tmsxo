@@ -29,7 +29,6 @@ class IntercompanyTransferService {
   private readonly STORAGE_KEY = 'tms_intercompany_transfers';
   private readonly INTERCO_RECORDS_KEY = 'tms_intercompany_records';
   private readonly CASH_FORECAST_KEY = 'tms_cash_forecast_entries';
-  private readonly RECONCILIATION_MATCHES_KEY = 'tms_interco_reconciliation_matches';
   private readonly AUDIT_LOG_KEY = 'tms_interco_audit_log';
 
   constructor() {

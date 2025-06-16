@@ -1049,7 +1049,6 @@ class ImportProcessingService {
       }
       
       // Step 3: Create file record
-      const fileId = `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const fileRecord = this.addUploadedFile({
         fileName,
         accountId,

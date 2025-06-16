@@ -1,9 +1,9 @@
 import { Transaction, TransactionCategory } from '../../../shared/types';
 import { enhancedMLOrchestrator, EnhancedMLResult } from '../machine-learning/EnhancedMLOrchestrator';
 // import { localOllamaIntegration } from './localOllamaIntegration';
-import { categorizationService } from './categorizationService';
-import { systemIntegrityService } from './systemIntegrityService';
-import { localStorageManager } from './localStorageManager';
+import { categorizationService } from './CategorizationService';
+import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
+import { localStorageManager } from '../../data/storage/LocalStorageManager';
 import { eventBus } from '../../core/orchestration/EventBus';
 import { isDebugMode } from '../shared/utils/debugging/DebugMode';
 

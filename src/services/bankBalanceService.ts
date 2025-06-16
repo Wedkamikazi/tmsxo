@@ -183,22 +183,22 @@ class BankBalanceService {
         const mostRecentTransaction = transactionsToProcess[0];
         const closingBalance = mostRecentTransaction.balance;
         
-        // Opening balance is either previous day's closing or calculated from all transactions
+        // Opening balance is either previous day's closing or calculated from oldest transaction
         let openingBalance: number;
         if (index === 0) {
-          // For first day, calculate opening balance by working backwards from all transactions
-          // Since transactions are in reverse chronological order, we need to calculate
-          // the total impact of ALL transactions to get the balance before any transactions
+          // For the VERY FIRST DAY in the dataset:
+          // - Transactions are in REVERSE chronological order (newest first)
+          // - Each transaction shows the balance AFTER that transaction was processed
+          // - The OLDEST transaction (last in the array) shows the balance after the FIRST transaction of the day
+          // - To get the opening balance, we need the balance BEFORE the first transaction
           
-          // Calculate the total impact of ALL transactions for this day
-          let totalDayImpact = 0;
-          for (const transaction of transactionsToProcess) {
-            const transactionImpact = (transaction.creditAmount || 0) - (transaction.debitAmount || 0);
-            totalDayImpact += transactionImpact;
-          }
+          // Get the oldest transaction (last in sorted array)
+          const oldestTransaction = transactionsToProcess[transactionsToProcess.length - 1];
           
-          // Opening balance = Closing balance - Total day impact
-          openingBalance = closingBalance - totalDayImpact;
+          // The opening balance is the balance from the oldest transaction MINUS its impact
+          // This gives us the balance BEFORE that transaction was processed
+          const oldestTransactionImpact = (oldestTransaction.creditAmount || 0) - (oldestTransaction.debitAmount || 0);
+          openingBalance = oldestTransaction.balance - oldestTransactionImpact;
         } else {
           openingBalance = previousClosingBalance;
         }

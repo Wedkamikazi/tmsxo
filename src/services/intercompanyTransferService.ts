@@ -278,7 +278,7 @@ class IntercompanyTransferService {
     transaction: Transaction, 
     accountId: string
   ): Promise<IntercompanyTransfer> {
-    const transferId = `ITC_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const transferId = `ITC_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     
     // Determine direction based on transaction amounts
     const direction: 'inbound' | 'outbound' = transaction.creditAmount > 0 ? 'inbound' : 'outbound';

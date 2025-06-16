@@ -172,15 +172,17 @@ class BankBalanceService {
         const transactionsToProcess = uniqueTransactions;
         
         // Sort transactions by postDateTime (or fallback to formatted date + time)
+        // Sort in DESCENDING order (most recent first) to match bank statement format
         transactionsToProcess.sort((a, b) => {
           const aDateTime = a.postDateTime || `${a.date}T${a.time || '00:00'}:00`;
           const bDateTime = b.postDateTime || `${b.date}T${b.time || '00:00'}:00`;
-          return new Date(aDateTime).getTime() - new Date(bDateTime).getTime();
+          return new Date(bDateTime).getTime() - new Date(aDateTime).getTime();
         });
         
-        // Last transaction determines the closing balance
-        const lastTransaction = transactionsToProcess[transactionsToProcess.length - 1];
-        const closingBalance = lastTransaction.balance;
+        // MOST RECENT transaction determines the closing balance (not the last/oldest)
+        const mostRecentTransaction = transactionsToProcess[0];
+        const oldestTransaction = transactionsToProcess[transactionsToProcess.length - 1];
+        const closingBalance = mostRecentTransaction.balance;
         
         // Opening balance is either previous day's closing or calculated from first transaction
         let openingBalance: number;

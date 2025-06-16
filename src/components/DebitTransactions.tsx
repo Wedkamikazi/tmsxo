@@ -530,13 +530,13 @@ const ManualReconciliationModal: React.FC<ManualReconciliationModalProps> = ({
                               checked={selectedEntity === forecast.id}
                               onChange={() => setSelectedEntity(forecast.id)}
                             />
-                            <strong>{forecast.vendorName}</strong>
-                            <span className="amount">{formatAmount(forecast.expectedAmount)}</span>
+                            <strong>Vendor ID: {forecast.vendorId}</strong>
+                            <span className="amount">{formatAmount(forecast.amount)}</span>
                           </div>
                           <div className="option-details">
-                            <p>Expected: {new Date(forecast.expectedDate).toLocaleDateString()} | Type: {forecast.paymentType}</p>
-                            <p>Description: {forecast.description}</p>
-                            <p>Confidence: {(forecast.confidence * 100).toFixed(1)}%</p>
+                            <p>Expected: {new Date(forecast.expectedDate).toLocaleDateString()}</p>
+                            <p>Notes: {forecast.notes || 'No notes available'}</p>
+                            <p>Confidence: {forecast.confidence}</p>
                           </div>
                         </div>
                       ))}

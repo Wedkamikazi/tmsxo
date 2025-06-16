@@ -844,12 +844,10 @@ class SystemIntegrityService {
       const errorStats = this.getErrorStats();
       
       // Get performance metrics from performanceManager
-      const { performanceManager } = require('./performanceManager');
       const performanceReport = performanceManager.getPerformanceReport();
       const memoryHealth = performanceManager.getMemoryHealthStatus();
       
       // Get data integrity from unifiedDataService
-      const { unifiedDataService } = require('./unifiedDataService');
       const integrityReport = unifiedDataService.validateDataIntegrity();
 
       // Calculate overall health score (0-100)

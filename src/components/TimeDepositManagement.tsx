@@ -886,7 +886,7 @@ export const TimeDepositManagement: React.FC<TimeDepositManagementProps> = ({ da
       </div>
       
       <div className="suggestions-grid">
-        {investmentSuggestions.map((suggestion, index) => (
+        {investmentSuggestions.map((suggestion) => (
           <div key={suggestion.id} className={`suggestion-card ${suggestion.riskLevel}`}>
             <div className="card-header">
               <div className="suggestion-info">

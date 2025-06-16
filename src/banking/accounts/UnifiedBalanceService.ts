@@ -23,6 +23,8 @@ export interface DailyBalance {
   transactionCount: number;
   lastTransactionTime: string;
   lastTransactionId: string;
+  hasDuplicates?: boolean;
+  duplicateCount?: number;
 }
 
 export interface BalanceFilters {

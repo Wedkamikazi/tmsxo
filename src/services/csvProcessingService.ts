@@ -370,7 +370,6 @@ class CSVProcessingService {
           }
         }
         
-        console.warn(`Invalid date parts after validation: day=${day}, month=${month}, year=${year}, using current date`);
         return new Date().toISOString().split('T')[0];
       }
     }

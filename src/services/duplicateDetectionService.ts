@@ -182,24 +182,22 @@ class DuplicateDetectionService {
     const matchReasons: string[] = [];
     let score = 0;
     
-    // Date match (most important) - use formatted date, fallback to postDate if needed
-    const existingDate = existing.date || existing.postDate;
-    const newDate = newTxn.date || newTxn.postDate;
+    // Date match (most important) - use Post date if available, otherwise fall back to date
+    const existingDate = existing.postDate || existing.date;
+    const newDate = newTxn.postDate || newTxn.date;
     
-    if (existingDate && newDate) {
-      if (existingDate === newDate) {
-        score += 0.4;
-        matchReasons.push('Same post date');
-        
-        // If we have time information, check for exact time match
-        if (existing.time && newTxn.time && existing.time === newTxn.time) {
-          score += 0.1; // Bonus for exact time match
-          matchReasons.push('Same time');
-        }
-      } else if (this.isWithinDays(existingDate, newDate, 1)) {
-        score += 0.2;
-        matchReasons.push('Post date within 1 day');
+    if (existingDate === newDate) {
+      score += 0.4;
+      matchReasons.push('Same post date');
+      
+      // If we have time information, check for exact time match
+      if (existing.time && newTxn.time && existing.time === newTxn.time) {
+        score += 0.1; // Bonus for exact time match
+        matchReasons.push('Same time');
       }
+    } else if (this.isWithinDays(existingDate, newDate, 1)) {
+      score += 0.2;
+      matchReasons.push('Post date within 1 day');
     }
     
     // Amount match (critical)
@@ -243,8 +241,8 @@ class DuplicateDetectionService {
   
   // Find overlap period between existing and new transactions
   private findOverlapPeriod(existingTransactions: Transaction[], newTransactions: Transaction[]): { start: string; end: string } {
-    const existingDates = existingTransactions.map(t => t.date || t.postDate).sort();
-    const newDates = newTransactions.map(t => t.date || t.postDate).sort();
+    const existingDates = existingTransactions.map(t => t.postDate || t.date).sort();
+    const newDates = newTransactions.map(t => t.postDate || t.date).sort();
     
     const overlapStart = Math.max(
       new Date(existingDates[0] || '1900-01-01').getTime(),

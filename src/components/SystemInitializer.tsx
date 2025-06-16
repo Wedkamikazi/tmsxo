@@ -3,7 +3,6 @@ import { isDebugMode, enableDebugMode, disableDebugMode } from '../utils/debugMo
 import { systemSafetyManager, initializeSystemSafety } from '../utils/systemSafetyManager';
 import { storageQuotaManager } from '../services/storageQuotaManager';
 import { shouldReinitializeServices } from '../utils/stateManager';
-import { migrateTransactionDates, analyzeTransactionDates } from '../utils/dateMigration';
 // import { serviceOrchestrator, SystemStatus } from '../services/serviceOrchestrator';
 
 interface SystemInitializerProps {
@@ -50,33 +49,7 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
         console.log('✅ Treasury system registered successfully');
       }
 
-      // STEP 3: Fix existing transaction date formats (critical data migration)
-      setInitializationStatus('📅 Checking transaction date formats...');
-      console.log('📅 Analyzing existing transaction dates...');
-      
-      const analysis = analyzeTransactionDates();
-      console.log(`📊 Found ${analysis.totalTransactions} total transactions, ${analysis.invalidTransactions} need migration`);
-      
-      if (analysis.invalidTransactions > 0) {
-        setInitializationStatus(`🔧 Fixing ${analysis.invalidTransactions} invalid transaction dates...`);
-        console.log('🔄 Starting date migration for invalid postDateTime values...');
-        console.log('Sample invalid dates:', analysis.sampleInvalidDates);
-        
-        const migrationResult = migrateTransactionDates();
-        
-        if (migrationResult.totalFixed > 0) {
-          console.log(`✅ Successfully migrated ${migrationResult.totalFixed} transactions`);
-          setInitializationStatus(`✅ Fixed ${migrationResult.totalFixed} transaction dates`);
-        }
-        
-        if (migrationResult.errors.length > 0) {
-          console.warn(`⚠️ ${migrationResult.errors.length} migration errors:`, migrationResult.errors);
-        }
-      } else {
-        console.log('✅ All transaction dates are already in correct format');
-      }
-
-      // STEP 4: Initialize Storage Quota Manager (fast)
+      // STEP 3: Initialize Storage Quota Manager (fast)
       setInitializationStatus('📊 Initializing Storage Quota Manager...');
       console.log('📊 Starting Storage Quota Manager...');
       
@@ -93,16 +66,12 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
         (window as any).unifiedDataService = unifiedDataServiceModule.unifiedDataService;
         (window as any).eventBus = eventBusModule.eventBus;
         
-        // Make migration functions available for testing
-        (window as any).analyzeTransactionDates = analyzeTransactionDates;
-        (window as any).migrateTransactionDates = migrateTransactionDates;
-        
         console.log('✅ Storage Quota Manager ready and available globally');
         console.log('🧪 Test suite available in browser console');
         console.log('📋 Open http://localhost:3000/test-quota-management.html for test interface');
       }
 
-      // STEP 5: Continue with normal initialization
+      // STEP 4: Continue with normal initialization
       setInitializationStatus('Initializing services...');
       
       const currentDebugMode = isDebugMode();

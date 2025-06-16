@@ -157,8 +157,8 @@ export const BankStatementImport: React.FC<BankStatementImportProps> = ({
 
     // Update account balance to the most recent transaction balance (Post date + Time based)
     const sortedTransactions = [...allTransactions].sort((a, b) => {
-      const dateTimeA = new Date(`${a.date}T${a.time || '00:00'}`);
-      const dateTimeB = new Date(`${b.date}T${b.time || '00:00'}`);
+      const dateTimeA = new Date(`${a.postDate || a.date}T${a.time || '00:00'}`);
+      const dateTimeB = new Date(`${b.postDate || b.date}T${b.time || '00:00'}`);
       return dateTimeB.getTime() - dateTimeA.getTime();
     });
     

@@ -273,10 +273,10 @@ class CSVProcessingService {
       const year = parseInt(dateString.substring(4, 8));
       
       if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900 && year <= 2100) {
-          const date = new Date(year, month - 1, day);
-          return date.getFullYear() === year && 
-                 date.getMonth() === month - 1 && 
-                 date.getDate() === day;
+        const date = new Date(year, month - 1, day);
+        return date.getFullYear() === year && 
+               date.getMonth() === month - 1 && 
+               date.getDate() === day;
       }
     }
     
@@ -352,7 +352,7 @@ class CSVProcessingService {
       const month = parseInt(dateString.substring(0, 2));
       const day = parseInt(dateString.substring(2, 4));
       const year = parseInt(dateString.substring(4, 8));
-        
+      
       if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900) {
         const monthStr = month.toString().padStart(2, '0');
         const dayStr = day.toString().padStart(2, '0');
@@ -394,8 +394,8 @@ class CSVProcessingService {
       
       // Sort transactions by Post date and time (newest first, matching bank statement order)
       const sortedTransactions = transactions.sort((a, b) => {
-        const dateA = this.createSortableDateTime(a.date, a.time || '00:00');
-        const dateB = this.createSortableDateTime(b.date, b.time || '00:00');
+        const dateA = this.createSortableDateTime(a.postDate || a.date, a.time || '00:00');
+        const dateB = this.createSortableDateTime(b.postDate || b.date, b.time || '00:00');
         return dateB.getTime() - dateA.getTime(); // Newest first (most recent transaction first)
       });
       

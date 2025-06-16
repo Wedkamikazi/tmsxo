@@ -11,13 +11,12 @@
  * - Integration with daily cash management
  */
 
-import { 
-  IntercompanyTransfer, 
-  IntercompanyRecord, 
+import {
+  IntercompanyTransfer,
+  IntercompanyRecord,
   CashForecastEntry,
-  ReconciliationMatch,
   AuditLogEntry,
-  Transaction 
+  Transaction
 } from '../types';
 import { eventBus } from './eventBus';
 import { unifiedCategorizationService } from './unifiedCategorizationService';

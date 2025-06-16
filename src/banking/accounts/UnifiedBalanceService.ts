@@ -1,8 +1,8 @@
-import { StoredTransaction } from '../../data/storage/UnifiedDataService';
-import { unifiedDataService } from '../../data/storage/UnifiedDataService';
-import { BankAccount } from '../../shared/types';
+import { StoredTransaction } from '@/data/storage/UnifiedDataService';
+import { unifiedDataService } from '@/data/storage/UnifiedDataService';
+import { BankAccount } from '@/shared/types';
 import { importProcessingService } from '../imports/ImportProcessingService';
-import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
+import { systemIntegrityService } from '@/data/integrity/SystemIntegrityService';
 
 // UNIFIED BALANCE SERVICE
 // Consolidates daily balance calculations with balance validation and adjustment tracking

@@ -1245,7 +1245,7 @@ class CoreDataService {
           systemIntegrityService.logServiceError(
             'CoreDataService',
             'setStorageData',
-            error,
+            error instanceof Error ? error : new Error(String(error)),
             'critical',
             { key, operation: 'quota_exceeded' }
           );

@@ -1,8 +1,8 @@
 import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
 // import { performanceManager } from './performanceManager';
-import { localStorageManager } from './localStorageManager';
-import { isDebugMode } from '../shared/utils/debugging/DebugMode';
-import { systemSafetyManager } from '../core/safety/SystemSafetyManager';
+import { localStorageManager } from '../../data/storage/LocalStorageManager';
+import { isDebugMode } from '../../shared/utils/debugging/DebugMode';
+import { systemSafetyManager } from '../../core/safety/SystemSafetyManager';
 
 // LOCAL OLLAMA INTEGRATION SERVICE
 // Handles communication with local Ollama server for enhanced NLP capabilities

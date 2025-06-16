@@ -38,6 +38,9 @@ interface EnhancedAnalysis {
 }
 
 export const TransactionCategorization: React.FC<TransactionCategorizationProps> = ({ refreshTrigger }) => {
+  // CRITICAL: Infinite loop protection - monitors renders and prevents browser crashes
+  useInfiniteLoopProtection('TransactionCategorization');
+  
   // Initialize cleanup hooks
   const cleanup = useCleanup({ 
     componentName: 'TransactionCategorization',

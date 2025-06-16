@@ -1,5 +1,5 @@
 import React from 'react';
-import { unifiedCategorizationService } from '../analytics/categorization/UnifiedCategorizationService';
+import { unifiedCategorizationService } from '../../analytics/categorization/UnifiedCategorizationService';
 import { TensorFlowMethod } from '../services/categorization/tensorFlowMethod';
 import './QwenIntegrationStatus.css';
 

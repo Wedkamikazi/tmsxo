@@ -1,5 +1,4 @@
 import { HRPayment, PayrollEntry, AuditLogEntry } from '../types';
-import { eventBus } from './eventBus';
 
 /**
  * HR Payment Management Service

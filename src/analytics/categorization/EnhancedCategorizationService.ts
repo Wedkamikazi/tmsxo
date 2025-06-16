@@ -5,7 +5,6 @@ import { systemIntegrityService } from '@/data/integrity/SystemIntegrityService'
 import { localStorageManager } from '@/data/storage/LocalStorageManager';
 import { eventBus } from '@/core/orchestration/EventBus';
 import { isDebugMode } from '@/shared/utils/debugging/DebugMode';
-import { mlCategorizationService } from '../machine-learning/MLCategorizationService';
 
 // ENHANCED TRANSACTION CATEGORIZATION SERVICE
 // Consolidates all categorization logic and eliminates duplication

@@ -1,6 +1,6 @@
 import { eventBus, DataEvent } from '../../core/orchestration/EventBus';
-import { localStorageManager } from './localStorageManager';
-import { unifiedDataService } from './unifiedDataService';
+import { localStorageManager } from '../storage/LocalStorageManager';
+import { unifiedDataService } from '../storage/UnifiedDataService';
 import { performanceManager } from './performanceManager';
 import { crossTabSyncService } from './crossTabSyncService';
 import { isDebugMode } from '../shared/utils/debugging/DebugMode';

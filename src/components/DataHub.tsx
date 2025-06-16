@@ -477,6 +477,21 @@ export const DataHub: React.FC = () => {
       description: 'Daily cash management with intercompany transfers and time deposits'
     },
     {
+      id: 'timeDeposits' as const,
+      label: 'Time Deposits',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 6v6l4 2" />
+          <path d="M16 8h2" />
+          <path d="M16 16h2" />
+          <path d="M6 16h2" />
+          <path d="M6 8h2" />
+        </svg>
+      ),
+      description: 'Time deposit tracking, maturity management, and investment analytics'
+    },
+    {
       id: 'bankBalance' as const,
       label: 'Bank Balance',
       icon: (

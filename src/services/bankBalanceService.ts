@@ -208,7 +208,7 @@ class BankBalanceService {
           movement,
           transactionCount: transactionsToProcess.length, // Count of unique transactions only
           lastTransactionTime,
-          lastTransactionId: lastTransaction.id,
+          lastTransactionId: mostRecentTransaction.id,
           hasDuplicates,
           duplicateCount: duplicates.length
         });

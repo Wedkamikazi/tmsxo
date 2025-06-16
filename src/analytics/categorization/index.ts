@@ -1,7 +1,7 @@
 // UNIFIED CATEGORIZATION SYSTEM - CORE INTERFACES
 // This file defines the strategy pattern interfaces for categorization methods
 
-import { Transaction } from '../../shared/types';
+import { Transaction } from '@/shared/types';
 
 // UNIFIED CATEGORIZATION RESULT
 export interface UnifiedCategorizationResult {

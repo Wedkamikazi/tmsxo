@@ -1,5 +1,5 @@
 import { Transaction } from '../../shared/types';
-import { StoredTransaction } from './unifiedDataService';
+import { StoredTransaction } from '../../data/storage/UnifiedDataService';
 
 export interface DuplicateMatch {
   existingTransaction: Transaction;

@@ -26,8 +26,8 @@ const detectDebugMode = (): boolean => {
 
   // Check if running in development mode
   if (process.env.NODE_ENV === 'development') {
-    // In development, default to false unless explicitly enabled
-    return false;
+    // In development, default to TRUE for faster startup (prevents TensorFlow hanging)
+    return localStorage.getItem('debugMode') !== 'false'; // Only disable if explicitly set to false
   }
 
   // Production default: false

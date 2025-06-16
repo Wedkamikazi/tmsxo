@@ -1326,6 +1326,46 @@
     grid-template-columns: 1fr;
   }
   
+  .filters-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .filters-header {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  
+  .date-range-inputs,
+  .amount-range-inputs {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .date-separator,
+  .amount-separator {
+    display: none;
+  }
+  
+  .quick-filters {
+    justify-content: center;
+  }
+  
+  .filter-summary-content {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .filter-summary-label {
+    min-width: auto;
+  }
+  
+  .active-filters-list {
+    justify-content: center;
+  }
+  
   .timeline-item {
     flex-direction: column;
     gap: 16px;

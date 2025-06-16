@@ -93,6 +93,10 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
         (window as any).unifiedDataService = unifiedDataServiceModule.unifiedDataService;
         (window as any).eventBus = eventBusModule.eventBus;
         
+        // Make migration functions available for testing
+        (window as any).analyzeTransactionDates = analyzeTransactionDates;
+        (window as any).migrateTransactionDates = migrateTransactionDates;
+        
         console.log('✅ Storage Quota Manager ready and available globally');
         console.log('🧪 Test suite available in browser console');
         console.log('📋 Open http://localhost:3000/test-quota-management.html for test interface');

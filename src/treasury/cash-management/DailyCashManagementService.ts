@@ -378,7 +378,7 @@ class DailyCashManagementService {
 
       // Test intercompany transfer service (Job 1.4)
       try {
-        const { intercompanyTransferService } = await import('./intercompanyTransferService');
+        const { intercompanyTransferService } = await import('../intercompany/IntercompanyTransferService');
         await intercompanyTransferService.getAllIntercompanyTransfers();
         status.intercompanyTransferService = true;
       } catch (error) {

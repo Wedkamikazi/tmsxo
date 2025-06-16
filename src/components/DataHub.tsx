@@ -538,6 +538,12 @@ export const DataHub: React.FC = () => {
             <CreditTransactions dataRefreshTrigger={dataRefreshTrigger} />
           </ErrorBoundary>
         );
+      case 'debitTransactions':
+        return (
+          <ErrorBoundary componentName="DebitTransactions">
+            <DebitTransactions dataRefreshTrigger={dataRefreshTrigger} />
+          </ErrorBoundary>
+        );
       case 'bankBalance':
         return (
           <ErrorBoundary componentName="BankBalance">

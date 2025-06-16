@@ -21,7 +21,7 @@ a comprehensive **Daily Cash Management Table** template that integrates all the
               - **Audit Log:**  
                 - Maintain a log of adjustments and imports.
 
-                    ### 2. Debit Transactions
+                  ### 2. Debit Transactions
 
                 - **Extraction & Storage:** Debit transactions stored on a “Debit Transactions” page.
                 - **Categorization:** AI/LLM-based classification (e.g., vendor payments, fees).
@@ -31,12 +31,12 @@ a comprehensive **Daily Cash Management Table** template that integrates all the
                     - **Verification & Observations:**  
                       - Same as credit transactions.
 
-                          ### 3. HR Payments
+                        ### 3. HR Payments
 
                       - **Handling:**  
                         - Processed identically to AP, but for employee payments.
 
-                            ### 4. Intercompany Transfers
+                          ### 4. Intercompany Transfers
 
                         - **Extraction & Storage:**  
                           - Transactions stored on “Intercompany” page.
@@ -44,7 +44,7 @@ a comprehensive **Daily Cash Management Table** template that integrates all the
                             - Match with intercompany records and cash management forecasts.
                               - Auto/manual reconciliation, confidence ratios, verification, and observation notes as above.
 
-                                  ### 5. Time Deposits (Investments)
+                                ### 5. Time Deposits (Investments)
 
                               - **Extraction & Storage:**  
                                 - Tracked on “Investments” page.
@@ -60,7 +60,7 @@ a comprehensive **Daily Cash Management Table** template that integrates all the
 
                                               ---
 
-                                              ## Daily Cash Management Table
+                                            ## Daily Cash Management Table
 
                                               Here’s a unified table template that brings together all the above elements for a daily snapshot:
 
@@ -70,7 +70,7 @@ a comprehensive **Daily Cash Management Table** template that integrates all the
                                               | 2025-06-15 | SABB      | 123456     | SAR      | 950,000         | 300,000            | 100,000                | 0          | 50,000      | 0                | 210,000                   | 1,310,000               | 1,310,000                | 0           | Time deposit matured | ⩗          |
                                               | ...        | ...       | ...        | ...      | ...             | ...                | ...                    | ...        | ...         | ...              | ...                       | ...                     | ...                      | ...         | ...                | ...        |
 
-                                              ### **Column Explanations**
+                                            ### **Column Explanations**
 
                                           - **Opening Balance:** Yesterday’s closing balance.
                                           - **Cash In:** All collections (AR, other credits).
@@ -86,7 +86,7 @@ a comprehensive **Daily Cash Management Table** template that integrates all the
 
                                               ---
 
-                                              ## How This Table Works
+                                            ## How This Table Works
 
                                           - **Automated Data Pull:** Pulls in all relevant transactions from credit, debit, HR, intercompany, and investment modules.
                                           - **Aging & Maturity Logic:**  
@@ -101,7 +101,7 @@ a comprehensive **Daily Cash Management Table** template that integrates all the
 
                                                         ---
 
-                                                        ## Suggested Enhancements
+                                                      ## Suggested Enhancements
 
                                                         1. **Dashboard Integration:** Visualize balances, discrepancies, and upcoming maturities for quick decision-making.
                                                         2. **Automated Alerts:** Notify users of unmatched transactions, maturing investments, or liquidity shortfalls.
@@ -110,6 +110,6 @@ a comprehensive **Daily Cash Management Table** template that integrates all the
 
                                                         ---
 
-                                                        ### Ready for Implementation
+                                                      ### Ready for Implementation
 
                                                         This structure supports robust, real-time cash management and reconciliation, tailored for Saudi Arabia’s banking context and your advanced financial management needs. If you need a sample Excel/Google Sheets template or a database schema, let me know!

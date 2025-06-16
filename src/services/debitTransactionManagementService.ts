@@ -461,9 +461,11 @@ class DebitTransactionManagementService {
 
       // Attach the matched entity details
       if (matchedEntityType === 'ap_aging') {
-        debitTransaction.apAgingMatch = await this.getAPAgingById(matchedEntityId);
+        const apEntry = await this.getAPAgingById(matchedEntityId);
+        debitTransaction.apAgingMatch = apEntry || undefined;
       } else if (matchedEntityType === 'forecast') {
-        debitTransaction.forecastMatch = await this.getForecastedPaymentById(matchedEntityId);
+        const forecastEntry = await this.getForecastedPaymentById(matchedEntityId);
+        debitTransaction.forecastMatch = forecastEntry || undefined;
       }
 
       await this.updateDebitTransaction(debitTransaction);

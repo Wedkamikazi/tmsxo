@@ -316,13 +316,11 @@ class CSVProcessingService {
   private formatDate(dateString: string): string {
     // Return current date if input is empty or invalid
     if (!dateString || dateString.trim() === '') {
-      console.warn(`Empty date string provided to formatDate, using current date`);
       return new Date().toISOString().split('T')[0];
     }
     
-    // Special handling for 31/12/2024 to debug the specific issue
+    // Special handling for 31/12/2024 to fix the specific issue
     if (dateString.trim() === '31/12/2024') {
-      console.log(`Specific handling for 31/12/2024: "${dateString}"`);
       return '2024-12-31';
     }
     
@@ -334,15 +332,8 @@ class CSVProcessingService {
         const part2 = parseInt(parts[1]);
         const year = parseInt(parts[2]);
         
-        // Log for debugging, especially for year-end dates
         if (isNaN(part1) || isNaN(part2) || isNaN(year)) {
-          console.warn(`Invalid date parts in formatDate: "${dateString}" -> [${part1}, ${part2}, ${year}], using current date`);
           return new Date().toISOString().split('T')[0];
-        }
-        
-        // Extra logging for 31/12 dates
-        if (part1 === 31 && part2 === 12) {
-          console.log(`Processing year-end date: day=${part1}, month=${part2}, year=${year}`);
         }
         
         let month: number, day: number;

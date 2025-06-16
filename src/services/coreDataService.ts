@@ -1390,7 +1390,12 @@ class CoreDataService {
 
   private recordQuotaHistory(quotaInfo: StorageQuotaInfo): void {
     try {
-      const history = this.getStorageData(this.STORAGE_KEYS.quotaHistory, []);
+      const history = this.getStorageData(this.STORAGE_KEYS.quotaHistory, [] as Array<{
+        timestamp: string;
+        utilization: number;
+        used: number;
+        total: number;
+      }>);
       history.push({
         timestamp: quotaInfo.lastChecked,
         utilization: quotaInfo.utilization,

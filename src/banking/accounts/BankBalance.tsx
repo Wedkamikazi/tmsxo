@@ -49,7 +49,7 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
     }
     return [];
   });
-  const [stats, setStats] = useState<BankBalanceStats | null>(() => {
+  const [stats, setStats] = useState<BalanceStats | null>(() => {
     if (cachedState?.stats && shouldComponentUseCache('BankBalance')) {
       console.log('🚀 BANK BALANCE: Using cached stats data');
       return cachedState.stats;

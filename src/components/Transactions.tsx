@@ -373,9 +373,15 @@ export const Transactions: React.FC<TransactionsProps> = ({ onTransactionUpdate,
 
   // Event handlers
   const handleSort = (field: SortField) => {
+    console.log('🔍 SORTING DEBUG: User clicked sort on field:', field);
+    console.log('🔍 SORTING DEBUG: Current sort field:', sortField, 'direction:', sortDirection);
+    
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      const newDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+      console.log('🔍 SORTING DEBUG: Toggling direction to:', newDirection);
+      setSortDirection(newDirection);
     } else {
+      console.log('🔍 SORTING DEBUG: Changing sort field to:', field, 'with direction: desc');
       setSortField(field);
       setSortDirection('desc');
     }

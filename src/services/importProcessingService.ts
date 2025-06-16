@@ -38,6 +38,37 @@ export interface ImportHistoryValidation {
   isNewImportAfterLast: boolean;
 }
 
+export interface UploadedFile {
+  id: string;
+  fileName: string;
+  uploadDate: string;
+  accountId: string;
+  accountName: string;
+  transactionCount: number;
+  fileSize: number;
+  checksum?: string;
+}
+
+export interface DeletionReport {
+  fileId: string;
+  fileName: string;
+  expectedTransactionCount: number;
+  actualDeletedCount: number;
+  totalTransactionsBefore: number;
+  totalTransactionsAfter: number;
+  backupCreated: boolean;
+  backupKey: string;
+  isVerified: boolean;
+  error: string | null;
+}
+
+export interface BackupData {
+  fileRecord: UploadedFile;
+  transactions: any[];
+  timestamp: string;
+  accountBalance?: number;
+}
+
 // ======================
 // IMPORT PROCESSING SERVICE - FOUNDATION
 // ======================

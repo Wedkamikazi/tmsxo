@@ -296,22 +296,7 @@ class CSVProcessingService {
       // Value date is for interest calculation purposes and can be different
       const primaryDate = row.postDate || row.valueDate; // Post date as primary, value date as fallback only
       
-      // Debug logging for problematic dates
-      if (!row.postDate || !this.isValidDate(row.postDate)) {
-        console.warn(`Row ${index + 1}: Invalid or missing postDate "${row.postDate}", using valueDate "${row.valueDate}" as fallback`);
-      }
-      
       const formattedDate = this.formatDate(primaryDate);
-      
-      // Additional debug logging for 31/12/2024 specifically
-      if (primaryDate.includes('31/12/2024')) {
-        console.log(`Row ${index + 1}: Processing 31/12/2024 - postDate: "${row.postDate}", valueDate: "${row.valueDate}", using: "${primaryDate}", formatted: "${formattedDate}"`);
-      }
-      
-      // Additional debug logging
-      if (formattedDate.includes('Invalid') || formattedDate === primaryDate) {
-        console.warn(`Row ${index + 1}: Date formatting issue - original: "${primaryDate}", formatted: "${formattedDate}"`);
-      }
       
       return {
         id: `txn_${baseTimestamp}_${index}_${Math.random().toString(36).substr(2, 9)}`,

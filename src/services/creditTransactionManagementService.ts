@@ -93,9 +93,9 @@ class CreditTransactionManagementService {
   private async categorizeCreditTransaction(transaction: Transaction): Promise<CreditTransaction['categoryType']> {
     try {
       // Use the unified categorization service for AI analysis
-      const categorization = await unifiedCategorizationService.categorizeTransaction(transaction);
+      await unifiedCategorizationService.categorizeTransaction(transaction);
       
-      // Map to credit transaction categories
+      // Map to credit transaction categories based on description patterns
       const description = transaction.description.toLowerCase();
       
       if (description.includes('payment') || description.includes('receipt')) {

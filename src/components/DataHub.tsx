@@ -235,6 +235,9 @@ export const DataHub: React.FC = () => {
         unsubscribeFilesUpdated();
         unsubscribeAccountsUpdated();
         unsubscribeDebitExtracted();
+        unsubscribeHRExtracted();
+        unsubscribeHRUpdated();
+        unsubscribeHRConfirmed();
         unsubscribeDebitUpdated();
         unsubscribeDebitConfirmed();
       };

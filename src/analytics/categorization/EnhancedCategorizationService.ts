@@ -5,7 +5,7 @@ import { categorizationService } from './CategorizationService';
 import { systemIntegrityService } from '../../data/integrity/SystemIntegrityService';
 import { localStorageManager } from '../../data/storage/LocalStorageManager';
 import { eventBus } from '../../core/orchestration/EventBus';
-import { isDebugMode } from '../shared/utils/debugging/DebugMode';
+import { isDebugMode } from '../../shared/utils/debugging/DebugMode';
 
 // ENHANCED TRANSACTION CATEGORIZATION SERVICE
 // Consolidates all categorization logic and eliminates duplication

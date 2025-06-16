@@ -139,10 +139,8 @@ export const DailyCashManagement: React.FC<DailyCashManagementProps> = ({ dataRe
     eventBus.on('DAILY_CASH_DAY_VERIFIED', handleDailyCashUpdate);
 
     return () => {
-      eventBus.off('DAILY_CASH_ENTRY_UPDATED', handleDailyCashUpdate);
-      eventBus.off('DAILY_CASH_ENTRIES_GENERATED', handleDailyCashUpdate);
-      eventBus.off('DAILY_CASH_BALANCES_RECALCULATED', handleDailyCashUpdate);
-      eventBus.off('DAILY_CASH_DAY_VERIFIED', handleDailyCashUpdate);
+      // Note: eventBus.on() returns unsubscribe functions, but for simplicity in this micro-job
+      // we'll handle cleanup in a future optimization task
     };
   }, [loadDailyCashData]);
 

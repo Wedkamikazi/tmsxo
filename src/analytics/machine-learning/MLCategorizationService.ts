@@ -1,6 +1,6 @@
 import { isDebugMode as checkDebugMode } from '../../shared/utils/debugging/DebugMode';
 import * as tf from '@tensorflow/tfjs';
-import { Transaction, MLCategorizationResult } from '../../../shared/types';
+import { Transaction, MLCategorizationResult } from '../../shared/types';
 import { categorizationService } from '../categorization/CategorizationService';
 import { localStorageManager } from '../../data/storage/LocalStorageManager';
 import { performanceManager } from '../../core/performance/PerformanceManager';

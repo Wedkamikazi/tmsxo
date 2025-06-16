@@ -199,7 +199,9 @@ class UnifiedBalanceService {
           dailyMovement,
           transactionCount: dayTransactions.length,
           lastTransactionTime: this.extractTimeFromTransaction(lastTransaction),
-          lastTransactionId: lastTransaction.id
+          lastTransactionId: lastTransaction.id,
+          hasDuplicates: false, // TODO: Implement duplicate detection
+          duplicateCount: 0
         });
 
         previousClosingBalance = closingBalance;

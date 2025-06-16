@@ -307,7 +307,6 @@ class CSVProcessingService {
       };
     });
   }
-  }
 
   private formatDate(dateString: string): string {
     // Handle empty or null dates

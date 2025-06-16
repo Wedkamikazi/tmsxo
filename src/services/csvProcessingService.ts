@@ -400,11 +400,10 @@ class CSVProcessingService {
         return date.toISOString().split('T')[0];
       }
     } catch (error) {
-      console.warn(`Failed to parse date "${dateString}":`, error);
+      // Silent fallback
     }
     
     // Final fallback - use current date
-    console.warn(`All date parsing failed for "${dateString}", using current date`);
     return new Date().toISOString().split('T')[0];
   }
 

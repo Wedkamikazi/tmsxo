@@ -367,15 +367,385 @@ class ImportProcessingService {
   }
 
   // ======================
-  // PLACEHOLDER METHODS FOR NEXT MICRO-TASKS
+  // FILE STORAGE MANAGEMENT
   // ======================
 
-  // TODO: Micro-Task 2.1.2.2 - File Storage Integration
-  // - getAllUploadedFiles()
-  // - addUploadedFile()
-  // - deleteUploadedFile()
-  // - createBackup()
-  // - restoreFromBackup()
+  /**
+   * Get all uploaded files
+   */
+  getAllUploadedFiles(): UploadedFile[] {
+    return coreDataService.getAllFiles();
+  }
+
+  /**
+   * Add a new uploaded file record
+   */
+  addUploadedFile(fileData: Omit<UploadedFile, 'id' | 'uploadDate'>): UploadedFile {
+    const newFile = coreDataService.addFile(fileData);
+    if (!newFile) {
+      throw new Error('Failed to save file record');
+    }
+
+    eventBus.emit('FILE_UPLOADED', {
+      fileId: newFile.id,
+      fileName: newFile.fileName,
+      accountId: fileData.accountId,
+      transactionCount: fileData.transactionCount
+    }, 'ImportProcessingService');
+
+    return newFile;
+  }
+
+  /**
+   * Delete an uploaded file record and its associated transactions with verification
+   */
+  deleteUploadedFile(fileId: string): { success: boolean; deletionReport: DeletionReport } {
+    const deletionReport: DeletionReport = {
+      fileId,
+      fileName: '',
+      expectedTransactionCount: 0,
+      actualDeletedCount: 0,
+      totalTransactionsBefore: 0,
+      totalTransactionsAfter: 0,
+      backupCreated: false,
+      backupKey: '',
+      isVerified: false,
+      error: null
+    };
+
+    try {
+      const files = this.getAllUploadedFiles();
+      const fileToDelete = files.find(f => f.id === fileId);
+      
+      if (!fileToDelete) {
+        deletionReport.error = 'File not found';
+        return { success: false, deletionReport };
+      }
+
+      deletionReport.fileName = fileToDelete.fileName;
+      deletionReport.expectedTransactionCount = fileToDelete.transactionCount;
+
+      // Count total transactions before deletion
+      const stats = coreDataService.getDataSummary();
+      deletionReport.totalTransactionsBefore = stats.totalTransactions;
+
+      // Create backup before deletion
+      const backupResult = this.createFileBackup(fileToDelete);
+      deletionReport.backupCreated = backupResult.success;
+      deletionReport.backupKey = backupResult.backupKey;
+
+      if (!backupResult.success) {
+        deletionReport.error = 'Failed to create backup';
+        return { success: false, deletionReport };
+      }
+
+      // Delete using core data service
+      const success = coreDataService.deleteFile(fileId);
+      
+      if (!success) {
+        deletionReport.error = 'Failed to delete file';
+        return { success: false, deletionReport };
+      }
+
+      // Get updated stats
+      const newStats = coreDataService.getDataSummary();
+      deletionReport.totalTransactionsAfter = newStats.totalTransactions;
+      deletionReport.actualDeletedCount = deletionReport.totalTransactionsBefore - deletionReport.totalTransactionsAfter;
+
+      // Verify deletion was correct
+      deletionReport.isVerified = (
+        deletionReport.actualDeletedCount === deletionReport.expectedTransactionCount &&
+        deletionReport.totalTransactionsAfter === (deletionReport.totalTransactionsBefore - deletionReport.expectedTransactionCount)
+      );
+
+      eventBus.emit('FILE_DELETED', {
+        fileId,
+        fileName: deletionReport.fileName,
+        deletedTransactions: deletionReport.actualDeletedCount,
+        backupKey: deletionReport.backupKey
+      }, 'ImportProcessingService');
+
+      return { success: true, deletionReport };
+    } catch (error) {
+      deletionReport.error = error instanceof Error ? error.message : 'Unknown error';
+      
+      systemIntegrityService.logServiceError(
+        'ImportProcessingService',
+        'deleteUploadedFile',
+        error instanceof Error ? error : new Error(String(error)),
+        'high',
+        { fileId, operation: 'file_deletion' }
+      );
+      
+      return { success: false, deletionReport };
+    }
+  }
+
+  /**
+   * Get file by ID
+   */
+  getFileById(fileId: string): UploadedFile | null {
+    const files = this.getAllUploadedFiles();
+    return files.find(f => f.id === fileId) || null;
+  }
+
+  /**
+   * Get files by account ID
+   */
+  getFilesByAccount(accountId: string): UploadedFile[] {
+    const files = this.getAllUploadedFiles();
+    return files.filter(f => f.accountId === accountId);
+  }
+
+  /**
+   * Update transaction count for a file
+   */
+  updateTransactionCount(fileId: string, count: number): boolean {
+    try {
+      const file = this.getFileById(fileId);
+      if (!file) {
+        return false;
+      }
+
+      // Note: This functionality would need to be added to CoreDataService
+      // For now, we'll use a workaround
+      const files = this.getAllUploadedFiles();
+      const updatedFiles = files.map(f => 
+        f.id === fileId ? { ...f, transactionCount: count } : f
+      );
+
+      // This is a temporary workaround - should be handled by CoreDataService
+      try {
+        localStorage.setItem('tms_files', JSON.stringify(updatedFiles));
+        return true;
+      } catch (error) {
+        console.error('Failed to update transaction count:', error);
+        return false;
+      }
+    } catch (error) {
+      systemIntegrityService.logServiceError(
+        'ImportProcessingService',
+        'updateTransactionCount',
+        error instanceof Error ? error : new Error(String(error)),
+        'medium',
+        { fileId, count }
+      );
+      return false;
+    }
+  }
+
+  /**
+   * Get total transaction count across all files
+   */
+  getTotalTransactionCount(): number {
+    const stats = coreDataService.getDataSummary();
+    return stats.totalTransactions;
+  }
+
+  /**
+   * Create backup before file deletion
+   */
+  createFileBackup(file: UploadedFile): { success: boolean; backupKey: string } {
+    try {
+      const backupKey = `${this.BACKUP_KEY_PREFIX}${file.id}_${Date.now()}`;
+      
+      // Get all transactions for this file
+      const transactions = coreDataService.getAllTransactions()
+        .filter(t => t.fileId === file.id);
+
+      const backupData: BackupData = {
+        fileRecord: file,
+        transactions,
+        timestamp: new Date().toISOString(),
+        accountBalance: coreDataService.getAllAccounts()
+          .find(a => a.id === file.accountId)?.currentBalance
+      };
+
+      localStorage.setItem(backupKey, JSON.stringify(backupData));
+      
+      // Clean old backups
+      this.cleanOldBackups();
+      
+      return { success: true, backupKey };
+    } catch (error) {
+      systemIntegrityService.logServiceError(
+        'ImportProcessingService',
+        'createFileBackup',
+        error instanceof Error ? error : new Error(String(error)),
+        'high',
+        { fileId: file.id, operation: 'backup_creation' }
+      );
+      return { success: false, backupKey: '' };
+    }
+  }
+
+  /**
+   * Restore from backup
+   */
+  restoreFromBackup(backupKey: string): { success: boolean; restoredCount: number; error?: string } {
+    try {
+      const backupData = localStorage.getItem(backupKey);
+      if (!backupData) {
+        return { success: false, restoredCount: 0, error: 'Backup not found' };
+      }
+
+      const backup: BackupData = JSON.parse(backupData);
+      
+      // Restore file record
+      const restoredFile = coreDataService.addFile(backup.fileRecord);
+      if (!restoredFile) {
+        return { success: false, restoredCount: 0, error: 'Failed to restore file record' };
+      }
+
+      // Restore transactions
+      if (backup.transactions && backup.transactions.length > 0) {
+        const success = coreDataService.addTransactions(backup.transactions);
+        if (!success) {
+          // Cleanup the file record if transaction restore failed
+          coreDataService.deleteFile(restoredFile.id);
+          return { success: false, restoredCount: 0, error: 'Failed to restore transactions' };
+        }
+      }
+
+      eventBus.emit('FILE_RESTORED', {
+        backupKey,
+        fileId: restoredFile.id,
+        fileName: restoredFile.fileName,
+        restoredTransactions: backup.transactions.length
+      }, 'ImportProcessingService');
+
+      return { success: true, restoredCount: backup.transactions.length };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      systemIntegrityService.logServiceError(
+        'ImportProcessingService',
+        'restoreFromBackup',
+        error instanceof Error ? error : new Error(String(error)),
+        'high',
+        { backupKey, operation: 'backup_restoration' }
+      );
+      
+      return { success: false, restoredCount: 0, error: errorMessage };
+    }
+  }
+
+  /**
+   * Get all backup keys
+   */
+  getAllBackupKeys(): string[] {
+    const keys: string[] = [];
+    
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(this.BACKUP_KEY_PREFIX)) {
+          keys.push(key);
+        }
+      }
+    } catch (error) {
+      console.warn('Error getting backup keys:', error);
+    }
+    
+    return keys.sort();
+  }
+
+  /**
+   * Clean old backups to prevent storage bloat
+   */
+  cleanOldBackups(): number {
+    const backupKeys = this.getAllBackupKeys();
+    
+    if (backupKeys.length <= this.MAX_BACKUPS) {
+      return 0;
+    }
+
+    // Sort by timestamp (newest first) and remove old ones
+    const sortedKeys = backupKeys.sort().reverse();
+    const toDelete = sortedKeys.slice(this.MAX_BACKUPS);
+    
+    let deletedCount = 0;
+    toDelete.forEach(key => {
+      try {
+        localStorage.removeItem(key);
+        deletedCount++;
+      } catch (error) {
+        console.warn(`Failed to delete backup ${key}:`, error);
+      }
+    });
+
+    if (deletedCount > 0) {
+      eventBus.emit('BACKUPS_CLEANED', {
+        deletedCount,
+        remainingBackups: backupKeys.length - deletedCount
+      }, 'ImportProcessingService');
+    }
+
+    return deletedCount;
+  }
+
+  /**
+   * Clear all uploaded files (for testing/reset)
+   */
+  clearAllFiles(): void {
+    try {
+      const files = this.getAllUploadedFiles();
+      const fileCount = files.length;
+      
+      files.forEach(file => {
+        coreDataService.deleteFile(file.id);
+      });
+
+      eventBus.emit('ALL_FILES_CLEARED', {
+        deletedCount: fileCount,
+        timestamp: new Date().toISOString()
+      }, 'ImportProcessingService');
+      
+    } catch (error) {
+      systemIntegrityService.logServiceError(
+        'ImportProcessingService',
+        'clearAllFiles',
+        error instanceof Error ? error : new Error(String(error)),
+        'high',
+        { operation: 'clear_all_files' }
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Get file storage statistics
+   */
+  getFileStorageStats(): { 
+    totalFiles: number; 
+    totalTransactions: number; 
+    totalSize: number;
+    backupCount: number;
+    accountDistribution: Record<string, number>;
+  } {
+    const files = this.getAllUploadedFiles();
+    const accounts = coreDataService.getAllAccounts();
+    const stats = coreDataService.getDataSummary();
+    
+    // Calculate account distribution
+    const accountDistribution: Record<string, number> = {};
+    accounts.forEach(account => {
+      const accountFiles = files.filter(f => f.accountId === account.id);
+      accountDistribution[account.name] = accountFiles.length;
+    });
+
+    return {
+      totalFiles: files.length,
+      totalTransactions: stats.totalTransactions,
+      totalSize: stats.storageUsed,
+      backupCount: this.getAllBackupKeys().length,
+      accountDistribution
+    };
+  }
+
+  // ======================
+  // PLACEHOLDER METHODS FOR NEXT MICRO-TASKS
+  // ======================
 
   // TODO: Micro-Task 2.1.2.3 - CSV Processing Integration  
   // - parseCSV()

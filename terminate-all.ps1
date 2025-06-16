@@ -52,9 +52,9 @@ function Kill-ProcessesByPort {
             }
             
             if ($pids.Count -gt 0) {
-                foreach ($pid in $pids) {
+                foreach ($processId in $pids) {
                     try {
-                        Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
+                        Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
                     }
                     catch {
                         # Ignore errors for processes that may have already terminated

@@ -18,7 +18,6 @@ import {
   AuditLogEntry,
   Transaction 
 } from '../types';
-import { coreDataService } from './coreDataService';
 import { eventBus } from './eventBus';
 import { unifiedCategorizationService } from './unifiedCategorizationService';
 

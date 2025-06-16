@@ -2,10 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { 
   HRPayment, 
   PayrollEntry
-} from '../../shared/types';
+} from '@/shared/types';
 import { hrPaymentManagementService } from './HRPaymentManagementService';
-import { eventBus } from '../../core/orchestration/EventBus';
-import { ErrorBoundary } from '../../ui/components/common/ErrorBoundary';
+import { eventBus } from '@/core/orchestration/EventBus';
+import { ErrorBoundary } from '@/ui/components/common/ErrorBoundary';
 import './HRPayments.css';
 
 interface HRPaymentsProps {

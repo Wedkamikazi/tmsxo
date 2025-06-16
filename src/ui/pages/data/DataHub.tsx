@@ -24,7 +24,6 @@ import {
   ErrorBoundary, 
   SystemHealthMonitor 
 } from '@/ui';
-import SimpleDataCleanup from './DataCleanup';
 import { 
   stateManager, 
   saveActiveTab, 

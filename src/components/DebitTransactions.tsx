@@ -83,7 +83,7 @@ export const DebitTransactions: React.FC<DebitTransactionsProps> = ({ dataRefres
     try {
       await debitTransactionManagementService.confirmTransaction(
         transactionId, 
-        'current_user', // In a real app, this would come from user context
+        'current_user',
         observations
       );
       await loadDebitTransactions();
@@ -225,7 +225,6 @@ export const DebitTransactions: React.FC<DebitTransactionsProps> = ({ dataRefres
                 onChange={(e) => setFilters(prev => ({ ...prev, accountId: e.target.value }))}
               >
                 <option value="all">All Accounts</option>
-                {/* Account options would be populated from account service */}
               </select>
             </div>
             

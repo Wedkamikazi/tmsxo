@@ -1,0 +1,1142 @@
+/**
+ * TIME DEPOSIT MANAGEMENT CSS
+ * 
+ * Professional styling for the Time Deposit Management component including:
+ * - Summary dashboard cards
+ * - Tab navigation
+ * - Deposit tables and cards
+ * - Maturity calendar
+ * - Investment suggestions
+ * - Responsive design
+ */
+
+/* =============================================
+ * MAIN CONTAINER
+ * ============================================= */
+
+.time-deposit-management {
+  padding: 24px;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* =============================================
+ * HEADER SECTION
+ * ============================================= */
+
+.time-deposit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.header-content h1 {
+  color: #1e293b;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-content h1 i {
+  color: #f59e0b;
+  font-size: 24px;
+}
+
+.header-content p {
+  color: #64748b;
+  font-size: 16px;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* =============================================
+ * ACTION BUTTONS
+ * ============================================= */
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.action-button.primary {
+  background: #f59e0b;
+  color: white;
+}
+
+.action-button.primary:hover:not(:disabled) {
+  background: #d97706;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.action-button.secondary {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.action-button.secondary:hover:not(:disabled) {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+.action-button.small {
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+/* =============================================
+ * SUMMARY CARDS GRID
+ * ============================================= */
+
+.time-deposit-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px 24px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.card-header h3 {
+  color: #1e293b;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.card-header i {
+  color: #64748b;
+  font-size: 20px;
+}
+
+.card-content {
+  padding: 16px 24px 24px 24px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.stat-row:last-child {
+  margin-bottom: 0;
+}
+
+.stat-row span:first-child {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.stat-value {
+  color: #1e293b;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.stat-value-small {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* =============================================
+ * TAB NAVIGATION
+ * ============================================= */
+
+.tab-navigation {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.tab-buttons {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tab-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 24px;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent;
+}
+
+.tab-button:hover {
+  background: #f8fafc;
+  color: #475569;
+}
+
+.tab-button.active {
+  color: #f59e0b;
+  border-bottom-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.tab-button i {
+  font-size: 16px;
+}
+
+/* =============================================
+ * TAB CONTENT
+ * ============================================= */
+
+.tab-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.section-header h2 {
+  color: #1e293b;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.entry-count {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* =============================================
+ * DEPOSITS TABLE
+ * ============================================= */
+
+.table-container {
+  overflow: hidden;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.deposits-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.deposits-table thead {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+}
+
+.deposits-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.deposits-table th:last-child {
+  border-right: none;
+}
+
+.deposits-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s ease;
+}
+
+.deposits-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.deposits-table tbody tr.active-deposit {
+  background-color: #f0fdf4;
+}
+
+.deposits-table tbody tr.active-deposit:hover {
+  background-color: #dcfce7;
+}
+
+.deposits-table tbody tr.matured-deposit {
+  background-color: #eff6ff;
+}
+
+.deposits-table tbody tr.matured-deposit:hover {
+  background-color: #dbeafe;
+}
+
+.deposits-table td {
+  padding: 0.75rem 1rem;
+  border-right: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+.deposits-table td:last-child {
+  border-right: none;
+}
+
+/* =============================================
+ * TABLE CELL STYLES
+ * ============================================= */
+
+.deposit-number {
+  display: flex;
+  flex-direction: column;
+}
+
+.deposit-id {
+  font-weight: 600;
+  color: #374151;
+}
+
+.deposit-ref {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-family: 'Courier New', monospace;
+}
+
+.bank-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bank-info i {
+  color: #f59e0b;
+  font-size: 0.875rem;
+}
+
+.amount-cell {
+  text-align: right;
+}
+
+.amount-value {
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  color: #374151;
+}
+
+.rate-cell {
+  text-align: center;
+}
+
+.rate-value {
+  font-weight: 600;
+  color: #059669;
+}
+
+.date-cell {
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+}
+
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.status-badge.active {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.status-badge.matured {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.status-badge.cancelled {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.maturity-status {
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.return-value {
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+.actions-cell {
+  text-align: center;
+}
+
+.action-btn {
+  padding: 0.5rem;
+  margin: 0 0.25rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.action-btn.view {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.action-btn.view:hover {
+  background: #e2e8f0;
+}
+
+.action-btn.mature {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.action-btn.mature:hover {
+  background: #bbf7d0;
+}
+
+/* =============================================
+ * DEPOSIT CARDS (ACTIVE TAB)
+ * ============================================= */
+
+.active-deposits-content {
+  padding: 24px;
+}
+
+.active-deposits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.deposit-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.deposit-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.deposit-card.due-soon {
+  border-left: 4px solid #f59e0b;
+}
+
+.deposit-card.overdue {
+  border-left: 4px solid #dc2626;
+}
+
+.deposit-card.active {
+  border-left: 4px solid #16a34a;
+}
+
+.deposit-card .card-header {
+  padding: 20px 24px 16px 24px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.deposit-info h3 {
+  color: #1e293b;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.deposit-info p {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0;
+}
+
+.deposit-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #16a34a;
+}
+
+.status-indicator.due-soon {
+  background: #f59e0b;
+}
+
+.status-indicator.overdue {
+  background: #dc2626;
+}
+
+.deposit-amount {
+  margin-bottom: 16px;
+}
+
+.amount-label {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.deposit-amount .amount-value {
+  color: #1e293b;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.deposit-details {
+  margin-bottom: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-row span:first-child {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.detail-value {
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.card-actions {
+  display: flex;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.card-actions .action-button {
+  flex: 1;
+  justify-content: center;
+}
+
+/* =============================================
+ * MATURED DEPOSITS
+ * ============================================= */
+
+.matured-deposits-content {
+  padding: 24px;
+}
+
+.matured-summary {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.summary-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.summary-item span:first-child {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.summary-item .value {
+  color: #1e293b;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.performance-cell {
+  text-align: center;
+}
+
+.performance-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.actual-rate {
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+.performance-indicator {
+  font-size: 16px;
+}
+
+/* =============================================
+ * INVESTMENT SUGGESTIONS
+ * ============================================= */
+
+.suggestions-content {
+  padding: 24px;
+}
+
+.suggestions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+.suggestion-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.suggestion-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.suggestion-card.conservative {
+  border-left: 4px solid #16a34a;
+}
+
+.suggestion-card.moderate {
+  border-left: 4px solid #f59e0b;
+}
+
+.suggestion-card.aggressive {
+  border-left: 4px solid #dc2626;
+}
+
+.risk-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.risk-badge.conservative {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.risk-badge.moderate {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.risk-badge.aggressive {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.suggestion-reasoning {
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 12px;
+}
+
+.suggestion-reasoning p {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* =============================================
+ * MATURITY CALENDAR
+ * ============================================= */
+
+.calendar-content {
+  padding: 24px;
+}
+
+.calendar-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.calendar-summary {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.calendar-stats {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-label {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.maturity-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.timeline-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-item.due-soon {
+  border-left: 4px solid #f59e0b;
+  background: #fffbeb;
+}
+
+.timeline-item.overdue {
+  border-left: 4px solid #dc2626;
+  background: #fef2f2;
+}
+
+.timeline-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 80px;
+}
+
+.date-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  min-width: 60px;
+}
+
+.date-day {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
+}
+
+.date-month {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.days-indicator {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.timeline-content {
+  flex: 1;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.deposit-summary h4 {
+  color: #1e293b;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.deposit-summary p {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0;
+}
+
+.deposit-details {
+  display: flex;
+  gap: 16px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.detail-item span:first-child {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.detail-item .value {
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.timeline-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* =============================================
+ * COLOR CODING
+ * ============================================= */
+
+.text-green-600 {
+  color: #16a34a !important;
+}
+
+.text-yellow-600 {
+  color: #d97706 !important;
+}
+
+.text-red-600 {
+  color: #dc2626 !important;
+}
+
+.text-blue-600 {
+  color: #2563eb !important;
+}
+
+.text-gray-600 {
+  color: #4b5563 !important;
+}
+
+.text-gray-500 {
+  color: #6b7280 !important;
+}
+
+/* =============================================
+ * LOADING AND ERROR STATES
+ * ============================================= */
+
+.time-deposit-loading,
+.time-deposit-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  padding: 40px;
+}
+
+.loading-spinner {
+  margin-bottom: 16px;
+}
+
+.loading-spinner i {
+  font-size: 32px;
+  color: #f59e0b;
+}
+
+.time-deposit-loading p {
+  color: #64748b;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.error-content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.error-content i {
+  font-size: 48px;
+  color: #ef4444;
+  margin-bottom: 16px;
+}
+
+.error-content h3 {
+  color: #1e293b;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.error-content p {
+  color: #64748b;
+  font-size: 16px;
+  margin: 0 0 24px 0;
+}
+
+.retry-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-button:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+}
+
+/* =============================================
+ * EMPTY STATES
+ * ============================================= */
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin: 1rem 0;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: #9ca3af;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  margin: 1rem 0;
+  color: #374151;
+  font-size: 1.25rem;
+}
+
+.empty-state p {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+/* =============================================
+ * RESPONSIVE DESIGN
+ * ============================================= */
+
+@media (max-width: 1200px) {
+  .time-deposit-summary-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  
+  .active-deposits-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+  
+  .suggestions-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .time-deposit-management {
+    padding: 16px;
+  }
+  
+  .time-deposit-header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .tab-buttons {
+    flex-direction: column;
+  }
+  
+  .tab-button {
+    border-bottom: 1px solid #e2e8f0;
+    border-right: none;
+  }
+  
+  .tab-button.active {
+    border-bottom-color: #e2e8f0;
+    border-left: 3px solid #f59e0b;
+  }
+  
+  .time-deposit-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .active-deposits-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .suggestions-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .timeline-item {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .timeline-content {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+  
+  .deposit-details {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .table-wrapper {
+    font-size: 0.75rem;
+  }
+  
+  .deposits-table th,
+  .deposits-table td {
+    padding: 0.5rem 0.25rem;
+  }
+}
+
+/* =============================================
+ * PRINT STYLES
+ * ============================================= */
+
+@media print {
+  .time-deposit-management {
+    background: white;
+    padding: 0;
+  }
+  
+  .header-actions,
+  .tab-navigation,
+  .card-actions,
+  .timeline-actions,
+  .action-btn {
+    display: none;
+  }
+  
+  .summary-card,
+  .tab-content {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+} 

@@ -207,10 +207,20 @@ export const DataHub: React.FC = () => {
     return undefined;
   }, [servicesLoaded, unifiedDataService, eventBus, initializationSkipped, activeTab]);
 
-  const handleImportComplete = (transactions: Transaction[], bankAccount: BankAccount) => {
+  const handleImportComplete = async (transactions: Transaction[], bankAccount: BankAccount) => {
     console.log(`Imported ${transactions.length} transactions for ${bankAccount.name}`);
-    // All data operations are now handled by unified service with event bus
-    // No additional handling needed here - event bus will trigger UI updates
+    
+    // Extract credit transactions automatically after bank statement import
+    try {
+      const { creditTransactionManagementService } = await import('../services/creditTransactionManagementService');
+      await creditTransactionManagementService.extractCreditTransactions(transactions, bankAccount.id);
+      console.log('✅ Credit transactions extracted successfully');
+    } catch (error) {
+      console.error('Failed to extract credit transactions:', error);
+    }
+    
+    // All other data operations are handled by unified service with event bus
+    // Event bus will trigger UI updates
   };
 
   const handleFileDeleted = (fileId: string) => {

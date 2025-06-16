@@ -1,6 +1,6 @@
 import * as tf from '@tensorflow/tfjs';
 
-import { localStorageManager } from './localStorageManager';
+import { localStorageManager } from '../../data/storage/LocalStorageManager';
 import { systemIntegrityService } from './systemIntegrityService';
 
 // ADVANCED ML PREDICTIVE ANALYTICS SERVICE

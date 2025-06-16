@@ -1,6 +1,6 @@
 import { TransactionCategory, CategorizationRule, TransactionCategorization, Transaction } from '../../../shared/types';
 import { localStorageManager } from './localStorageManager';
-import { eventBus } from './EventBus';
+import { eventBus } from '../../core/orchestration/EventBus';
 
 /**
  * CATEGORIZATION SERVICE

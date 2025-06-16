@@ -1,4 +1,4 @@
-import { eventBus, DataEvent } from './EventBus';
+import { eventBus, DataEvent } from '../../core/orchestration/EventBus';
 import { localStorageManager } from './localStorageManager';
 import { unifiedDataService } from './unifiedDataService';
 import { performanceManager } from './performanceManager';

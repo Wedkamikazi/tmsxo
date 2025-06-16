@@ -3,7 +3,7 @@ import { ErrorBoundary } from './ui/components/common/ErrorBoundary';
 import { SystemInitializer } from './ui/pages/admin/SystemInitializer';
 import { initializeSystemSafety } from './core/safety/SystemSafetyManager';
 import { shouldReinitializeServices } from './utils/stateManager';
-import { DataHub } from './components/DataHub'; // Direct import for instant refresh
+import { DataHub } from './ui/pages/data/DataHub'; // Direct import for instant refresh
 import './styles/globals.css';
 
 // Import DataHub conditionally only for full initialization

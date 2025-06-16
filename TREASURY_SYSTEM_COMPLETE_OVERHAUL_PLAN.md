@@ -319,33 +319,77 @@ interface ProfessionalBankReconciliation {
   calculateReconciledBalance(reconciliation: BankReconciliation): ReconciledBalance;
 }
 
-// Standard Bank Reconciliation Formula
-interface BankReconciliation {
+// CORRECTED Bank Reconciliation Formula (fixes current system errors)
+interface ProfessionalBankReconciliation {
+  // Bank Statement Side (per banking standards)
   bankStatementBalance: number;
-  add: {
-    depositsInTransit: number;
-    bankErrors: number;
+  bankSideAdjustments: {
+    add: {
+      depositsInTransit: number;          // Deposits recorded but not on statement
+      bankErrorsInOurFavor: number;       // Bank errors that increase our balance
+    };
+    subtract: {
+      outstandingChecks: number;          // Checks issued but not cleared
+      bankErrorsAgainstUs: number;        // Bank errors that decrease our balance
+      bankServiceCharges: number;         // If not yet recorded in books
+    };
   };
-  subtract: {
-    outstandingChecks: number;
-    bankCharges: number;
-  };
-  adjustedBankBalance: number;
+  adjustedBankBalance: number;            // Bank balance + adds - subtracts
 
-  bookBalance: number;
-  addToBooks: {
-    bankCollections: number;
-    interestEarned: number;
+  // Book Balance Side (per accounting standards)
+  bookBalance: number;                    // Balance per general ledger
+  bookSideAdjustments: {
+    add: {
+      bankCollections: number;            // Collections made by bank
+      interestEarned: number;             // Interest credited by bank
+      errorCorrections: number;           // Corrections in our favor
+      otherBankCredits: number;           // Other credits from bank
+    };
+    subtract: {
+      bankServiceCharges: number;         // Service charges by bank
+      nsfChecks: number;                  // NSF checks returned
+      errorCorrections: number;           // Corrections against us
+      otherBankDebits: number;            // Other debits by bank
+    };
   };
-  subtractFromBooks: {
-    bankCharges: number;
-    nsfChecks: number;
-    bookErrors: number;
-  };
-  adjustedBookBalance: number;
+  adjustedBookBalance: number;            // Book balance + adds - subtracts
 
-  // Must be equal for successful reconciliation
-  isReconciled: boolean; // adjustedBankBalance === adjustedBookBalance
+  // Reconciliation Validation (CRITICAL)
+  reconciliationResult: {
+    isReconciled: boolean;                // adjustedBankBalance === adjustedBookBalance
+    variance: number;                     // Difference (must be zero)
+    varianceThreshold: number;            // Acceptable variance (e.g., $0.01)
+    requiresInvestigation: boolean;       // If variance > threshold
+  };
+
+  // Outstanding Items Aging (Banking Best Practice)
+  outstandingItemsAnalysis: {
+    outstandingChecks: Array<{
+      checkNumber: string;
+      date: string;
+      amount: number;
+      daysOutstanding: number;
+      requiresFollowUp: boolean;          // If > 90 days
+    }>;
+    depositsInTransit: Array<{
+      depositDate: string;
+      amount: number;
+      daysInTransit: number;
+      requiresFollowUp: boolean;          // If > 3 days
+    }>;
+  };
+
+  // Audit Trail (SOX Compliance)
+  auditTrail: {
+    preparedBy: string;
+    preparedDate: string;
+    reviewedBy: string;
+    reviewedDate: string;
+    approvedBy: string;
+    approvedDate: string;
+    reconciliationId: string;
+    supportingDocuments: string[];
+  };
 }
 ```
 

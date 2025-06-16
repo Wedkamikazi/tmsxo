@@ -65,47 +65,43 @@ class DebitTransactionManagementService {
     const sampleAPAging: APAgingEntry[] = [
       {
         id: 'ap_001',
+        vendorId: 'vendor_001',
         vendorName: 'ABC Supplies Ltd',
         invoiceNumber: 'INV-2024-001',
-        amount: 15750.00,
         dueDate: '2024-12-20',
-        invoiceDate: '2024-11-20',
-        aging: '0-30',
-        paymentTerms: 'Net 30',
-        category: 'office_supplies'
+        amount: 15750.00,
+        agingDays: 25,
+        status: 'pending'
       },
       {
         id: 'ap_002',
+        vendorId: 'vendor_002',
         vendorName: 'TechCorp Solutions',
         invoiceNumber: 'TC-456789',
-        amount: 28900.00,
         dueDate: '2024-12-15',
-        invoiceDate: '2024-11-15',
-        aging: '0-30',
-        paymentTerms: 'Net 30',
-        category: 'technology'
+        amount: 28900.00,
+        agingDays: 30,
+        status: 'pending'
       },
       {
         id: 'ap_003',
+        vendorId: 'vendor_003',
         vendorName: 'City Utilities Company',
         invoiceNumber: 'UTIL-2024-12',
-        amount: 4250.50,
         dueDate: '2024-12-25',
-        invoiceDate: '2024-12-01',
-        aging: '0-30',
-        paymentTerms: 'Net 25',
-        category: 'utilities'
+        amount: 4250.50,
+        agingDays: 20,
+        status: 'pending'
       },
       {
         id: 'ap_004',
+        vendorId: 'vendor_004',
         vendorName: 'Professional Services Inc',
         invoiceNumber: 'PS-2024-089',
-        amount: 12500.00,
         dueDate: '2024-12-18',
-        invoiceDate: '2024-11-18',
-        aging: '0-30',
-        paymentTerms: 'Net 30',
-        category: 'professional_services'
+        amount: 12500.00,
+        agingDays: 27,
+        status: 'pending'
       }
     ];
 

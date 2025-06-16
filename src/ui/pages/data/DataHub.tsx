@@ -254,7 +254,7 @@ export const DataHub: React.FC = () => {
     
     // Extract credit and debit transactions automatically after bank statement import
     try {
-      const { creditTransactionManagementService } = await import('../services/creditTransactionManagementService');
+      const { creditTransactionManagementService } = await import('../../../banking/transactions/CreditTransactionManagementService');
       await creditTransactionManagementService.extractCreditTransactions(transactions, bankAccount.id);
       console.log('✅ Credit transactions extracted successfully');
     } catch (error) {

@@ -2,7 +2,7 @@
 // Central orchestrator for all categorization strategies
 // Implements fallback chain, performance monitoring, and unified API
 
-import { Transaction } from '../../shared/types';
+import { Transaction } from '@/shared/types';
 import { 
   UnifiedCategorizationResult,
   StrategyRegistry,
@@ -12,8 +12,8 @@ import {
 import { RuleBasedMethod } from './RuleBasedMethod';
 import { MLEnhancedMethod } from './MLEnhancedMethod';
 import { TensorFlowMethod } from './TensorFlowMethod';
-import { isDebugMode } from '../../shared/utils/debugging/DebugMode';
-import { eventBus } from '../../core/orchestration/EventBus';
+import { isDebugMode } from '@/shared/utils/debugging/DebugMode';
+import { eventBus } from '@/core/orchestration/EventBus';
 
 export interface BatchCategorizationOptions {
   batchSize?: number;

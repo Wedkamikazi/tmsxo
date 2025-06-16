@@ -7,7 +7,6 @@ import { cleanupManager } from '@/data/maintenance/CleanupManager';
 import { localStorageManager } from '@/data/storage/LocalStorageManager';
 import { categorizationService } from '../categorization/CategorizationService';
 import { isDebugMode } from '@/shared/utils/debugging/DebugMode';
-import { mlCategorizationService } from './MLCategorizationService';
 import { mlNaturalLanguageService } from './MLNaturalLanguageService';
 
 // ENHANCED ML ORCHESTRATOR

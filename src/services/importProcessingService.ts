@@ -1301,13 +1301,86 @@ class ImportProcessingService {
   }
 
   // ======================
-  // PLACEHOLDER METHODS FOR NEXT MICRO-TASKS
+  // UTILITY METHODS
   // ======================
 
-  // TODO: Micro-Task 2.1.2.4 - Service Orchestration
-  // - processImportWorkflow()
-  // - validateImportWorkflow()
-  // - executeImportWithValidation()
+  /**
+   * Get service health status
+   */
+  getServiceHealth(): {
+    status: 'healthy' | 'warning' | 'error';
+    components: {
+      importHistory: boolean;
+      fileStorage: boolean;
+      csvProcessing: boolean;
+    };
+    statistics: {
+      totalFiles: number;
+      totalTransactions: number;
+      totalBackups: number;
+      importHistoryEntries: number;
+    };
+  } {
+    try {
+      const fileStats = this.getFileStorageStats();
+      const importStats = this.getImportStatistics();
+      
+      const components = {
+        importHistory: true,
+        fileStorage: true,
+        csvProcessing: true
+      };
+      
+      // Test each component
+      try {
+        this.getImportHistory();
+      } catch {
+        components.importHistory = false;
+      }
+      
+      try {
+        this.getAllUploadedFiles();
+      } catch {
+        components.fileStorage = false;
+      }
+      
+      try {
+        this.generateCSVTemplate();
+      } catch {
+        components.csvProcessing = false;
+      }
+      
+      const healthyComponents = Object.values(components).filter(Boolean).length;
+      const status = healthyComponents === 3 ? 'healthy' : 
+                    healthyComponents === 2 ? 'warning' : 'error';
+      
+      return {
+        status,
+        components,
+        statistics: {
+          totalFiles: fileStats.totalFiles,
+          totalTransactions: fileStats.totalTransactions,
+          totalBackups: fileStats.backupCount,
+          importHistoryEntries: importStats.accountsWithHistory
+        }
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        components: {
+          importHistory: false,
+          fileStorage: false,
+          csvProcessing: false
+        },
+        statistics: {
+          totalFiles: 0,
+          totalTransactions: 0,
+          totalBackups: 0,
+          importHistoryEntries: 0
+        }
+      };
+    }
+  }
 }
 
 // Export singleton instance

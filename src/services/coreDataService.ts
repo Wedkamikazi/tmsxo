@@ -1016,7 +1016,7 @@ class CoreDataService {
 
   private removeOldSnapshots(): void {
     try {
-      const snapshots = this.getStorageData(this.STORAGE_KEYS.snapshots, {});
+      const snapshots = this.getStorageData(this.STORAGE_KEYS.snapshots, {} as Record<string, StorageSnapshot>);
       const timestamps = Object.keys(snapshots).sort().reverse();
       
       if (timestamps.length > 2) {

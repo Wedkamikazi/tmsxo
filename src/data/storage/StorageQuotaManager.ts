@@ -12,7 +12,7 @@
  * Integrates with existing localStorageManager.ts for seamless quota management
  */
 
-import { eventBus } from './eventBus';
+import { eventBus } from '../../core/orchestration/EventBus';
 import { systemIntegrityService } from '../integrity/SystemIntegrityService';
 
 export interface StorageQuotaInfo {

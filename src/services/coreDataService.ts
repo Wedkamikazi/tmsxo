@@ -991,12 +991,12 @@ class CoreDataService {
   }
 
   getAllSnapshots() {
-    return this.getStorageData(this.STORAGE_KEYS.snapshots, {});
+    return this.getStorageData(this.STORAGE_KEYS.snapshots, {} as Record<string, StorageSnapshot>);
   }
 
   deleteSnapshot(snapshotTimestamp: string): boolean {
     try {
-      const snapshots = this.getStorageData(this.STORAGE_KEYS.snapshots, {});
+      const snapshots = this.getStorageData(this.STORAGE_KEYS.snapshots, {} as Record<string, StorageSnapshot>);
       delete snapshots[snapshotTimestamp];
       this.setStorageData(this.STORAGE_KEYS.snapshots, snapshots);
       return true;

@@ -24,6 +24,8 @@ export const SystemInitializer: React.FC<SystemInitializerProps> = ({ children }
   const [initializationStatus, setInitializationStatus] = useState('Starting...');
   const [debugMode, setDebugMode] = useState(isDebugMode());
   const [safetyStatus, setSafetyStatus] = useState('Initializing...');
+  const [dataFixStatus, setDataFixStatus] = useState('');
+  const [showDataFix, setShowDataFix] = useState(false);
 
   useEffect(() => {
     // If already initialized (using cache), skip initialization

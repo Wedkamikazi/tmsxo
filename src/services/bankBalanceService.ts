@@ -196,7 +196,7 @@ class BankBalanceService {
         }
         
         const movement = closingBalance - openingBalance;
-        const lastTransactionTime = (lastTransaction.postDateTime || `${lastTransaction.date}T${lastTransaction.time || '00:00'}:00`).split('T')[1];
+        const lastTransactionTime = (mostRecentTransaction.postDateTime || `${mostRecentTransaction.date}T${mostRecentTransaction.time || '00:00'}:00`).split('T')[1];
         
         dailyBalances.push({
           id: `${accountId}-${date}`,

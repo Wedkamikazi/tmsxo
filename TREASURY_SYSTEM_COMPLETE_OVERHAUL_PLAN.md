@@ -1001,23 +1001,62 @@ interface ProfessionalCashPosition {
 - [ ] **Risk Management**: Concentration and counterparty risk monitoring
 - [ ] **Regulatory Compliance**: Cash reporting per regulatory requirements
 
-**AI Assistant Testing Instructions**:
+**AI Assistant Testing Instructions - PROFESSIONAL CALCULATION VALIDATION**:
 
 ```bash
-# Test cash position calculations
-npm test -- --testNamePattern="CashPosition"
+# Test professional cash position calculations
+npm test -- --testNamePattern="ProfessionalCashPosition"
 
-# Verify liquidity ratios
-const liquidityRatios = cashPositionService.calculateLiquidityRatios()
-console.assert(liquidityRatios.currentRatio > 1.0, "Current ratio should be > 1.0")
+# CRITICAL: Verify accounting equation balance
+const accountingValidation = cashPositionService.validateAccountingEquation()
+console.assert(accountingValidation.isBalanced === true, "CRITICAL: Accounting equation must balance")
+console.assert(accountingValidation.variance === 0, "CRITICAL: No variance allowed in accounting equation")
 
-# Check cash forecast accuracy
-const forecastAccuracy = cashPositionService.calculateForecastAccuracy()
-console.log("Forecast Accuracy:", forecastAccuracy)
+# CRITICAL: Verify liquidity ratios calculations
+const liquidityRatios = cashPositionService.calculateProfessionalLiquidityRatios()
+console.assert(liquidityRatios.currentRatio >= 1.0, "Current ratio must be >= 1.0 for liquidity")
+console.assert(liquidityRatios.quickRatio >= 0.5, "Quick ratio must be >= 0.5 for short-term liquidity")
+console.assert(liquidityRatios.cashRatio >= 0.1, "Cash ratio must be >= 0.1 for immediate liquidity")
 
-# Validate multi-currency positions
-const currencyPositions = cashPositionService.getCashByCurrency()
-console.log("Currency Positions:", currencyPositions)
+# CRITICAL: Verify cash flow classification per GAAP
+const cashFlowValidation = cashPositionService.validateGAAPCashFlowClassification()
+console.assert(cashFlowValidation.operatingActivitiesValid === true, "Operating activities must be properly classified")
+console.assert(cashFlowValidation.investingActivitiesValid === true, "Investing activities must be properly classified")
+console.assert(cashFlowValidation.financingActivitiesValid === true, "Financing activities must be properly classified")
+
+# CRITICAL: Verify three-way reconciliation
+const reconciliation = cashPositionService.performThreeWayReconciliation()
+console.assert(reconciliation.isReconciled === true, "CRITICAL: Three-way reconciliation must balance")
+console.assert(reconciliation.cashFlowTiestoBalanceSheet === true, "Cash flow must tie to balance sheet")
+console.assert(reconciliation.cashFlowTiestoIncomeStatement === true, "Cash flow must tie to income statement")
+
+# CRITICAL: Verify multi-currency calculations
+const currencyValidation = cashPositionService.validateMultiCurrencyCalculations()
+console.assert(currencyValidation.fxRatesValid === true, "FX rates must be current and valid")
+console.assert(currencyValidation.exposureCalculationsValid === true, "Currency exposure calculations must be accurate")
+
+# CRITICAL: Verify risk calculations per Basel III
+const riskValidation = cashPositionService.validateBaselIIIRiskCalculations()
+console.assert(riskValidation.creditRiskValid === true, "Credit risk calculations must follow Basel III")
+console.assert(riskValidation.liquidityRiskValid === true, "Liquidity risk calculations must follow Basel III")
+console.assert(riskValidation.marketRiskValid === true, "Market risk calculations must follow Basel III")
+
+# CRITICAL: Verify professional cash forecasting
+const forecastValidation = cashPositionService.validateProfessionalForecasting()
+console.assert(forecastValidation.forecastAccuracy >= 0.85, "Forecast accuracy must be >= 85%")
+console.assert(forecastValidation.varianceAnalysisComplete === true, "Variance analysis must be complete")
+
+# CRITICAL: Verify regulatory compliance
+const complianceValidation = cashPositionService.validateRegulatoryCompliance()
+console.assert(complianceValidation.minimumCashMet === true, "Minimum cash requirements must be met")
+console.assert(complianceValidation.reportingCurrent === true, "All regulatory reporting must be current")
+
+# Professional Standards Final Validation
+console.log("=== PROFESSIONAL STANDARDS VALIDATION COMPLETE ===")
+console.log("CTP Compliance:", cashPositionService.validateCTPCompliance())
+console.log("GAAP Compliance:", cashPositionService.validateGAAPCompliance())
+console.log("Banking Standards:", cashPositionService.validateBankingStandards())
+console.log("Basel III Compliance:", cashPositionService.validateBaselIIICompliance())
 ```
 
 #### **Job 2.1.2: Advanced Bank Reconciliation Engine**

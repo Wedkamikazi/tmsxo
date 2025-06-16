@@ -11,9 +11,9 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { DebitTransaction, APAgingEntry, ForecastedPayment } from '../../shared/types';
+import { DebitTransaction, APAgingEntry, ForecastedPayment } from '@/shared/types';
 import { debitTransactionManagementService } from './DebitTransactionManagementService';
-import { ErrorBoundary } from '../../ui/components/common/ErrorBoundary';
+import { ErrorBoundary } from '@/ui/components/common/ErrorBoundary';
 import './DebitTransactions.css';
 
 interface DebitTransactionsProps {

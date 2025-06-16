@@ -3,10 +3,10 @@ import { useCleanup, useTimerCleanup, useEventListenerCleanup } from '../../shar
 import { useInfiniteLoopProtection } from '../../core/safety/InfiniteLoopProtection';
 import { Transaction, TransactionCategory, TransactionCategorization as TransactionCategorizationData } from '../../../shared/types';
 import { unifiedDataService, type StoredTransaction } from '../../data/storage/UnifiedDataService';
-import { unifiedCategorizationService } from '../analytics/categorization/UnifiedCategorizationService';
-import { categorizationService } from '../analytics/categorization/CategorizationService'; // Keep for category management only
-import { enhancedMLOrchestrator } from '../analytics/machine-learning/EnhancedMLOrchestrator';
-import { localOllamaIntegration } from '../integration/ai/LocalOllamaIntegration';
+import { unifiedCategorizationService } from './UnifiedCategorizationService';
+import { categorizationService } from './CategorizationService'; // Keep for category management only
+import { enhancedMLOrchestrator } from '../machine-learning/EnhancedMLOrchestrator';
+import { localOllamaIntegration } from '../../integration/ai/LocalOllamaIntegration';
 import './TransactionCategorization.css';
 
 interface TransactionCategorizationProps {

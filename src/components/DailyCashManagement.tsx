@@ -418,22 +418,257 @@ export const DailyCashManagement: React.FC<DailyCashManagementProps> = ({ dataRe
         {/* Summary Cards */}
         {renderSummaryCards()}
 
-        {/* Table Section - Placeholder for next micro-job */}
+        {/* Daily Cash Management Table */}
         <div className="daily-cash-table-section">
           <div className="section-header">
             <h2>Daily Cash Entries</h2>
             <span className="entry-count">{dailyCashEntries.length} entries</span>
           </div>
           
-          {/* Table will be implemented in Micro-Job 2.1.6 */}
-          <div className="table-placeholder">
-            <i className="fas fa-table"></i>
-            <p>Daily Cash Table will be implemented in the next micro-job</p>
-            <p className="placeholder-detail">
-              Will include all 15 columns: Date, Bank, Account, Currency, Opening Balance, 
-              Cash In/Out, Intercompany, Time Deposits, Projected/Actual Closing, Discrepancy, etc.
-            </p>
-          </div>
+          {dailyCashEntries.length === 0 ? (
+            <div className="empty-state">
+              <i className="fas fa-table"></i>
+              <h3>No Daily Cash Entries Found</h3>
+              <p>Generate entries to see daily cash management data</p>
+              <button 
+                onClick={handleGenerateEntries}
+                className="action-button primary"
+              >
+                <i className="fas fa-plus"></i>
+                Generate Entries for Last 30 Days
+              </button>
+            </div>
+          ) : (
+            <div className="table-container">
+              <div className="table-wrapper">
+                <table className="daily-cash-table">
+                  <thead>
+                    <tr>
+                      <th className="col-date">Date</th>
+                      <th className="col-bank">Bank Name</th>
+                      <th className="col-account">Account No</th>
+                      <th className="col-currency">Currency</th>
+                      <th className="col-balance">Opening Balance</th>
+                      <th className="col-cash-in">Cash In<br/><small>(AR/Other)</small></th>
+                      <th className="col-cash-out">Cash Out<br/><small>(AP/HR/Other)</small></th>
+                      <th className="col-interco">Interco In</th>
+                      <th className="col-interco">Interco Out</th>
+                      <th className="col-deposit">Time Deposit Out</th>
+                      <th className="col-deposit">Time Deposit In<br/><small>(Matured)</small></th>
+                      <th className="col-balance">Closing Balance<br/><small>(Actual)</small></th>
+                      <th className="col-balance">Projected Closing<br/><small>Balance</small></th>
+                      <th className="col-discrepancy">Discrepancy</th>
+                      <th className="col-notes">Notes/<br/>Observations</th>
+                      <th className="col-verified">⩗ Verified</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dailyCashEntries.map((entry) => (
+                      <tr key={entry.id} className={entry.isVerified ? 'verified-row' : ''}>
+                        {/* Date */}
+                        <td className="col-date">
+                          <div className="date-cell">
+                            <span className="date-main">{new Date(entry.date).toLocaleDateString('en-GB')}</span>
+                            <span className="date-day">{new Date(entry.date).toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                          </div>
+                        </td>
+                        
+                        {/* Bank Name */}
+                        <td className="col-bank">
+                          <div className="bank-cell">
+                            <i className="fas fa-university"></i>
+                            <span>{entry.bankName}</span>
+                          </div>
+                        </td>
+                        
+                        {/* Account Number */}
+                        <td className="col-account">
+                          <div className="account-cell">
+                            <span className="account-number">{entry.accountNumber}</span>
+                          </div>
+                        </td>
+                        
+                        {/* Currency */}
+                        <td className="col-currency">
+                          <span className="currency-badge">{entry.currency}</span>
+                        </td>
+                        
+                        {/* Opening Balance */}
+                        <td className="col-balance">
+                          <div className="balance-cell">
+                            <span className={`balance-amount ${entry.openingBalance >= 0 ? 'positive' : 'negative'}`}>
+                              {formatCurrency(entry.openingBalance)}
+                            </span>
+                          </div>
+                        </td>
+                        
+                        {/* Cash In */}
+                        <td className="col-cash-in">
+                          <div className="cash-flow-cell positive">
+                            {entry.cashIn > 0 && <i className="fas fa-arrow-down"></i>}
+                            <span>{formatCurrency(entry.cashIn)}</span>
+                          </div>
+                        </td>
+                        
+                        {/* Cash Out */}
+                        <td className="col-cash-out">
+                          <div className="cash-flow-cell negative">
+                            {entry.cashOut > 0 && <i className="fas fa-arrow-up"></i>}
+                            <span>{formatCurrency(entry.cashOut)}</span>
+                          </div>
+                        </td>
+                        
+                        {/* Intercompany In */}
+                        <td className="col-interco">
+                          <div className="interco-cell positive">
+                            {entry.intercoIn > 0 && <i className="fas fa-exchange-alt"></i>}
+                            <span>{formatCurrency(entry.intercoIn)}</span>
+                          </div>
+                        </td>
+                        
+                        {/* Intercompany Out */}
+                        <td className="col-interco">
+                          <div className="interco-cell negative">
+                            {entry.intercoOut > 0 && <i className="fas fa-exchange-alt"></i>}
+                            <span>{formatCurrency(entry.intercoOut)}</span>
+                          </div>
+                        </td>
+                        
+                        {/* Time Deposit Out */}
+                        <td className="col-deposit">
+                          <div className="deposit-cell negative">
+                            {entry.timeDepositOut > 0 && <i className="fas fa-piggy-bank"></i>}
+                            <span>{formatCurrency(entry.timeDepositOut)}</span>
+                          </div>
+                        </td>
+                        
+                        {/* Time Deposit In (Matured) */}
+                        <td className="col-deposit">
+                          <div className="deposit-cell positive">
+                            {entry.timeDepositIn > 0 && <i className="fas fa-coins"></i>}
+                            <span>{formatCurrency(entry.timeDepositIn)}</span>
+                          </div>
+                        </td>
+                        
+                        {/* Closing Balance (Actual) */}
+                        <td className="col-balance">
+                          <div className="balance-cell">
+                            <span className={`balance-amount ${entry.closingBalanceActual >= 0 ? 'positive' : 'negative'}`}>
+                              {formatCurrency(entry.closingBalanceActual)}
+                            </span>
+                          </div>
+                        </td>
+                        
+                        {/* Projected Closing Balance */}
+                        <td className="col-balance">
+                          <div className="balance-cell">
+                            <span className={`balance-amount projected ${entry.closingBalanceProjected >= 0 ? 'positive' : 'negative'}`}>
+                              {formatCurrency(entry.closingBalanceProjected)}
+                            </span>
+                          </div>
+                        </td>
+                        
+                        {/* Discrepancy */}
+                        <td className="col-discrepancy">
+                          <div className={`discrepancy-cell ${getDiscrepancyColor(entry.discrepancy).replace('text-', '')}`}>
+                            {Math.abs(entry.discrepancy) > 0.01 && (
+                              <i className="fas fa-exclamation-triangle"></i>
+                            )}
+                            <span>{formatCurrency(entry.discrepancy)}</span>
+                            {Math.abs(entry.discrepancy) > 0.01 && (
+                              <div className="discrepancy-badge">
+                                {Math.abs(entry.discrepancy) > 1000 ? 'HIGH' : 'MEDIUM'}
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        
+                        {/* Notes/Observations */}
+                        <td className="col-notes">
+                          <div className="notes-cell">
+                            {entry.observations && (
+                              <div className="notes-content">
+                                <i className="fas fa-sticky-note"></i>
+                                <span title={entry.observations}>
+                                  {entry.observations.length > 30 
+                                    ? `${entry.observations.substring(0, 30)}...` 
+                                    : entry.observations}
+                                </span>
+                              </div>
+                            )}
+                            {entry.notes && (
+                              <div className="notes-content">
+                                <i className="fas fa-comment"></i>
+                                <span title={entry.notes}>
+                                  {entry.notes.length > 30 
+                                    ? `${entry.notes.substring(0, 30)}...` 
+                                    : entry.notes}
+                                </span>
+                              </div>
+                            )}
+                            {!entry.observations && !entry.notes && (
+                              <span className="no-notes">—</span>
+                            )}
+                          </div>
+                        </td>
+                        
+                        {/* Verification Status */}
+                        <td className="col-verified">
+                          <div className="verification-cell">
+                            {entry.isVerified ? (
+                              <div className="verified-status">
+                                <i className="fas fa-check-circle"></i>
+                                <span className="verified-text">Verified</span>
+                                {entry.verifiedDate && (
+                                  <div className="verified-details">
+                                    <small>{new Date(entry.verifiedDate).toLocaleDateString()}</small>
+                                    {entry.verifiedBy && <small>by {entry.verifiedBy}</small>}
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <button
+                                className="verify-button"
+                                onClick={() => handleVerifyDay(entry)}
+                                title="Mark day as verified"
+                              >
+                                <i className="fas fa-check"></i>
+                                Verify
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* Table Footer with Summary */}
+              <div className="table-footer">
+                <div className="table-summary">
+                  <div className="summary-item">
+                    <span>Total Cash In:</span>
+                    <span className="positive">{formatCurrency(balanceStats.totalCashIn)}</span>
+                  </div>
+                  <div className="summary-item">
+                    <span>Total Cash Out:</span>
+                    <span className="negative">{formatCurrency(balanceStats.totalCashOut)}</span>
+                  </div>
+                  <div className="summary-item">
+                    <span>Net Movement:</span>
+                    <span className={balanceStats.totalCashIn - balanceStats.totalCashOut >= 0 ? 'positive' : 'negative'}>
+                      {formatCurrency(balanceStats.totalCashIn - balanceStats.totalCashOut)}
+                    </span>
+                  </div>
+                  <div className="summary-item">
+                    <span>Entries with Discrepancies:</span>
+                    <span className="warning">{balanceStats.entriesWithDiscrepancies}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Verification Modal - Placeholder */}

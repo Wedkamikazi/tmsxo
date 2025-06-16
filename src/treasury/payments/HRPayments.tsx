@@ -3,8 +3,8 @@ import {
   HRPayment, 
   PayrollEntry
 } from '../../../shared/types';
-import { hrPaymentManagementService } from '../treasury/payments/HRPaymentManagementService';
-import { eventBus } from '../core/orchestration/EventBus';
+import { hrPaymentManagementService } from './HRPaymentManagementService';
+import { eventBus } from '../../core/orchestration/EventBus';
 import { ErrorBoundary } from '../../ui/components/common/ErrorBoundary';
 import './HRPayments.css';
 

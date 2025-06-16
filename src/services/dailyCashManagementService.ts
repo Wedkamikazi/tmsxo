@@ -825,6 +825,52 @@ class DailyCashManagementService {
   }
 
   /**
+   * Calculate intercompany transfers for a specific date and account (Job 1.4 - IMPLEMENTED)
+   */
+  private async calculateIntercompanyTransfers(date: string, accountNumber: string): Promise<{
+    intercoIn: number;
+    intercoOut: number;
+  }> {
+    try {
+      // Import intercompany transfer service
+      const { intercompanyTransferService } = await import('./intercompanyTransferService');
+      
+      const intercoData = await intercompanyTransferService.getIntercompanyTransfersForDate(date, accountNumber);
+      
+      return {
+        intercoIn: intercoData.intercoIn,
+        intercoOut: intercoData.intercoOut
+      };
+    } catch (error) {
+      console.warn('Intercompany transfer service not available:', error);
+      return { intercoIn: 0, intercoOut: 0 };
+    }
+  }
+
+  /**
+   * Calculate time deposit movements for a specific date and account (Job 1.5 - IMPLEMENTED)
+   */
+  private async calculateTimeDepositMovements(date: string, accountNumber: string): Promise<{
+    timeDepositOut: number;
+    timeDepositIn: number;
+  }> {
+    try {
+      // Import time deposit service
+      const { timeDepositService } = await import('./timeDepositService');
+      
+      const timeDepositData = await timeDepositService.getTimeDepositMovementsForDate(date, accountNumber);
+      
+      return {
+        timeDepositOut: timeDepositData.timeDepositOut,
+        timeDepositIn: timeDepositData.timeDepositIn
+      };
+    } catch (error) {
+      console.warn('Time deposit service not available:', error);
+      return { timeDepositOut: 0, timeDepositIn: 0 };
+    }
+  }
+
+  /**
    * Get actual closing balance from bank data for a specific date and account
    */
   private async getActualClosingBalance(date: string, accountNumber: string): Promise<number> {

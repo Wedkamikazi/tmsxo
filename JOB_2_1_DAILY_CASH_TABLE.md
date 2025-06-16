@@ -97,7 +97,7 @@ await dailyCashManagementService.markDayAsVerified(date, accountId, verifiedBy, 
 
 ### **Data Integration Flow**
 
-```
+```text
 Daily Cash Service
 ├── Credit Transactions (Job 1.1) → Cash In
 ├── Debit Transactions (Job 1.2) → Cash Out

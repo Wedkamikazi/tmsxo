@@ -161,37 +161,24 @@ class UnifiedBalanceService {
       sortedDates.forEach(date => {
         const dayTransactions = transactionsByDate.get(date)!;
         
-        // Sort transactions by postDateTime to get the most recent one of the day
+        // Sort transactions by postDateTime to get the last one of the day
         const sortedDayTransactions = dayTransactions.sort((a, b) => 
           new Date(b.postDateTime).getTime() - new Date(a.postDateTime).getTime()
         );
 
-        const mostRecentTransaction = sortedDayTransactions[0]; // Most recent transaction of the day
-
-        // The closing balance comes from the MOST RECENT transaction of the day
-        // This is the actual balance after all transactions for that day
-        const closingBalance = mostRecentTransaction.balance;
+        const lastTransaction = sortedDayTransactions[0]; // Most recent transaction of the day
 
         // Determine opening balance for the day
         let openingBalance: number;
         if (previousClosingBalance !== null) {
-          // Use previous day's closing balance as today's opening balance
           openingBalance = previousClosingBalance;
         } else {
-          // For the VERY FIRST DAY in the dataset, we need to understand the CSV structure:
-          // - Transactions are in REVERSE chronological order (newest first)
-          // - Each transaction shows the balance AFTER that transaction was processed
-          // - The OLDEST transaction (last in the array) shows the balance after the FIRST transaction of the day
-          // - To get the opening balance, we need the balance BEFORE the first transaction
-          
-          // Get the oldest transaction (last in sorted array)
-          const oldestTransaction = sortedDayTransactions[sortedDayTransactions.length - 1];
-          
-          // The opening balance is the balance from the oldest transaction MINUS its impact
-          // This gives us the balance BEFORE that transaction was processed
-          const oldestTransactionImpact = (oldestTransaction.creditAmount || 0) - (oldestTransaction.debitAmount || 0);
-          openingBalance = oldestTransaction.balance - oldestTransactionImpact;
+          // For the first day, calculate opening balance from first transaction
+          const totalDayMovement = this.calculateDayMovement(dayTransactions);
+          openingBalance = lastTransaction.balance - totalDayMovement;
         }
+
+        const closingBalance = lastTransaction.balance;
         const dailyMovement = closingBalance - openingBalance;
 
         dailyBalances.push({
@@ -206,8 +193,8 @@ class UnifiedBalanceService {
           openingBalance,
           dailyMovement,
           transactionCount: dayTransactions.length,
-          lastTransactionTime: this.extractTimeFromTransaction(mostRecentTransaction),
-          lastTransactionId: mostRecentTransaction.id
+          lastTransactionTime: this.extractTimeFromTransaction(lastTransaction),
+          lastTransactionId: lastTransaction.id
         });
 
         previousClosingBalance = closingBalance;
@@ -593,16 +580,14 @@ class UnifiedBalanceService {
   // PRIVATE HELPER METHODS
   // ==========================================
 
-  // Calculate total movement for a day (no longer used - kept for potential future use)
-  // Movement is now calculated as: closingBalance - openingBalance
-  // This ensures accuracy by using actual bank statement balances
-  // private calculateDayMovement(transactions: StoredTransaction[]): number {
-  //   return transactions.reduce((sum, transaction) => {
-  //     const debitAmount = transaction.debitAmount || 0;
-  //     const creditAmount = transaction.creditAmount || 0;
-  //     return sum + creditAmount - debitAmount; // Credits positive, debits negative
-  //   }, 0);
-  // }
+  // Calculate total movement for a day
+  private calculateDayMovement(transactions: StoredTransaction[]): number {
+    return transactions.reduce((sum, transaction) => {
+      const debitAmount = transaction.debitAmount || 0;
+      const creditAmount = transaction.creditAmount || 0;
+      return sum + creditAmount - debitAmount; // Credits positive, debits negative
+    }, 0);
+  }
 
   // Extract date from transaction
   private extractDateFromTransaction(transaction: StoredTransaction): string {

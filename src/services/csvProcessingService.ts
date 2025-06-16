@@ -1,17 +1,15 @@
 import { CSVRow, Transaction, ImportSummary, ValidationError, ValidationRule, CSVTemplate } from '../types';
 
 // CSV Template Configuration
-// POST DATE is the primary date used for all transactions (when transaction was posted to account)
-// VALUE DATE is kept for reference but not used as primary date (used by banks for interest calculations)
 export const CSV_TEMPLATE: CSVTemplate = {
   headers: ['Bank reference', 'Narrative', 'Customer reference', 'TRN type', 'Value date', 'Credit amount', 'Debit amount', 'Time', 'Post date', 'Balance'],
   validationRules: [
     { field: 'Bank reference', rule: 'required', message: 'Bank reference is required' },
     { field: 'Narrative', rule: 'required', message: 'Narrative is required' },
     { field: 'TRN type', rule: 'required', message: 'Transaction type is required' },
-    { field: 'Value date', rule: 'required', message: 'Value date is required (but Post date takes priority)' },
+    { field: 'Value date', rule: 'required', message: 'Value date is required' },
     { field: 'Value date', rule: 'date', message: 'Value date must be in valid format (MM/DD/YYYY, DD/MM/YYYY, or MMDDYYYY)' },
-    { field: 'Post date', rule: 'required', message: 'Post date is required (PRIMARY date used for transactions)' },
+    { field: 'Post date', rule: 'required', message: 'Post date is required' },
     { field: 'Post date', rule: 'date', message: 'Post date must be in valid format (MM/DD/YYYY, DD/MM/YYYY, or MMDDYYYY)' },
     { field: 'Credit amount', rule: 'number', message: 'Credit amount must be a valid number' },
     { field: 'Debit amount', rule: 'number', message: 'Debit amount must be a valid number' },
@@ -291,12 +289,19 @@ class CSVProcessingService {
   convertToTransactions(rows: CSVRow[]): Transaction[] {
     const baseTimestamp = Date.now();
     return rows.map((row, index) => {
-      // ONLY USE POST DATE from bank statements (not value date)
-      // Post date is when the transaction was actually posted to the account
-      // Value date is for interest calculation purposes and can be different
-      const primaryDate = row.postDate || row.valueDate; // Post date as primary, value date as fallback only
+      // Debug logging for problematic dates
+      if (!row.postDate || !this.isValidDate(row.postDate)) {
+        console.warn(`Row ${index + 1}: Invalid postDate "${row.postDate}", using valueDate "${row.valueDate}"`);
+      }
       
+      // Use valueDate as primary, fallback to postDate
+      const primaryDate = row.valueDate || row.postDate;
       const formattedDate = this.formatDate(primaryDate);
+      
+      // Additional debug logging
+      if (formattedDate.includes('Invalid') || formattedDate === primaryDate) {
+        console.warn(`Row ${index + 1}: Date formatting issue - original: "${primaryDate}", formatted: "${formattedDate}"`);
+      }
       
       return {
         id: `txn_${baseTimestamp}_${index}_${Math.random().toString(36).substr(2, 9)}`,
@@ -306,9 +311,9 @@ class CSVProcessingService {
         creditAmount: Math.abs(this.parseAmount(row.creditAmount)), // Ensure credit amounts are positive for display
         balance: this.parseAmount(row.balance),
         reference: row.customerReference,
-        postDate: row.postDate, // Store the actual post date from bank statement
+        postDate: primaryDate, // Store the original date value
         time: row.time,
-        valueDate: row.valueDate // Keep value date for reference but don't use for primary date
+        valueDate: row.valueDate
       };
     });
   }
@@ -316,12 +321,8 @@ class CSVProcessingService {
   private formatDate(dateString: string): string {
     // Return current date if input is empty or invalid
     if (!dateString || dateString.trim() === '') {
+      console.warn(`Empty date string provided to formatDate, using current date`);
       return new Date().toISOString().split('T')[0];
-    }
-    
-    // Special handling for 31/12/2024 to fix the specific issue
-    if (dateString.trim() === '31/12/2024') {
-      return '2024-12-31';
     }
     
     // Handle slash-separated dates
@@ -332,7 +333,9 @@ class CSVProcessingService {
         const part2 = parseInt(parts[1]);
         const year = parseInt(parts[2]);
         
+        // Log for debugging
         if (isNaN(part1) || isNaN(part2) || isNaN(year)) {
+          console.warn(`Invalid date parts in formatDate: "${dateString}" -> [${part1}, ${part2}, ${year}], using current date`);
           return new Date().toISOString().split('T')[0];
         }
         
@@ -370,6 +373,7 @@ class CSVProcessingService {
           }
         }
         
+        console.warn(`Invalid date parts after validation: day=${day}, month=${month}, year=${year}, using current date`);
         return new Date().toISOString().split('T')[0];
       }
     }
@@ -400,10 +404,11 @@ class CSVProcessingService {
         return date.toISOString().split('T')[0];
       }
     } catch (error) {
-      // Silent fallback
+      console.warn(`Failed to parse date "${dateString}":`, error);
     }
     
     // Final fallback - use current date
+    console.warn(`All date parsing failed for "${dateString}", using current date`);
     return new Date().toISOString().split('T')[0];
   }
 
@@ -420,19 +425,16 @@ class CSVProcessingService {
         // Convert HHMM to HH:MM
         timeString = timeString.substring(0, 2) + ':' + timeString.substring(2);
       }
-      // Validate time format
-      if (!/^\d{2}:\d{2}$/.test(timeString)) {
-        timeString = '00:00';
-      }
     }
     
-    // Combine date and time with proper validation
+    // Combine date and time - add debug logging for invalid dates
     const dateTimeString = `${formattedDate}T${timeString}:00`;
     const result = new Date(dateTimeString);
     
     if (isNaN(result.getTime())) {
-      // Return fallback date instead of current date to avoid infinite loops
-      return new Date('2024-01-01T00:00:00');
+      console.warn(`Invalid datetime created: "${dateTimeString}" from postDate: "${postDate}", time: "${time}"`);
+      // Return current date as fallback
+      return new Date();
     }
     
     return result;
@@ -446,7 +448,6 @@ class CSVProcessingService {
       const transactions = this.convertToTransactions(rows);
       
       // Sort transactions by Post date and time (newest first, matching bank statement order)
-      // ALWAYS use post date for sorting (not value date)
       const sortedTransactions = transactions.sort((a, b) => {
         const dateA = this.createSortableDateTime(a.postDate || a.date, a.time || '00:00');
         const dateB = this.createSortableDateTime(b.postDate || b.date, b.time || '00:00');

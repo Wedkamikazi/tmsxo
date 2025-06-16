@@ -172,39 +172,28 @@ class BankBalanceService {
         const transactionsToProcess = uniqueTransactions;
         
         // Sort transactions by postDateTime (or fallback to formatted date + time)
-        // Sort in DESCENDING order (most recent first) to match bank statement format
         transactionsToProcess.sort((a, b) => {
           const aDateTime = a.postDateTime || `${a.date}T${a.time || '00:00'}:00`;
           const bDateTime = b.postDateTime || `${b.date}T${b.time || '00:00'}:00`;
-          return new Date(bDateTime).getTime() - new Date(aDateTime).getTime();
+          return new Date(aDateTime).getTime() - new Date(bDateTime).getTime();
         });
         
-        // MOST RECENT transaction determines the closing balance (not the last/oldest)
-        const mostRecentTransaction = transactionsToProcess[0];
-        const closingBalance = mostRecentTransaction.balance;
+        // Last transaction determines the closing balance
+        const lastTransaction = transactionsToProcess[transactionsToProcess.length - 1];
+        const closingBalance = lastTransaction.balance;
         
-        // Opening balance is either previous day's closing or calculated from oldest transaction
+        // Opening balance is either previous day's closing or calculated from first transaction
         let openingBalance: number;
         if (index === 0) {
-          // For the VERY FIRST DAY in the dataset:
-          // - Transactions are in REVERSE chronological order (newest first)
-          // - Each transaction shows the balance AFTER that transaction was processed
-          // - The OLDEST transaction (last in the array) shows the balance after the FIRST transaction of the day
-          // - To get the opening balance, we need the balance BEFORE the first transaction
-          
-          // Get the oldest transaction (last in sorted array)
-          const oldestTransaction = transactionsToProcess[transactionsToProcess.length - 1];
-          
-          // The opening balance is the balance from the oldest transaction MINUS its impact
-          // This gives us the balance BEFORE that transaction was processed
-          const oldestTransactionImpact = (oldestTransaction.creditAmount || 0) - (oldestTransaction.debitAmount || 0);
-          openingBalance = oldestTransaction.balance - oldestTransactionImpact;
+          // For first day, calculate opening balance from first transaction
+          const firstTransaction = transactionsToProcess[0];
+          openingBalance = firstTransaction.balance - (firstTransaction.creditAmount - firstTransaction.debitAmount);
         } else {
           openingBalance = previousClosingBalance;
         }
         
         const movement = closingBalance - openingBalance;
-        const lastTransactionTime = (mostRecentTransaction.postDateTime || `${mostRecentTransaction.date}T${mostRecentTransaction.time || '00:00'}:00`).split('T')[1];
+        const lastTransactionTime = (lastTransaction.postDateTime || `${lastTransaction.date}T${lastTransaction.time || '00:00'}:00`).split('T')[1];
         
         dailyBalances.push({
           id: `${accountId}-${date}`,
@@ -216,7 +205,7 @@ class BankBalanceService {
           movement,
           transactionCount: transactionsToProcess.length, // Count of unique transactions only
           lastTransactionTime,
-          lastTransactionId: mostRecentTransaction.id,
+          lastTransactionId: lastTransaction.id,
           hasDuplicates,
           duplicateCount: duplicates.length
         });

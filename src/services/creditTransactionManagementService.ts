@@ -478,8 +478,9 @@ class CreditTransactionManagementService {
 
   private async getForecastedCollections(): Promise<ForecastedCollection[]> {
     try {
-      const forecasts = await coreDataService.getData<ForecastedCollection[]>(this.FORECASTED_COLLECTIONS_KEY);
-      return forecasts || [];
+      const item = localStorage.getItem(this.FORECASTED_COLLECTIONS_KEY);
+      if (!item) return [];
+      return JSON.parse(item) as ForecastedCollection[];
     } catch (error) {
       console.error('Failed to get forecasted collections:', error);
       return [];

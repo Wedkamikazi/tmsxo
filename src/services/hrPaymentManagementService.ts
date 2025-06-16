@@ -1,5 +1,5 @@
 import { HRPayment, PayrollEntry, ReconciliationMatch, AuditLogEntry, Transaction } from '../types';
-import { eventBus } from '../utils/eventBus';
+import { eventBus } from './eventBus';
 
 /**
  * HR Payment Management Service

@@ -83,7 +83,13 @@ class CreditTransactionService {
 
   // Get all collection types
   getCollectionTypes(): CollectionType[] {
-    return fileStorageService.readData<CollectionType[]>(this.COLLECTION_TYPES_FILENAME, []);
+    try {
+      const stored = localStorage.getItem(`tms_${this.COLLECTION_TYPES_FILENAME}`);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.warn('Failed to load collection types:', error);
+      return [];
+    }
   }
 
   // Get all credit transactions with reconciliation data

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { stateManager } from '../../../core/performance/StateManager';
-import { isDebugMode, enableDebugMode, disableDebugMode } from '../shared/utils/debugging/DebugMode';
+import { isDebugMode, enableDebugMode, disableDebugMode } from '../../../shared/utils/debugging/DebugMode';
 import './Settings.css';
 
 export const Settings: React.FC = () => {

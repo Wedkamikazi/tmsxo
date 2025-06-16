@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { performanceManager, PerformanceMetrics, MemoryStats } from '../core/performance/PerformanceManager';
+import { performanceManager, PerformanceMetrics, MemoryStats } from '../../../core/performance/PerformanceManager';
 import { ErrorBoundary } from '../../components/common/ErrorBoundary';
 
 interface SystemHealthProps {

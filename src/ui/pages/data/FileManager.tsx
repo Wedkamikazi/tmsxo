@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { unifiedDataService } from '../data/storage/UnifiedDataService';
+import { unifiedDataService } from '../../../data/storage/UnifiedDataService';
 import { UploadedFile } from '../../../shared/types';
 import './FileManager.css';
 

@@ -1,5 +1,5 @@
-import { isDebugMode as checkDebugMode } from '../../shared/utils/debugging/DebugMode';
-import { eventBus, DataEvent } from '../../core/orchestration/EventBus';
+import { isDebugMode as checkDebugMode } from '@/shared/utils/debugging/DebugMode';
+import { eventBus, DataEvent } from '@/core/orchestration/EventBus';
 import { unifiedDataService } from '../storage/UnifiedDataService';
 
 // CROSS-TAB SYNCHRONIZATION SERVICE

@@ -18,8 +18,8 @@ import {
   BusinessCalendar,
   AuditLogEntry,
   Transaction
-} from '../../shared/types';
-import { eventBus } from '../../core/orchestration/EventBus';
+} from '@/shared/types';
+import { eventBus } from '@/core/orchestration/EventBus';
 
 // =============================================
 // TIME DEPOSIT SERVICE

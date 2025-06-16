@@ -150,10 +150,10 @@ export const BankBalance: React.FC<BankBalanceProps> = ({ refreshTrigger }) => {
       accountId: '',
       dateFrom: '',
       dateTo: '',
-      balanceMin: '',
-      balanceMax: '',
-      movementMin: '',
-      movementMax: ''
+      balanceFrom: '',
+      balanceTo: '',
+      movementFrom: '',
+      movementTo: ''
     });
     setCurrentPage(1);
   };

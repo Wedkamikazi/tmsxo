@@ -237,7 +237,7 @@ export class DateMigrationUtils {
       const accounts = localStorageManager.getAllAccounts();
       
       for (const account of accounts) {
-        const transactions = localStorageManager.getTransactions(account.id);
+        const transactions = localStorageManager.getTransactionsByAccount(account.id);
         
         for (const transaction of transactions) {
           result.totalTransactions++;

@@ -5,7 +5,7 @@ import {
   type BankBalanceFilters, 
   type BankBalanceStats 
 } from '../../core/services/bankBalanceService';
-import { unifiedDataService } from '../data/storage/UnifiedDataService';
+import { unifiedDataService } from '../../data/storage/UnifiedDataService';
 import { BankAccount } from '../../shared/types';
 import { 
   registerGlobalRefresh, 

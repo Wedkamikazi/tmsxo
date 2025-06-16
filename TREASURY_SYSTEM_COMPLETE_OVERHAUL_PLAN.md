@@ -644,38 +644,102 @@ interface BundledModelService {
 
 ### **2.1 REAL TREASURY OPERATIONS IMPLEMENTATION**
 
-#### **Job 2.1.1: Cash Position Management System**
+#### **Job 2.1.1: Professional Cash Position Management System**
 
-**Duration**: 4 days  
-**Priority**: CRITICAL  
+**Duration**: 6 days
+**Priority**: CRITICAL
+**Professional Standard**: CTP Cash Management & Banking Best Practices
+
 **Files to Create**:
 
-- `src/treasury/cashPositionService.ts`
-- `src/treasury/liquidityCalculator.ts`
-- `src/treasury/cashFlowProjection.ts`
+- `src/treasury/professionalCashPositionService.ts`
+- `src/treasury/liquidityManagement.ts`
+- `src/treasury/cashConcentration.ts`
+- `src/treasury/cashForecastingEngine.ts`
 - `src/components/CashPositionDashboard.tsx`
 
 **Implementation Details**:
 
 ```typescript
-// Real-time cash position tracking
-interface CashPositionService {
-  getCurrentPosition(): CashPosition;
-  getPositionHistory(period: TimePeriod): CashPosition[];
-  projectFutureCashFlow(days: number): CashFlowProjection;
+// Professional Cash Position Management per CTP Standards
+interface ProfessionalCashPositionService {
+  // Real-time cash position with proper accounting
+  getCurrentCashPosition(): CashPosition;
+
+  // Cash concentration and pooling
+  performCashConcentration(): CashConcentrationResult;
+  optimizeCashPooling(): CashPoolingResult;
+
+  // Professional liquidity management
   calculateLiquidityRatios(): LiquidityRatios;
-  getIntraday Movements(): IntradayMovement[];
+  performLiquidityStressTesting(): LiquidityStressResult;
+
+  // Cash forecasting per CTP standards
+  generateCashForecast(horizon: number): CashForecast;
+  performVarianceAnalysis(): VarianceAnalysis;
+
+  // Investment optimization
+  identifyInvestmentOpportunities(): InvestmentOpportunity[];
+  optimizeExcessCash(): CashOptimizationResult;
+}
+
+// Professional Cash Position Structure
+interface CashPosition {
+  asOfDate: Date;
+  totalCash: number;
+  availableCash: number;
+  restrictedCash: number;
+
+  // By currency (multi-currency support)
+  cashByCurrency: CurrencyPosition[];
+
+  // By account type
+  operatingAccounts: AccountPosition[];
+  investmentAccounts: AccountPosition[];
+  restrictedAccounts: AccountPosition[];
+
+  // Liquidity metrics
+  liquidityRatios: {
+    currentRatio: number;
+    quickRatio: number;
+    cashRatio: number;
+    operatingCashFlowRatio: number;
+  };
+
+  // Risk metrics
+  concentrationRisk: ConcentrationRisk;
+  counterpartyRisk: CounterpartyRisk[];
 }
 ```
 
-**Acceptance Criteria**:
+**Professional Validation Checklist**:
 
-- [ ] Real-time cash position calculation
-- [ ] Multi-account position aggregation
-- [ ] Intraday cash movement tracking
-- [ ] Liquidity ratio calculations
-- [ ] Cash flow projections (30/60/90 days)
-- [ ] Position alerts and thresholds
+- [ ] **Cash Position Accuracy**: Real-time position with proper cut-off procedures
+- [ ] **Multi-Currency Support**: Proper FX rate application and exposure calculation
+- [ ] **Liquidity Management**: Professional liquidity ratio calculations
+- [ ] **Cash Forecasting**: Variance analysis and forecast accuracy tracking
+- [ ] **Investment Optimization**: Excess cash identification and investment recommendations
+- [ ] **Risk Management**: Concentration and counterparty risk monitoring
+- [ ] **Regulatory Compliance**: Cash reporting per regulatory requirements
+
+**AI Assistant Testing Instructions**:
+
+```bash
+# Test cash position calculations
+npm test -- --testNamePattern="CashPosition"
+
+# Verify liquidity ratios
+const liquidityRatios = cashPositionService.calculateLiquidityRatios()
+console.assert(liquidityRatios.currentRatio > 1.0, "Current ratio should be > 1.0")
+
+# Check cash forecast accuracy
+const forecastAccuracy = cashPositionService.calculateForecastAccuracy()
+console.log("Forecast Accuracy:", forecastAccuracy)
+
+# Validate multi-currency positions
+const currencyPositions = cashPositionService.getCashByCurrency()
+console.log("Currency Positions:", currencyPositions)
+```
 
 #### **Job 2.1.2: Advanced Bank Reconciliation Engine**
 

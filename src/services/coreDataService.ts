@@ -340,7 +340,11 @@ class CoreDataService {
     
     const updatedAccounts = accounts.map(account => {
       const accountTransactions = transactions.filter(t => t.accountId === account.id);
-      const balance = accountTransactions.reduce((sum, t) => sum + t.amount, 0);
+      const balance = accountTransactions.reduce((sum, t) => {
+        // Calculate net amount from debit and credit amounts
+        const netAmount = (t.creditAmount || 0) - (t.debitAmount || 0);
+        return sum + netAmount;
+      }, 0);
       
       return { ...account, balance };
     });

@@ -291,11 +291,11 @@ class CSVProcessingService {
     return rows.map((row, index) => {
       // Debug logging for problematic dates
       if (!row.postDate || !this.isValidDate(row.postDate)) {
-        console.warn(`Row ${index + 1}: Invalid postDate "${row.postDate}", using valueDate "${row.valueDate}"`);
+        console.warn(`Row ${index + 1}: Invalid postDate "${row.postDate}", using valueDate "${row.valueDate}" as fallback`);
       }
       
-      // Use valueDate as primary, fallback to postDate
-      const primaryDate = row.valueDate || row.postDate;
+      // Use postDate as primary (when transaction was actually posted), fallback to valueDate only if postDate is missing
+      const primaryDate = row.postDate || row.valueDate;
       const formattedDate = this.formatDate(primaryDate);
       
       // Additional debug logging

@@ -1,9 +1,11 @@
 # JOB 2.1: Daily Cash Management Table Foundation
 
 ## 🎯 **WHAT WE'RE DOING**
+
 Creating the comprehensive **Daily Cash Management Table** - the central dashboard that integrates all transaction types (credit, debit, HR, intercompany, investments) into a unified daily view with balance reconciliation and discrepancy detection.
 
 ## ✅ **WHAT WE'VE DONE**
+
 **Completed Jobs:**
 
 - ✅ Job 1.1 - Credit Transactions Foundation with reconciliation
@@ -20,6 +22,7 @@ Creating the comprehensive **Daily Cash Management Table** - the central dashboa
 ## 🔄 **WHAT WE'RE IMPLEMENTING**
 
 ### **1. Daily Cash Management Service**
+
 **File:** `src/services/dailyCashManagementService.ts`
 
 **Core Features to Implement:**
@@ -37,6 +40,7 @@ Creating the comprehensive **Daily Cash Management Table** - the central dashboa
 - 🔄 **Observations Management**: Notes and discrepancy flagging
 
 ### **2. Daily Cash Management UI Component**
+
 **Files:** `src/components/DailyCashManagement.tsx` + `DailyCashManagement.css`
 
 **UI Features to Implement:**
@@ -51,6 +55,7 @@ Creating the comprehensive **Daily Cash Management Table** - the central dashboa
 - 🔄 **Export Functionality**: Excel/CSV export for reporting
 
 ### **3. The Daily Cash Table Structure**
+
 **Table Columns (as specified):**
 
 | Column | Description | Data Source |
@@ -75,6 +80,7 @@ Creating the comprehensive **Daily Cash Management Table** - the central dashboa
 ## 🔧 **TECHNICAL IMPLEMENTATION**
 
 ### **Service Architecture**
+
 ```typescript
 // Generate daily entries for date range
 const entries = await dailyCashManagementService.generateDailyCashEntries(dateFrom, dateTo, accountIds);
@@ -90,6 +96,7 @@ await dailyCashManagementService.markDayAsVerified(date, accountId, verifiedBy, 
 ```
 
 ### **Data Integration Flow**
+
 ```
 Daily Cash Service
 ├── Credit Transactions (Job 1.1) → Cash In

@@ -418,7 +418,7 @@ class DailyCashManagementService {
 
       // Calculate integration score
       const availableServices = Object.values(status).filter(Boolean).length - 1; // Exclude integrationScore
-      status.integrationScore = (availableServices / 5) * 100;
+      status.integrationScore = (availableServices / 7) * 100; // Now 7 services total
 
       console.log('📊 Service integration status:', status);
       return status;

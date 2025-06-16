@@ -405,7 +405,7 @@ class DailyCashManagementService {
 
       // Test unified data service
       try {
-        const { unifiedDataService } = await import('./unifiedDataService');
+        const { unifiedDataService } = await import('../../data/storage/UnifiedDataService');
         unifiedDataService.getAllAccounts();
         status.unifiedDataService = true;
       } catch (error) {

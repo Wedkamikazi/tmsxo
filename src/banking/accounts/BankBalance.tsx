@@ -6,14 +6,14 @@ import {
   type BankBalanceStats 
 } from '../services/bankBalanceService';
 import { unifiedDataService } from '../data/storage/UnifiedDataService';
-import { BankAccount } from '../../../shared/types';
+import { BankAccount } from '../../shared/types';
 import { 
   registerGlobalRefresh, 
   unregisterGlobalRefresh, 
   shouldComponentUseCache,
   setComponentState,
   getComponentState 
-} from '../../../core/performance/StateManager';
+} from '../../core/performance/StateManager';
 import './BankBalance.css';
 
 interface BankBalanceProps {

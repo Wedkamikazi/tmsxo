@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { FileUpload } from './FileUpload';
-import { ImportSummary, BankAccount, Transaction } from '../../../shared/types';
+import { ImportSummary, BankAccount, Transaction } from '../../shared/types';
 import { importProcessingService } from '../banking/imports/ImportProcessingService';
 import { unifiedDataService, type StoredTransaction } from '../data/storage/UnifiedDataService';
 import { BalanceValidationResult } from '../banking/accounts/UnifiedBalanceService';

@@ -3,8 +3,8 @@ import { useTensorFlowCleanup, useTimerCleanup } from '@/shared/hooks/useCleanup
 import { useInfiniteLoopProtection } from '@/core/safety/InfiniteLoopProtection';
 import { unifiedCategorizationService } from '../categorization/UnifiedCategorizationService';
 import { TensorFlowMethod } from '../categorization/TensorFlowMethod';
-import { enhancedMLOrchestrator } from './EnhancedMLOrchestrator';
-import { mlCategorizationService } from './MLCategorizationService';
+import { mlPredictiveAnalyticsService, PredictiveInsight } from './MLPredictiveAnalyticsService';
+import { mlNaturalLanguageService, NLPAnalysisResult } from './MLNaturalLanguageService';
 import { unifiedDataService } from '@/data/storage/UnifiedDataService';
 import { Transaction } from '@/shared/types';
 import * as tf from '@tensorflow/tfjs';
